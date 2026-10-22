@@ -1,10 +1,8 @@
-import { event, org, totals } from "@/content/event";
+import { event, org } from "@/content/event";
 import { EPassLink } from "@/components/epass/EPassLink";
-import { EPassCounter } from "@/components/epass/EPassCounter";
 import { Frame } from "@/components/ui/Frame";
 import { Hills, LotusRule, Sprig } from "@/components/ui/Ornaments";
 import { Reveal } from "@/components/ui/Reveal";
-import { Countdown } from "./Countdown";
 
 // The colonnade: the middle arch stands tallest, the outer ones step down, like the poster's group.
 const lift = ["lg:translate-y-10", "lg:translate-y-4", "", "lg:translate-y-4", "lg:translate-y-10"];
@@ -12,7 +10,7 @@ const lift = ["lg:translate-y-10", "lg:translate-y-4", "", "lg:translate-y-4", "
 /**
  * Opens like the printed pass: who presents it, the title with its big "9th", the lotus rule, the
  * date and venue in maroon, the director and the four words. Then five arches, one tradition each,
- * standing on the poster's hills, and a guide line of numbers that are also links.
+ * standing on the poster's hills.
  */
 export function Hero() {
   return (
@@ -104,36 +102,6 @@ export function Hero() {
           </ul>
         </div>
       </div>
-
-      {/* Guide line: what's here, and where to go next (My Postcards' StatsBar) */}
-      <nav aria-label="At a glance" className="relative pb-6 pt-2">
-        <ul className="wrap flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-sm text-ink-muted">
-          {[
-            { href: "#programme", n: totals.evenings, label: "evenings" },
-            { href: "#programme", n: totals.performances, label: "performances" },
-            { href: "#programme", n: totals.artists, label: "artists" },
-          ].map((s, i) => (
-            <li key={s.label} className="flex items-center gap-1">
-              {i > 0 && <span aria-hidden="true" className="text-line-strong">·</span>}
-              <a href={s.href} className="rounded-full px-2.5 py-1.5 transition-colors hover:bg-ink/[0.05] hover:text-ink">
-                <span className="font-semibold text-ink tabular-nums">{s.n}</span> {s.label}
-              </a>
-            </li>
-          ))}
-          <li className="flex items-center gap-1">
-            <span aria-hidden="true" className="text-line-strong">·</span>
-            <a href="#e-pass" className="rounded-full px-2.5 py-1.5 transition-colors hover:bg-ink/[0.05] hover:text-ink">
-              <EPassCounter />
-            </a>
-          </li>
-          <li className="flex items-center gap-1">
-            <span aria-hidden="true" className="text-line-strong">·</span>
-            <span className="px-2.5 py-1.5">
-              <Countdown />
-            </span>
-          </li>
-        </ul>
-      </nav>
     </section>
   );
 }
