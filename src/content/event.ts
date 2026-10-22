@@ -4,7 +4,7 @@
  *
  * Artist bios were written from published sources (listed in README.md, "Bio sources") and the
  * Mishra brothers' own profile. Artists with no reliable public profile get their role only.
- * Each photograph is used in one place on the page, so nothing repeats.
+ * On the page itself each photograph appears once; the "Meet the artists" sheets reuse portraits.
  *
  * Still to come from the client: per-performance times and running order (the order inside each
  * evening follows their text), entry policy, social links, official sponsor artwork.
@@ -32,7 +32,7 @@ export const photos = {
   mantraTemple: art("mantra-temple", 2200, 1467, "Two Odissi dancers seated in a carved stone temple doorway", { position: "50% 60%" }),
   mantraDuo: art("mantra-duo", 2200, 1467, "Two Odissi dancers in green and blue costumes in a playful duet on a dark stage", { position: "45% 50%" }),
   reelaPortrait: art("reela-portrait", 1201, 1800, "Reela Hota in red silk and silver jewellery, hands raised in an expressive mudra", { position: "50% 22%" }),
-  reelaSeated: art("reela-seated", 1201, 1800, "Reela Hota seated in a namaste pose in a red and maroon Odissi costume", { position: "50% 40%" }),
+  reelaSeated: art("reela-seated", 1201, 1800, "Reela Hota seated in a namaste pose in a red and maroon Odissi costume", { position: "50% 38%" }),
   reelaPoseB: art("reela-pose-b", 1200, 1800, "Odissi dancer in a copper and red costume in a graceful tribhangi pose", { position: "50% 18%" }),
   arupa: art("arupa-bharatanatyam", 1200, 1800, "Arupa Lahiri balanced on one leg in a tan and red Bharatanatyam costume with a fanned skirt", { position: "50% 35%" }),
   arupaSeated: art("arupa-seated", 918, 918, "Arupa Lahiri in a red and blue Bharatanatyam costume, kneeling in a pose of abhinaya", { position: "50% 30%" }),
@@ -47,7 +47,7 @@ export const photos = {
   sudarushkaGroup: art("sudarushka-group", 1030, 1600, "Russian dancers in blue and white folk costume gathered together in a forest", { position: "50% 30%" }),
   abhaySantoor: art("abhay-santoor", 2000, 1694, "Abhay Sopori in a cream embroidered kurta seated behind his santoor", { position: "50% 40%" }),
   abhayPortrait: art("abhay-portrait", 1261, 1800, "Abhay Sopori in a cream embroidered kurta, hands poised over the santoor strings", { position: "50% 22%" }),
-  mukeshRabab: art("mukesh-rabab", 1280, 1060, "Mukesh Sharma in a dark kurta playing the rabab", { position: "40% 40%" }),
+  mukeshRabab: art("mukesh-rabab", 1280, 1060, "Mukesh Sharma in a dark kurta playing the rabab", { position: "36% 30%" }),
   mishraDuo: art("mishra-duo", 1201, 1800, "Ritesh and Rajnish Mishra in brown silk kurtas seated close together against a black backdrop", { position: "50% 30%" }),
   madhavi: art("madhavi-color-a", 1333, 1800, "Madhavi Mudgal in a red Odissi costume with silver jewellery, mid-gesture", { credit: "Ajay Lal", position: "50% 25%" }),
 };
@@ -98,7 +98,7 @@ export interface Artist {
   name: string;
   role: string;
   bio?: string;
-  /** A portrait used nowhere else on the page; artists without one get a monogram. */
+  /** Portrait for the bio sheet; artists without a photograph get a monogram. */
   photo?: Photo;
 }
 
@@ -112,9 +112,6 @@ export interface Session {
   performers: string;
   images: Photo[];
   artists: Artist[];
-  /** A few words about the art form itself, for performers without a public profile. */
-  formNote?: string;
-  formPhoto?: Photo;
 }
 
 export interface Day {
@@ -223,6 +220,7 @@ export const event = {
             {
               name: "Arupa Lahiri",
               role: "Bharatanatyam",
+              photo: photos.arupaSeated,
               bio: "A dancer of the Vazhuvoor style, she trained for more than fifteen years under Padma Shri Chitra Visweswaran in Chennai. She received the Sangeet Natak Akademi's Ustad Bismillah Khan Yuva Puraskar in 2019 and has performed across India and in the UK, USA, France, Germany and Australia.",
             },
           ],
@@ -257,13 +255,13 @@ export const event = {
               bio: "Born in Jamshedpur, she trained at Kathak Kendra, New Delhi under Pandit Jaikishan Maharaj and Pandit Birju Maharaj, and was for many years a lead dancer with Aditi Mangaldas's Drishtikon Dance Foundation. A recipient of the Ustad Bismillah Khan Yuva Puraskar (2008), she has presented her work at Sadler's Wells in London and the Edinburgh Festival Fringe, and teaches at Kathak Kendra.",
               photo: photos.gauriPortrait,
             },
-            { name: "Mariia Timashova", role: "Sudarushka" },
-            { name: "Mariia Agafonova", role: "Sudarushka" },
-            { name: "Yana", role: "Sudarushka" },
+            {
+              name: "Mariia Timashova, Mariia Agafonova and Yana",
+              role: "Sudarushka, Russian folk dance",
+              bio: "Sudarushka, loosely \"sweetheart\", is a Russian folk dance. Here it is danced in the spirit of the khorovod, the old Slavic circle dance in which dancers join hands and move together in a ring.",
+              photo: photos.sudarushkaGroup,
+            },
           ],
-          formPhoto: photos.sudarushkaGroup,
-          formNote:
-            "Sudarushka, loosely \"sweetheart\", is a Russian folk dance. Here it is danced in the spirit of the khorovod, the old Slavic circle dance in which dancers join hands and move together in a ring.",
         },
       ],
     },
@@ -287,11 +285,13 @@ export const event = {
             {
               name: "Pandit Abhay Rustum Sopori",
               role: "Santoor",
+              photo: photos.abhayPortrait,
               bio: "A santoor player, composer and conductor from Kashmir, he is the son and disciple of the santoor maestro Pandit Bhajan Sopori and carries forward the Sufiana gharana, a family tradition of more than 300 years. He is among the youngest recipients of the Ustad Bismillah Khan Yuva Puraskar.",
             },
             {
               name: "Pandit Mukesh Sharma",
               role: "Rabab",
+              photo: photos.mukeshRabab,
               bio: "A Delhi-based sarod virtuoso who also plays the rabab, the older lute from which the sarod descends. He has toured widely and collaborated with musicians in France and Germany and with flamenco artists in Spain.",
             },
             {
@@ -313,6 +313,7 @@ export const event = {
             {
               name: "Pandit Ritesh Mishra and Pandit Rajnish Mishra",
               role: "Vocal duo, Banaras Gharana",
+              photo: photos.mishraDuo,
               bio: "Sons of Padma Bhushan Pandit Rajan Mishra and nephews of Pandit Sajan Mishra, the brothers are the sixth generation of a Banaras Gharana family with a musical lineage of some 400 years. Singing together for more than three decades, they have performed at the BBC Proms at the Royal Albert Hall, at Lincoln Center in New York and at the closing ceremony of the 2002 Commonwealth Games, and are Top Grade vocalists of All India Radio.",
             },
             { name: "Durjay Bhowmick", role: "Tabla" },
@@ -369,10 +370,6 @@ export const event = {
   ],
 };
 
-/** One credits line for the footer, instead of a caption on every picture. Names come from the photo file names. */
-export const photoCredits =
-  "Photographs of Madhavi Mudgal by Avinash Pasricha (archive) and Ajay Lal. Kuchipudi photographs by Priyanka and Sai Thejeswar Rao.";
-
 /** Start of the first evening, in India time, for the countdown. */
 export const eventStartsAt = `${event.startDate}T18:30:00+05:30`;
 
@@ -386,5 +383,5 @@ export const eveningLabels: Record<Evenings, { short: string; long: string }> = 
 export const totals = {
   evenings: event.days.length,
   performances: event.days.reduce((n, d) => n + d.sessions.length, 0),
-  artists: new Set(event.days.flatMap((d) => d.sessions.flatMap((s) => s.artists.flatMap((a) => (a.name.includes(" and Pandit") ? a.name.split(" and ") : [a.name]))))).size,
+  artists: new Set(event.days.flatMap((d) => d.sessions.flatMap((s) => s.artists.flatMap((a) => (a.name.includes(" and ") ? a.name.split(/, | and /) : [a.name]))))).size,
 };

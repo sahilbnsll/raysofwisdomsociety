@@ -4,53 +4,77 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CalendarButton } from "./CalendarButton";
 
-/** Everything a visitor needs on the day: where, when, how to get there, what to bring, and answers. */
+const icon = {
+  when: <path d="M4.5 6.5h15v13h-15zM4.5 10.5h15M8.5 4v4M15.5 4v4" />,
+  where: (
+    <>
+      <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </>
+  ),
+  metro: (
+    <>
+      <rect x="6" y="3.5" width="12" height="13" rx="3" />
+      <path d="M6 11h12M9 20l1.5-3.5M15 20l-1.5-3.5M9.5 14h.01M14.5 14h.01" />
+    </>
+  ),
+  entry: <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8ZM14 6v12" />,
+};
+
+/** Everything a visitor needs on the day, in one card beside the map, then the questions people ask. */
 export function Visit() {
   const v = event.venue;
   const query = encodeURIComponent(`${v.name}, ${v.area}`);
-  const facts: [string, React.ReactNode][] = [
-    ["When", `${dateRange()}, ${event.timeLabel}`],
-    ["Where", v.address],
-    ["Getting there", v.metro],
-    ["Entry", "Your e-pass, on your phone or printed. The gate team scans it and checks your party in."],
+  const facts: { key: keyof typeof icon; title: string; text: string }[] = [
+    { key: "when", title: dateRange(), text: `${event.timeLabel}, both evenings` },
+    { key: "where", title: v.name, text: v.address },
+    { key: "metro", title: "Mandi House metro", text: "Blue and Violet lines, a 5 to 10 minute walk" },
+    { key: "entry", title: "Your e-pass", text: "On your phone or printed. The gate team scans it." },
   ];
 
   return (
     <section id="visit" className="section border-t border-line">
       <div className="wrap">
-        <SectionHeader title={`Plan your visit to ${v.name}`} intro="One of Delhi's best-loved stages for classical music and dance, in the arts district around Mandi House." />
+        <SectionHeader title="Plan your visit" intro={`${v.name} is one of Delhi's best-loved stages for classical music and dance, in the arts district around Mandi House.`} />
 
-        <div className="mt-12 grid items-start gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
-          <Reveal>
-            <dl className="divide-y divide-line border-y border-line">
-              {facts.map(([k, val]) => (
-                <div key={k} className="grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-4">
-                  <dt className="serif italic text-ink-muted">{k}</dt>
-                  <dd className="font-medium leading-relaxed">{val}</dd>
-                </div>
+        <Reveal className="card mt-12 grid overflow-hidden lg:grid-cols-[minmax(0,26rem)_1fr]">
+          <div className="flex flex-col p-6 sm:p-8">
+            <ul className="space-y-5">
+              {facts.map((f) => (
+                <li key={f.key} className="flex gap-4">
+                  <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-sage text-olive">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      {icon[f.key]}
+                    </svg>
+                  </span>
+                  <div className="min-w-0 pt-0.5">
+                    <p className="font-semibold leading-snug">{f.title}</p>
+                    <p className="text-sm leading-relaxed text-ink-muted">{f.text}</p>
+                  </div>
+                </li>
               ))}
-            </dl>
-            <div className="mt-7 flex flex-wrap gap-3">
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-8">
               <a href={v.mapUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m4 11 16-7-7 16-2-7-7-2Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                </svg>
                 Get directions
                 <span className="sr-only"> (opens Google Maps in a new tab)</span>
               </a>
               <CalendarButton />
             </div>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <div className="card overflow-hidden p-1.5">
-              <iframe
-                title={`Map showing ${v.name}, ${v.area}`}
-                src={`https://maps.google.com/maps?q=${query}&z=15&output=embed`}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="block aspect-[4/3] w-full rounded-[1rem] border-0 bg-sage grayscale-[0.35] sepia-[0.15]"
-              />
-            </div>
-          </Reveal>
-        </div>
+          </div>
+          <div className="relative min-h-[18rem] border-t border-line bg-sage lg:min-h-[26rem] lg:border-l lg:border-t-0">
+            <iframe
+              title={`Map showing ${v.name}, ${v.area}`}
+              src={`https://maps.google.com/maps?q=${query}&z=15&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 h-full w-full border-0 grayscale-[0.3] sepia-[0.12]"
+            />
+          </div>
+        </Reveal>
 
         <div id="faq" className="mt-20 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <Reveal>

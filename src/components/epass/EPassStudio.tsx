@@ -20,11 +20,6 @@ const evenings: { value: Evenings; title: string; note: string }[] = [
   { value: "day2", title: "26 Nov", note: event.days[1].theme },
 ];
 
-const steps = [
-  { title: "Make your pass", detail: "Your name, how many of you, which evening." },
-  { title: "Keep it on your phone", detail: "It downloads as an image; you can also share it to your photos." },
-  { title: "Show it at the gate", detail: `From ${event.start} at ${event.venue.name}. One scan checks your party in.` },
-];
 
 interface FormError {
   field?: string;
@@ -62,7 +57,6 @@ export function EPassStudio() {
 
   const current: PassData | null = creating ? null : (passes.find((p) => p.id === selectedId) ?? passes[0] ?? null);
   const view = useMemo<PassData>(() => current ?? { id: PREVIEW_ID, name: name.trim() || "Your name", guests, days }, [current, name, guests, days]);
-  const step = current ? 2 : 0;
 
   // The picture on screen is the same one that gets downloaded.
   useEffect(() => {
@@ -182,35 +176,8 @@ export function EPassStudio() {
           </div>
         </Reveal>
 
-        {/* Where you are in three steps; it follows what the visitor has actually done */}
-        <ol className="mx-auto mt-10 grid max-w-4xl gap-3 sm:grid-cols-3" aria-label="How the e-pass works">
-          {steps.map((s, i) => {
-            const done = i < step || (i === 1 && !!current);
-            const active = i === step;
-            return (
-              <li
-                key={s.title}
-                aria-current={active ? "step" : undefined}
-                className={`flex gap-3 rounded-2xl px-4 py-3.5 transition-colors duration-[var(--d3)] ${active ? "bg-paper shadow-e1 ring-1 ring-line" : ""}`}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`mt-0.5 grid size-7 shrink-0 place-items-center rounded-full text-sm font-semibold ${
-                    done ? "bg-olive text-paper" : active ? "bg-maroon text-paper" : "bg-paper text-ink-muted ring-1 ring-line-strong"
-                  }`}
-                >
-                  {done ? "✓" : i + 1}
-                </span>
-                <span>
-                  <span className="block font-semibold leading-snug">{s.title}</span>
-                  <span className="mt-0.5 block text-sm leading-snug text-ink-muted">{s.detail}</span>
-                </span>
-              </li>
-            );
-          })}
-        </ol>
 
-        <div className="mt-10 grid items-start gap-10 lg:grid-cols-[1fr_minmax(0,24rem)] lg:gap-16">
+        <div className="mt-12 grid items-start gap-10 lg:grid-cols-[1fr_minmax(0,24rem)] lg:gap-16">
           {/* Ticket: first on phones so people see what they are making */}
           <div className="order-1 mx-auto w-full max-w-[19rem] lg:order-2 lg:sticky lg:top-24 lg:max-w-none">
             <div
@@ -337,83 +304,106 @@ export function EPassStudio() {
                     }}
                   />
                 </button>
-                <p className="mt-3 text-center text-xs text-ink-muted">We keep only the name, number of people and evening you enter here.</p>
+                <p className="mt-4 flex items-start gap-2 rounded-xl bg-cream px-4 py-3 text-sm leading-relaxed text-ink-muted">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="mt-0.5 shrink-0 text-olive">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="M12 11v5M12 8h.01" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+                  </svg>
+                  <span>
+                    Your pass downloads straight away and stays on this phone. At the gate, the team scans its code and checks your party in. We keep only the
+                    name, number of people and evening you enter.
+                  </span>
+                </p>
               </form>
             ) : (
-              <div className="card p-6 shadow-e2 sm:p-8">
-                {passes.length > 1 && (
-                  <div role="tablist" aria-label="Your passes" className="-mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1">
-                    {passes.map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={p.id === current.id}
-                        onClick={() => setSelectedId(p.id)}
-                        className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm transition-colors ${p.id === current.id ? "bg-ink text-paper" : "bg-cream text-ink-muted hover:text-ink"}`}
-                      >
-                        {p.name.split(" ")[0]} · {p.guests}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <p className="inline-flex items-center gap-2 rounded-full bg-sage px-3 py-1 text-sm font-medium">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="m3 8.5 3.2 3L13 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {justIssued === current.id ? "Saved to your device" : "Saved on this device"}
-                </p>
-                <h3 ref={readyRef} tabIndex={-1} className="display mt-4 text-4xl outline-none sm:text-5xl">
-                  {current.name}
-                </h3>
-                <p className="mt-1 text-ink-muted">
-                  {current.guests} {current.guests === 1 ? "person" : "people"} · {eveningLabels[current.days].long} · {event.timeLabel}
-                </p>
-
-                <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-cream px-4 py-3">
-                  <div className="min-w-0 grow">
-                    <p className="text-xs text-ink-muted">Pass number</p>
-                    <p className="font-semibold tracking-[0.08em]">{current.id}</p>
-                  </div>
-                  <button type="button" onClick={() => copyId(current.id)} className="btn btn-secondary !min-h-10 !px-4 text-xs">
-                    <Swap active={copied ? "copied" : "copy"} states={{ copy: <>Copy</>, copied: <>Copied</> }} />
-                  </button>
-                </div>
-
-                <button type="button" onClick={() => gateRef.current?.showModal()} className="btn btn-primary mt-6 w-full !min-h-14 text-base">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-                  </svg>
-                  Show at the gate
-                </button>
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <button type="button" onClick={() => save(current)} className="btn btn-secondary">
-                    <Swap active={saved ? "saved" : "save"} states={{ save: <>Download again</>, saved: <>Saved ✓</> }} />
-                  </button>
-                  {canShare ? (
-                    <button type="button" onClick={() => share(current)} className="btn btn-secondary">
-                      Save to photos or share
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => downloadCalendar(current.days)} className="btn btn-secondary">
-                      Add to calendar
-                    </button>
+              <div className="card overflow-hidden shadow-e2">
+                <div className="p-6 sm:p-8">
+                  {passes.length > 1 && (
+                    <div role="tablist" aria-label="Your passes" className="-mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1">
+                      {passes.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={p.id === current.id}
+                          onClick={() => setSelectedId(p.id)}
+                          className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm transition-colors ${p.id === current.id ? "bg-ink text-paper" : "bg-cream text-ink-muted hover:text-ink"}`}
+                        >
+                          {p.name.split(" ")[0]} · {p.guests}
+                        </button>
+                      ))}
+                    </div>
                   )}
+                  <h3 ref={readyRef} tabIndex={-1} className="display text-4xl outline-none sm:text-5xl">
+                    {current.name}
+                  </h3>
+                  <p className="mt-1 text-ink-muted">
+                    {current.guests} {current.guests === 1 ? "person" : "people"} · {eveningLabels[current.days].long} · {event.timeLabel}
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <span className="font-semibold tracking-[0.08em]">{current.id}</span>
+                    <button type="button" onClick={() => copyId(current.id)} className="text-sm text-ink-muted underline underline-offset-4 hover:text-ink">
+                      <Swap active={copied ? "copied" : "copy"} states={{ copy: <>Copy number</>, copied: <>Copied</> }} />
+                    </button>
+                  </div>
                 </div>
-                {canShare && (
-                  <button type="button" onClick={() => downloadCalendar(current.days)} className="link-arrow mt-2">
-                    Add {current.days === "both" ? "both evenings" : eveningLabels[current.days].short} to your calendar
-                  </button>
-                )}
 
-                <div className="perforation my-6" />
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  Your pass stays on this phone: open this page again any time to show it. At the gate the team scans the code and checks your party in{" "}
-                  {current.days === "both" ? "once each evening" : "for the evening"}.
-                </p>
-                <button type="button" onClick={another} className="link-arrow mt-2">
-                  Get a pass for someone else
-                </button>
+                {/* What's left to do, in order, each with its own action */}
+                <ol className="border-t border-line">
+                  <li className="flex gap-4 px-6 py-5 sm:px-8">
+                    <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-olive text-sm text-paper">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="font-semibold">Pass made</p>
+                      <p className="text-sm text-ink-muted">{justIssued === current.id ? "Downloaded to this device just now." : "Saved on this device. Open this page again any time to see it."}</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-4 border-t border-line px-6 py-5 sm:px-8">
+                    <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-paper text-sm font-semibold ring-1 ring-line-strong">
+                      2
+                    </span>
+                    <div className="min-w-0 grow">
+                      <p className="font-semibold">Keep it handy</p>
+                      <p className="text-sm text-ink-muted">Save a copy where you will find it on the day.</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button type="button" onClick={() => save(current)} className="btn btn-secondary !min-h-10 !px-4 text-sm">
+                          <Swap active={saved ? "saved" : "save"} states={{ save: <>Download image</>, saved: <>Saved ✓</> }} />
+                        </button>
+                        {canShare && (
+                          <button type="button" onClick={() => share(current)} className="btn btn-secondary !min-h-10 !px-4 text-sm">
+                            Save to photos
+                          </button>
+                        )}
+                        <button type="button" onClick={() => downloadCalendar(current.days)} className="btn btn-secondary !min-h-10 !px-4 text-sm">
+                          Add to calendar
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                  <li className="flex gap-4 border-t border-line bg-cream/60 px-6 py-5 sm:px-8">
+                    <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-maroon text-sm font-semibold text-paper">
+                      3
+                    </span>
+                    <div className="min-w-0 grow">
+                      <p className="font-semibold">At the gate</p>
+                      <p className="text-sm text-ink-muted">
+                        From {event.start} at {event.venue.name}. Open your pass full screen and the team scans it{current.days === "both" ? ", once each evening" : ""}.
+                      </p>
+                      <button type="button" onClick={() => gateRef.current?.showModal()} className="btn btn-primary mt-3 w-full !min-h-12">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                        </svg>
+                        Show at the gate
+                      </button>
+                    </div>
+                  </li>
+                </ol>
+                <div className="border-t border-line px-6 py-4 sm:px-8">
+                  <button type="button" onClick={another} className="link-arrow">
+                    Get a pass for someone else
+                  </button>
+                </div>
               </div>
             )}
 

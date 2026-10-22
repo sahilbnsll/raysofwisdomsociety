@@ -7,7 +7,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Countdown } from "./Countdown";
 
 // The colonnade: the middle arch stands tallest, the outer ones step down, like the poster's group.
-const lift = ["lg:translate-y-14", "lg:translate-y-6", "", "lg:translate-y-6", "lg:translate-y-14"];
+const lift = ["lg:translate-y-10", "lg:translate-y-4", "", "lg:translate-y-4", "lg:translate-y-10"];
 
 /**
  * Opens like the printed pass: who presents it, the title with its big "9th", the lotus rule, the
@@ -78,29 +78,35 @@ export function Hero() {
         </Reveal>
       </div>
 
-      {/* Five traditions, one stage */}
-      <div className="wrap relative z-10 mt-12 lg:mt-14">
-        <ul className="mx-auto grid max-w-5xl grid-cols-3 items-end gap-3 sm:gap-5 lg:grid-cols-5">
-          {event.arcade.map((a, i) => (
-            <li
-              key={a.label}
-              className={`${lift[i]} ${i === 0 || i === 4 ? "hidden lg:block" : ""}`}
-              style={{ animation: `rise 900ms var(--ease-out) ${200 + Math.abs(2 - i) * 110}ms both` }}
-            >
-              <figure>
-                <div className="arch-frame">
-                  <Frame photo={a.photo} ratio="3 / 4.2" arch priority={i === 2} sizes="(min-width:1024px) 18vw, 31vw" />
-                </div>
-                <figcaption className="serif mt-3 text-center text-[0.95rem] italic text-ink-muted">{a.label}</figcaption>
-              </figure>
-            </li>
-          ))}
-        </ul>
+      {/* Five traditions, one stage: the arches stand on the poster's hills, each with its nameplate */}
+      <div className="relative mt-12 lg:mt-14">
+        <Hills className="absolute inset-x-0 bottom-0 h-28 sm:h-40" />
+        <div className="wrap relative pb-10 sm:pb-14 lg:pb-20">
+          <ul className="mx-auto grid max-w-5xl grid-cols-3 items-end gap-3 sm:gap-5 lg:grid-cols-5">
+            {event.arcade.map((a, i) => (
+              <li
+                key={a.label}
+                className={`${lift[i]} ${i === 0 || i === 4 ? "hidden lg:block" : ""}`}
+                style={{ animation: `rise 900ms var(--ease-out) ${200 + Math.abs(2 - i) * 110}ms both` }}
+              >
+                <figure className="relative">
+                  <div className="arch-frame">
+                    <Frame photo={a.photo} ratio="3 / 4.2" arch priority={i === 2} sizes="(min-width:1024px) 18vw, 31vw" />
+                  </div>
+                  <figcaption className="absolute inset-x-0 -bottom-3.5 flex justify-center">
+                    <span className="serif rounded-full bg-paper px-3 py-1 text-[0.8rem] italic leading-none text-ink shadow-e1 ring-1 ring-[color-mix(in_srgb,var(--gold)_45%,transparent)] sm:px-4 sm:py-1.5 sm:text-[0.95rem]">
+                      {a.label}
+                    </span>
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <Hills className="relative -mt-16 h-24 sm:-mt-24 sm:h-36" />
 
       {/* Guide line: what's here, and where to go next (My Postcards' StatsBar) */}
-      <nav aria-label="At a glance" className="relative -mt-2 pb-6">
+      <nav aria-label="At a glance" className="relative pb-6 pt-2">
         <ul className="wrap flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-sm text-ink-muted">
           {[
             { href: "#programme", n: totals.evenings, label: "evenings" },
