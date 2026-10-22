@@ -12,12 +12,16 @@ export function Award() {
       <div className="wrap">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
           <Reveal>
-            <p className="text-ink-muted">A special highlight of the festival</p>
+            <p className="serif text-lg italic text-ink-muted">A special highlight of the festival</p>
             <h2 id="award-title" className="section-title mt-3">
               {a.title}
             </h2>
-            <p className="display mt-4 text-[1.9rem] leading-tight">{a.recipient}</p>
-            <p className="mt-6 max-w-xl text-[1.0625rem] leading-[1.8] text-ink-muted">{a.text}</p>
+            <p className="display mt-4 text-[2rem] leading-tight text-maroon">{a.recipient}</p>
+            <div className="reading mt-6 max-w-xl space-y-4">
+              {a.bio.map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </div>
           </Reveal>
           <Reveal develop delay={100} className="mx-auto w-full max-w-[22rem]">
             <div className="arch-frame">
@@ -29,22 +33,19 @@ export function Award() {
         <div className="mt-24">
           <Reveal>
             <h3 className="display text-3xl">From the archive</h3>
-            <p className="mt-2 text-ink-muted">{a.archiveIntro}</p>
+            <p className="reading mt-2">{a.archiveIntro}</p>
           </Reveal>
           <ul className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:gap-x-8 lg:gap-y-10">
             {a.archive.map((p, i) => (
               <Reveal as="li" key={p.photo.src} delay={(i % 6) * 60}>
-                <figure
-                  className="card print h-full p-2.5 pb-4"
-                  style={{ "--lean": lean[i % lean.length] } as React.CSSProperties}
-                >
+                <figure className="card print h-full p-2.5 pb-4" style={{ "--lean": lean[i % lean.length] } as React.CSSProperties}>
                   <Frame photo={p.photo} ratio="4 / 5" sizes="(min-width:768px) 30vw, 46vw" className="!rounded-[0.6rem]" />
                   <figcaption className="px-2 pt-4">
                     <span className="flex items-baseline justify-between gap-3">
                       <span className="display block text-2xl leading-tight">{p.title}</span>
                       {p.year && <span className="shrink-0 text-sm tabular-nums text-ink-muted">{p.year}</span>}
                     </span>
-                    <span className="mt-1.5 block text-sm leading-relaxed text-ink-muted">{p.caption}</span>
+                    <span className="serif mt-1.5 block text-[0.98rem] leading-relaxed text-ink-muted">{p.caption}</span>
                   </figcaption>
                 </figure>
               </Reveal>

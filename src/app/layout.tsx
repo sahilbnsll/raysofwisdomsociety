@@ -1,19 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Geist } from "next/font/google";
+import { DM_Serif_Display, Hanken_Grotesk, Newsreader } from "next/font/google";
 import { brand, event, org } from "@/content/event";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+// Display: a bold, high-contrast serif close to the poster's title lettering.
+const dmSerif = DM_Serif_Display({
+  variable: "--font-dm-serif",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: "400",
   style: ["normal", "italic"],
   display: "swap",
 });
 
-// Geist for UI and reading text (as in LumaCV); Cormorant only for display sizes.
-const geist = Geist({
-  variable: "--font-geist",
+// Reading and UI: the Portfolio pairing.
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const hanken = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   display: "swap",
 });
@@ -26,11 +35,11 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: `${event.title} 2026 | ${org.name}`,
-  description: `${event.edition} ${event.title}, 25 and 26 November 2026 at Kamani Auditorium, New Delhi. ${event.motto.join(". ")}.`,
+  description: `${event.edition} ${event.title}, 25 and 26 November 2026 at Kamani Auditorium, New Delhi. Get your e-pass. ${event.motto.join(". ")}.`,
   icons: { icon: brand.logo.src },
   openGraph: {
     title: `${event.edition} ${event.title} 2026`,
-    description: event.motto.join(". ") + ".",
+    description: `25 and 26 November 2026, Kamani Auditorium, New Delhi. ${event.motto.join(". ")}.`,
     images: [{ url: event.poster.src, width: event.poster.width, height: event.poster.height, alt: event.poster.alt }],
   },
   robots: event.isDraft ? { index: false, follow: false } : undefined,
@@ -39,12 +48,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f7f1e5",
+  themeColor: "#f6efe0",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${geist.variable}`}>
+    <html lang="en" className={`${dmSerif.variable} ${newsreader.variable} ${hanken.variable}`}>
       <body>
         <noscript>
           <style>{`.reveal{opacity:1!important;transform:none!important}.develop img{filter:none!important}`}</style>

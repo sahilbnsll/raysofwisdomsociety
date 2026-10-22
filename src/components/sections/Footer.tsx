@@ -1,14 +1,15 @@
 import Image from "next/image";
-import { brand, event, org, photoCredits } from "@/content/event";
+import { brand, event, org, photoCredits, sponsors } from "@/content/event";
 import { dateRange } from "@/lib/format";
+import { Seal } from "@/components/ui/Seal";
 
 export function Footer() {
   return (
     <footer className="on-dark bg-ink pb-28 pt-20 text-paper md:pb-12">
       <div className="wrap grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
         <div className="md:col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-4">
-            <Image src={brand.logo.src} alt="" width={64} height={64} className="size-14 object-contain" />
+          <div className="flex items-center gap-5">
+            <Seal className="w-24 shrink-0 text-paper/80" />
             <div>
               <p className="display text-2xl leading-tight">
                 {event.edition} {event.title}
@@ -18,7 +19,7 @@ export function Footer() {
               </p>
             </div>
           </div>
-          <p className="display mt-8 text-2xl italic text-paper/85">Art heals. Connects. Awakens.</p>
+          <p className="serif mt-8 text-2xl italic text-paper/85">Art heals. Connects. Awakens.</p>
         </div>
 
         <div>
@@ -46,14 +47,18 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="text-sm font-semibold">Organised by</p>
-          <a href={org.site} className="mt-4 inline-block rounded-2xl bg-paper p-3 transition-transform duration-[var(--d2)] hover:-translate-y-0.5" aria-label={`${org.name} website`}>
+          <p className="text-sm font-semibold">Presented by</p>
+          <a href={org.site} className="mt-3 inline-block rounded-2xl bg-paper p-3 transition-transform duration-[var(--d2)] hover:-translate-y-0.5" aria-label={`${org.name} website`}>
             <Image src={brand.rays.src} alt={brand.rays.alt} width={brand.rays.w} height={brand.rays.h} className="h-14 w-auto" />
           </a>
-          <p className="mt-4 text-sm leading-relaxed text-paper/70">{org.tagline}.</p>
-          <a href={org.site} className="mt-2 inline-flex min-h-8 items-center text-sm text-paper/70 underline decoration-paper/30 underline-offset-4 hover:text-paper">
-            raysofwisdomsociety.net
-          </a>
+          <p className="mt-6 text-sm font-semibold">In association with</p>
+          <ul className="mt-3 flex flex-wrap gap-3">
+            {sponsors.map((s) => (
+              <li key={s.name} className="rounded-2xl bg-paper px-4 py-3">
+                <Image src={s.src} alt={s.name} width={s.w} height={s.h} className="h-9 w-auto" />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

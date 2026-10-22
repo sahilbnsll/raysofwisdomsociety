@@ -2,30 +2,31 @@ import { EPassProvider } from "@/components/epass/EPassProvider";
 import { EPassStudio } from "@/components/epass/EPassStudio";
 import { About } from "@/components/sections/About";
 import { Award } from "@/components/sections/Award";
-import { Faq } from "@/components/sections/Faq";
 import { Footer } from "@/components/sections/Footer";
-import { Gallery } from "@/components/sections/Gallery";
 import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
-import { Performers } from "@/components/sections/Performers";
+import { Partners } from "@/components/sections/Partners";
 import { Programme } from "@/components/sections/Programme";
 import { StickyCta } from "@/components/sections/StickyCta";
-import { Venue } from "@/components/sections/Venue";
+import { Visit } from "@/components/sections/Visit";
 
+/**
+ * The page reads in the order a visitor decides: what this is, who presents it, why it matters,
+ * what's on (with the artists inside each performance), get the pass, the evening's special
+ * honour, then how to get there. Each photograph appears once.
+ */
 export default function EventPage() {
   return (
     <EPassProvider>
       <Header />
       <main>
         <Hero />
+        <Partners />
         <About />
         <Programme />
-        <Performers />
         <EPassStudio />
         <Award />
-        <Gallery />
-        <Venue />
-        <Faq />
+        <Visit />
       </main>
       <Footer />
       <StickyCta />

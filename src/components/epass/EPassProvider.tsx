@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import type { Evenings } from "@/content/event";
 import type { PassData } from "@/lib/epass/render-pass";
 
 interface EPassContextValue {
@@ -8,9 +9,11 @@ interface EPassContextValue {
   count: number | null;
   /** Passes this browser has made, newest first. */
   passes: PassData[];
+  /** The evening a visitor picked elsewhere on the page (e.g. under a day of the programme). */
+  preferred: { value: Evenings; at: number } | null;
   recordIssued: (pass: PassData, count: number) => void;
-  /** Scrolls to the e-pass section and puts the cursor in the name field. */
-  goToPass: () => void;
+  /** Scrolls to the e-pass section and puts the cursor in the name field, optionally choosing an evening. */
+  goToPass: (evening?: Evenings) => void;
   /** The studio registers how to focus its first field. */
   registerFocus: (fn: (() => void) | null) => void;
 }
@@ -56,6 +59,7 @@ const NO_PASSES: PassData[] = [];
 
 export function EPassProvider({ children }: { children: React.ReactNode }) {
   const [count, setCount] = useState<number | null>(null);
+  const [preferred, setPreferred] = useState<{ value: Evenings; at: number } | null>(null);
   const raw = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const parsed = useMemo(() => parsePasses(raw), [raw]);
   const passes = parsed.length ? parsed : NO_PASSES;
@@ -95,14 +99,18 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
     focusRef.current = fn;
   }, []);
 
-  const goToPass = useCallback(() => {
+  const goToPass = useCallback((evening?: Evenings) => {
+    if (evening) setPreferred({ value: evening, at: Date.now() });
     const el = document.getElementById("e-pass");
     el?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     // Wait for the scroll to settle so the on-screen keyboard doesn't fight it.
     window.setTimeout(() => focusRef.current?.(), 650);
   }, []);
 
-  const value = useMemo(() => ({ count, passes, recordIssued, goToPass, registerFocus }), [count, passes, recordIssued, goToPass, registerFocus]);
+  const value = useMemo(
+    () => ({ count, passes, preferred, recordIssued, goToPass, registerFocus }),
+    [count, passes, preferred, recordIssued, goToPass, registerFocus],
+  );
 
   return <EPassContext.Provider value={value}>{children}</EPassContext.Provider>;
 }

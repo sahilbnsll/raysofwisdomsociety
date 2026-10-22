@@ -27,6 +27,7 @@ const photos = [
   ["reela-pose-a", "Reela hota", "_J3A8928_pp", 1800],
   ["reela-pose-b", "Reela hota", "_J3A8972_pp", 1800],
   ["arupa-bharatanatyam", "Arupa Lahiri", "IMG_8150", 1800],
+  ["arupa-seated", "Arupa Lahiri", "IMG_8149", 918],
   ["amrita-red", "Amrita Lahiri", "p260619amrita1", 1800],
   ["amrita-leap", "Amrita Lahiri", "photo by Priyanka", 1800],
   ["amrita-rays", "Amrita Lahiri", "photo is by sai thejeswar rao", 1800],
@@ -97,3 +98,27 @@ async function cutOutWhite(input, output, width) {
 
 await cutOutWhite(path.join(SRC, "Logos", "IAAF logo.jpeg"), path.join(OUT, "brand", "iaaf-logo.png"), 900);
 await cutOutWhite(path.join(SRC, "Logos", "rays logo.jpeg"), path.join(OUT, "brand", "rays-logo.png"), 700);
+
+/* ---------------------------------------------------------------- */
+/* Sponsors                                                          */
+/* ---------------------------------------------------------------- */
+
+// Chadha Papers: the supplied file is a phone screenshot; crop the mark and wordmark, drop the white.
+{
+  const crop = await sharp(path.join(SRC, "Logos", "IMG_8188.JPG")).rotate().extract({ left: 160, top: 340, width: 700, height: 440 }).toBuffer();
+  await cutOutWhite(crop, path.join(OUT, "brand", "chadha-papers.png"), 600);
+}
+
+// Modi Groups: the supplied file is a photo of 3D wall lettering (glare, grey wall), so the mark is
+// redrawn from it as a flat vector. Replace with the sponsor's official artwork when it arrives.
+{
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1620 1010">
+    <path fill="#2f8ae4" d="M560 700 L1020 296 Q1100 226 1180 296 L1520 700 L1316 700 L1100 470 L764 700 Z"/>
+    <path fill="#2b22b4" d="M100 700 L560 296 Q640 226 720 296 L1060 700 L856 700 L640 470 L304 700 Z"/>
+    <text x="810" y="955" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900"
+      font-size="205" textLength="1420" lengthAdjust="spacingAndGlyphs" fill="#2d2d33">MODI GROUPS</text>
+  </svg>`;
+  const raster = await sharp(Buffer.from(svg), { density: 144 }).png().toBuffer();
+  await sharp(raster).trim({ threshold: 1 }).resize({ width: 640 }).png({ compressionLevel: 9 }).toFile(path.join(OUT, "brand", "modi-groups.png"));
+  console.log("modi-groups.png written");
+}

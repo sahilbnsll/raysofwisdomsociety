@@ -3,33 +3,35 @@
 /* ------------------------------------------------------------------ */
 /* Design tokens                                                       */
 /*                                                                     */
-/* "Programme on cream paper." Rules borrowed from the other projects: */
-/*  - one accent, used sparingly (Portfolio): maroon marks the primary */
-/*    action and the current selection, nothing else;                  */
-/*  - decoration, labels and icons are ink, not accent;                */
-/*  - one ground for the whole page; sage is the single secondary      */
-/*    surface (the e-pass), the footer the only dark one;              */
-/*  - no tracked all-caps eyebrows, no ornaments between sections      */
-/*    (My Postcards); cards lift off the page with soft shadows        */
-/*    (LumaCV, Portfolio). Photographs carry the colour.               */
+/* Concept: the printed festival pass. The page is the same handmade   */
+/* cream paper as the physical pass, inked in the poster's olive-black,*/
+/* with maroon for the date line and the one thing to do (the e-pass), */
+/* gold only as hairlines and the seal, and the poster's sage and rose */
+/* watercolour hills where a section opens. Photographs carry colour.  */
+/*                                                                     */
+/* Borrowed rules: one accent used sparingly; Newsreader for reading   */
+/* and Hanken Grotesk for UI (Portfolio); no tracked-caps eyebrows, a  */
+/* seal instead of a stamp, numbers that are also links (My Postcards).*/
 /* ------------------------------------------------------------------ */
 
 :root {
-  --cream: #f7f1e5;
-  --paper: #fdfaf3;
-  --sage: #e6eada;
-  --sage-deep: #c9d3b2;
-  --olive: #4f6131;
-  --ink: #1f2919;
-  --ink-muted: #5d6556;
-  --maroon: #7b1e23;
-  --maroon-deep: #5d151a;
-  --line: rgb(31 41 25 / 0.12);
-  --line-strong: rgb(31 41 25 / 0.22);
+  --cream: #f6efe0;
+  --paper: #fbf7ee;
+  --sage: #e2e7d1;
+  --sage-deep: #c5cfa9;
+  --olive: #566b30;
+  --ink: #26301a;
+  --ink-muted: #5b6250;
+  --maroon: #8a1c24;
+  --maroon-deep: #681319;
+  --gold: #b48d3c;
+  --rose: #e8c6bf;
+  --line: rgb(38 48 26 / 0.12);
+  --line-strong: rgb(38 48 26 / 0.22);
 
-  --shadow-e1: 0 1px 2px rgb(31 41 25 / 0.06), 0 2px 8px -2px rgb(31 41 25 / 0.08);
-  --shadow-e2: 0 2px 4px rgb(31 41 25 / 0.06), 0 16px 32px -16px rgb(31 41 25 / 0.28);
-  --shadow-e3: 0 4px 8px rgb(31 41 25 / 0.06), 0 30px 60px -28px rgb(31 41 25 / 0.4);
+  --shadow-e1: 0 1px 2px rgb(38 48 26 / 0.06), 0 2px 8px -2px rgb(38 48 26 / 0.08);
+  --shadow-e2: 0 2px 4px rgb(38 48 26 / 0.06), 0 16px 32px -16px rgb(38 48 26 / 0.3);
+  --shadow-e3: 0 4px 8px rgb(38 48 26 / 0.06), 0 30px 60px -28px rgb(38 48 26 / 0.45);
 
   /* Motion (Portfolio): D1 micro, D2 standard, D3 structural */
   --d1: 120ms;
@@ -40,6 +42,11 @@
   --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
 
   --header-h: 4.25rem;
+  --gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  --wrap: 76rem;
+
+  /* Paper grain: a faint fibre texture so the page reads as the same stock as the printed pass. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .15 0 0 0 0 .18 0 0 0 0 .1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @theme inline {
@@ -52,6 +59,8 @@
   --color-ink-muted: var(--ink-muted);
   --color-maroon: var(--maroon);
   --color-maroon-deep: var(--maroon-deep);
+  --color-gold: var(--gold);
+  --color-rose: var(--rose);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
 
@@ -59,8 +68,9 @@
   --shadow-e2: var(--shadow-e2);
   --shadow-e3: var(--shadow-e3);
 
-  --font-display: var(--font-cormorant), "Iowan Old Style", Georgia, serif;
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-dm-serif), "Iowan Old Style", Georgia, serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -70,10 +80,12 @@
 html {
   color-scheme: light;
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+  scroll-padding-top: calc(var(--header-h) + 1.25rem);
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   background: var(--cream);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -84,9 +96,20 @@ body {
   text-wrap: pretty;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.32;
+}
+
 h1,
 h2,
-h3 {
+h3,
+h4 {
   text-wrap: balance;
 }
 
@@ -107,16 +130,15 @@ h3 {
 
 /* ---------- layout ---------- */
 
-:root {
-  --gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);
-  --wrap: 76rem;
-}
-
 .wrap {
   width: 100%;
-  max-width: 76rem;
+  max-width: var(--wrap);
   margin-inline: auto;
   padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
 }
 
 /* Large monitors: let the column breathe instead of floating in a sea of cream. */
@@ -124,49 +146,60 @@ h3 {
   :root {
     --wrap: 86rem;
   }
-  .wrap {
-    max-width: 86rem;
-  }
   html {
     font-size: 106.25%;
   }
-}
-
-.section {
-  padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
-}
-
-/* Sections on the same ground are separated by a hairline the width of the column, not a colour change. */
-.section.rule-top {
-  background-image: linear-gradient(var(--line), var(--line));
-  background-repeat: no-repeat;
-  background-position: top center;
-  background-size: min(calc(100% - 2 * var(--gutter)), calc(var(--wrap) - 2 * var(--gutter))) 1px;
 }
 
 /* ---------- type ---------- */
 
 .display {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.012em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   line-height: 1;
 }
 
 .section-title {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-weight: 400;
+  letter-spacing: -0.012em;
   line-height: 1.04;
-  font-size: clamp(2.25rem, 1.6rem + 2.5vw, 3.6rem);
+  font-size: clamp(2.3rem, 1.6rem + 2.6vw, 3.7rem);
 }
 
-.section-intro {
-  margin-top: 1rem;
-  max-width: 38rem;
-  font-size: 1.0625rem;
+.serif {
+  font-family: var(--font-serif);
+}
+
+/* Reading text: Newsreader at a comfortable measure */
+.reading {
+  font-family: var(--font-serif);
+  font-size: clamp(1.075rem, 1rem + 0.25vw, 1.2rem);
   line-height: 1.7;
   color: var(--ink-muted);
+}
+
+/* The poster's four words, with its small gold diamonds between them. Used where the poster is quoted. */
+.motto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: inherit;
+  gap: 0.15rem 1rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 1rem + 0.5vw, 1.4rem);
+  color: var(--ink);
+}
+
+.motto > span + span::before {
+  content: "";
+  display: inline-block;
+  width: 0.36rem;
+  height: 0.36rem;
+  margin-right: 1rem;
+  background: var(--gold);
+  transform: rotate(45deg) translateY(-0.15rem);
 }
 
 /* ---------- controls ---------- */
@@ -179,14 +212,15 @@ h3 {
   min-height: 2.875rem;
   padding: 0.7rem 1.4rem;
   border-radius: 999px;
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 600;
+  line-height: 1.2;
   cursor: pointer;
   transition:
     transform var(--d1) var(--ease),
     background-color var(--d2) var(--ease),
     color var(--d2) var(--ease),
-    border-color var(--d2) var(--ease),
     box-shadow var(--d2) var(--ease);
 }
 
@@ -202,7 +236,7 @@ h3 {
 .btn-primary {
   background: var(--maroon);
   color: var(--paper);
-  box-shadow: 0 1px 2px rgb(93 21 26 / 0.3), 0 8px 18px -10px rgb(93 21 26 / 0.7);
+  box-shadow: 0 1px 2px rgb(104 19 25 / 0.3), 0 8px 18px -10px rgb(104 19 25 / 0.7);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -219,7 +253,12 @@ h3 {
   box-shadow: inset 0 0 0 1px var(--ink-muted);
 }
 
-/* A text link that behaves like a button: used for secondary actions next to a primary one. */
+.on-dark .btn-secondary {
+  background: transparent;
+  color: var(--paper);
+  box-shadow: inset 0 0 0 1px rgb(251 247 238 / 0.35);
+}
+
 .link-arrow {
   display: inline-flex;
   align-items: center;
@@ -253,7 +292,24 @@ h3 {
   box-shadow: var(--shadow-e1), inset 0 0 0 1px var(--line);
 }
 
-/* Archive prints: they lean a little and straighten when you point at them (hover devices only). */
+/* ---------- signature devices ---------- */
+
+/* Mehrab: artists stand in a temple arch, edged by a hairline. */
+.arch {
+  border-radius: 50% 50% 0.75rem 0.75rem / 32% 32% 0.75rem 0.75rem;
+  overflow: hidden;
+  background: var(--sage-deep);
+  position: relative;
+  isolation: isolate;
+}
+
+.arch-frame {
+  border-radius: 50% 50% 1rem 1rem / 32% 32% 1rem 1rem;
+  outline: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  outline-offset: 5px;
+}
+
+/* Archive prints lean a little and straighten when pointed at (hover devices only). */
 .print {
   transition:
     transform var(--d3) var(--ease-out),
@@ -270,23 +326,6 @@ h3 {
   }
 }
 
-/* ---------- signature device ---------- */
-
-/* Mehrab: photographs of artists sit in a temple arch, edged by a hairline. */
-.arch {
-  border-radius: 50% 50% 0.75rem 0.75rem / 32% 32% 0.75rem 0.75rem;
-  overflow: hidden;
-  background: var(--sage-deep);
-  position: relative;
-  isolation: isolate;
-}
-
-.arch-frame {
-  border-radius: 50% 50% 1rem 1rem / 32% 32% 1rem 1rem;
-  outline: 1px solid var(--line-strong);
-  outline-offset: 5px;
-}
-
 /* Photographs "develop" from black and white into colour as they arrive (My Postcards). */
 .develop img {
   transition: filter 1100ms var(--ease-out);
@@ -294,6 +333,13 @@ h3 {
 
 .develop[data-in="false"] img {
   filter: grayscale(1) contrast(1.05) brightness(1.04);
+}
+
+/* Perforation: the tear line of the pass, used where something is a ticket. */
+.perforation {
+  height: 2px;
+  background-image: radial-gradient(circle, var(--line-strong) 1.1px, transparent 1.4px);
+  background-size: 9px 2px;
 }
 
 /* ---------- reveal on scroll ---------- */
@@ -311,7 +357,40 @@ h3 {
   transform: none;
 }
 
-/* ---------- motion ---------- */
+/* ---------- dialogs: sheets slide up on phones, fade-scale on wide screens ---------- */
+
+dialog.sheet {
+  transition:
+    opacity var(--d3) var(--ease-out),
+    transform var(--d3) var(--ease-out),
+    overlay var(--d3) allow-discrete,
+    display var(--d3) allow-discrete;
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+
+dialog.sheet[open] {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  dialog.sheet[open] {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+dialog::backdrop {
+  background: rgb(38 48 26 / 0.62);
+  backdrop-filter: blur(3px);
+}
+
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* ---------- keyframes ---------- */
 
 @keyframes pulse-ring {
   0% {
@@ -345,9 +424,25 @@ h3 {
   }
 }
 
-dialog::backdrop {
-  background: rgb(31 41 25 / 0.7);
-  backdrop-filter: blur(3px);
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.6) rotate(-14deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(0.96) rotate(-10deg);
+  }
+  100% {
+    transform: scale(1) rotate(-10deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

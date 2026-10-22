@@ -9,13 +9,12 @@ import { useActiveSection } from "@/components/ui/useActiveSection";
 const links = [
   { id: "about", label: "About" },
   { id: "programme", label: "Programme" },
-  { id: "artists", label: "Artists" },
-  { id: "gallery", label: "Gallery" },
-  { id: "venue", label: "Venue" },
+  { id: "award", label: "Award" },
+  { id: "visit", label: "Visit" },
 ];
 
 export function Header() {
-  const active = useActiveSection(links.map((l) => l.id));
+  const active = useActiveSection([...links.map((l) => l.id), "e-pass"]);
   const [scrolled, setScrolled] = useState(false);
   const menu = useRef<HTMLDialogElement>(null);
 
@@ -29,15 +28,15 @@ export function Header() {
   return (
     <header
       className={`sticky top-0 z-40 transition-[background-color,box-shadow] duration-[var(--d3)] ${
-        scrolled ? "bg-cream/88 shadow-[0_1px_0_var(--line)] backdrop-blur-md" : "bg-transparent"
+        scrolled ? "bg-cream/90 shadow-[0_1px_0_var(--line)] backdrop-blur-md" : "bg-transparent"
       }`}
     >
-      <div className="wrap flex h-[var(--header-h)] items-center justify-between gap-6">
+      <div className="wrap flex h-[var(--header-h)] items-center justify-between gap-4">
         <a href="#top" className="flex items-center gap-3" aria-label={`${event.title} 2026, back to top`}>
           <Image src={brand.logo.src} alt="" width={44} height={44} className="size-10 object-contain" priority />
-          <span className="leading-tight">
+          <span className="leading-tight max-[359px]:hidden">
             <span className="display block text-[1.35rem]">{event.shortTitle}</span>
-            <span className="hidden text-xs text-ink-muted sm:block">25 to 26 Nov · New Delhi</span>
+            <span className="hidden text-xs text-ink-muted sm:block">25 to 26 Nov · Kamani Auditorium</span>
           </span>
         </a>
 
@@ -59,7 +58,9 @@ export function Header() {
         <div className="flex items-center gap-2">
           {/* Short label on the narrowest phones so the bar never overflows */}
           <EPassLink className="btn btn-primary !min-h-10 !px-4 text-sm whitespace-nowrap">
-            <span className="max-[379px]:hidden">Get your&nbsp;</span>e-pass
+            <span>
+              <span className="max-[399px]:hidden">Get your </span>e-pass
+            </span>
           </EPassLink>
           <button
             type="button"
@@ -79,7 +80,7 @@ export function Header() {
         ref={menu}
         aria-label="Menu"
         onClick={(e) => e.target === e.currentTarget && menu.current?.close()}
-        className="m-0 ml-auto h-svh max-h-none w-[min(22rem,88vw)] max-w-none bg-cream p-0 text-ink shadow-e3"
+        className="sheet m-0 ml-auto h-svh max-h-none w-[min(22rem,88vw)] max-w-none bg-cream p-0 text-ink shadow-e3"
       >
         <div className="flex items-center justify-between px-6 py-5">
           <span className="flex items-center gap-3">
@@ -94,7 +95,7 @@ export function Header() {
         </div>
         <nav aria-label="Festival sections" className="px-3">
           <ul>
-            {links.map((l) => (
+            {[...links.slice(0, 2), { id: "e-pass", label: "Your e-pass" }, ...links.slice(2)].map((l) => (
               <li key={l.id}>
                 <a href={`#${l.id}`} onClick={() => menu.current?.close()} className="display flex min-h-14 items-center rounded-xl px-3 text-[1.75rem] hover:bg-ink/[0.05]">
                   {l.label}
@@ -103,9 +104,11 @@ export function Header() {
             ))}
           </ul>
         </nav>
-        <div className="px-6 pt-6">
-          <EPassLink className="btn btn-primary w-full" />
-        </div>
+        <p className="px-6 pt-6 text-sm text-ink-muted">
+          25 and 26 November, {event.timeLabel}
+          <br />
+          {event.venue.name}, {event.venue.area}
+        </p>
       </dialog>
     </header>
   );
