@@ -37,8 +37,8 @@ export function Visit() {
       <div className="wrap">
         <SectionHeader title="Plan your visit" intro={`${v.name} is one of Delhi's best-loved stages for classical music and dance, in the arts district around Mandi House.`} />
 
-        <Reveal className="card mt-12 grid overflow-hidden lg:grid-cols-[minmax(0,26rem)_1fr]">
-          <div className="flex flex-col p-6 sm:p-8">
+        <div className="mt-12 grid gap-5 lg:grid-cols-[minmax(0,27rem)_1fr] lg:gap-6">
+          <Reveal className="card flex flex-col p-6 sm:p-8">
             <ul className="space-y-5">
               {facts.map((f) => (
                 <li key={f.key} className="flex gap-4">
@@ -64,17 +64,22 @@ export function Visit() {
               </a>
               <CalendarButton />
             </div>
-          </div>
-          <div className="relative min-h-[18rem] border-t border-line bg-sage lg:min-h-[26rem] lg:border-l lg:border-t-0">
+          </Reveal>
+
+          {/* The map as its own card, one level out so India Gate and Connaught Place give a sense of place.
+              The iframe is 15rem taller than its frame and shifted up, which crops off Google's place pop-up
+              (our "Get directions" does the same job); the attribution along the bottom stays visible.
+              ll= centres the map about 1 km north of the venue so the pin lands mid-frame after the crop. */}
+          <Reveal delay={100} className="card relative min-h-[22rem] overflow-hidden lg:min-h-[30rem]">
             <iframe
               title={`Map showing ${v.name}, ${v.area}`}
-              src={`https://maps.google.com/maps?q=${query}&z=15&output=embed`}
+              src={`https://maps.google.com/maps?q=${query}&ll=28.6338,77.2336&t=&z=14&ie=UTF8&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0 h-full w-full border-0 grayscale-[0.3] sepia-[0.12]"
+              className="absolute inset-x-0 bottom-0 h-[calc(100%+15rem)] w-full border-0 grayscale-[0.25] sepia-[0.1]"
             />
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
 
         <div id="faq" className="mt-20 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <Reveal>
