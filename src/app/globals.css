@@ -1,0 +1,375 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                       */
+/*                                                                     */
+/* "Programme on cream paper." Rules borrowed from the other projects: */
+/*  - one accent, used sparingly (Portfolio): maroon marks the primary */
+/*    action and the current selection, nothing else;                  */
+/*  - decoration, labels and icons are ink, not accent;                */
+/*  - one ground for the whole page; sage is the single secondary      */
+/*    surface (the e-pass), the footer the only dark one;              */
+/*  - no tracked all-caps eyebrows, no ornaments between sections      */
+/*    (My Postcards); cards lift off the page with soft shadows        */
+/*    (LumaCV, Portfolio). Photographs carry the colour.               */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --cream: #f7f1e5;
+  --paper: #fdfaf3;
+  --sage: #e6eada;
+  --sage-deep: #c9d3b2;
+  --olive: #4f6131;
+  --ink: #1f2919;
+  --ink-muted: #5d6556;
+  --maroon: #7b1e23;
+  --maroon-deep: #5d151a;
+  --line: rgb(31 41 25 / 0.12);
+  --line-strong: rgb(31 41 25 / 0.22);
+
+  --shadow-e1: 0 1px 2px rgb(31 41 25 / 0.06), 0 2px 8px -2px rgb(31 41 25 / 0.08);
+  --shadow-e2: 0 2px 4px rgb(31 41 25 / 0.06), 0 16px 32px -16px rgb(31 41 25 / 0.28);
+  --shadow-e3: 0 4px 8px rgb(31 41 25 / 0.06), 0 30px 60px -28px rgb(31 41 25 / 0.4);
+
+  /* Motion (Portfolio): D1 micro, D2 standard, D3 structural */
+  --d1: 120ms;
+  --d2: 200ms;
+  --d3: 320ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
+
+  --header-h: 4.25rem;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-paper: var(--paper);
+  --color-sage: var(--sage);
+  --color-sage-deep: var(--sage-deep);
+  --color-olive: var(--olive);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-maroon: var(--maroon);
+  --color-maroon-deep: var(--maroon-deep);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --shadow-e1: var(--shadow-e1);
+  --shadow-e2: var(--shadow-e2);
+  --shadow-e3: var(--shadow-e3);
+
+  --font-display: var(--font-cormorant), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--sage-deep);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--maroon);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.on-dark :focus-visible {
+  outline-color: var(--sage-deep);
+}
+
+/* ---------- layout ---------- */
+
+:root {
+  --gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  --wrap: 76rem;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Large monitors: let the column breathe instead of floating in a sea of cream. */
+@media (min-width: 1680px) {
+  :root {
+    --wrap: 86rem;
+  }
+  .wrap {
+    max-width: 86rem;
+  }
+  html {
+    font-size: 106.25%;
+  }
+}
+
+.section {
+  padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
+}
+
+/* Sections on the same ground are separated by a hairline the width of the column, not a colour change. */
+.section.rule-top {
+  background-image: linear-gradient(var(--line), var(--line));
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: min(calc(100% - 2 * var(--gutter)), calc(var(--wrap) - 2 * var(--gutter))) 1px;
+}
+
+/* ---------- type ---------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
+  font-size: clamp(2.25rem, 1.6rem + 2.5vw, 3.6rem);
+}
+
+.section-intro {
+  margin-top: 1rem;
+  max-width: 38rem;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--ink-muted);
+}
+
+/* ---------- controls ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.875rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform var(--d1) var(--ease),
+    background-color var(--d2) var(--ease),
+    color var(--d2) var(--ease),
+    border-color var(--d2) var(--ease),
+    box-shadow var(--d2) var(--ease);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.btn-primary {
+  background: var(--maroon);
+  color: var(--paper);
+  box-shadow: 0 1px 2px rgb(93 21 26 / 0.3), 0 8px 18px -10px rgb(93 21 26 / 0.7);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--maroon-deep);
+}
+
+.btn-secondary {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.btn-secondary:hover {
+  box-shadow: inset 0 0 0 1px var(--ink-muted);
+}
+
+/* A text link that behaves like a button: used for secondary actions next to a primary one. */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--d2) var(--ease);
+}
+
+.link-arrow:hover {
+  text-decoration-color: var(--ink);
+}
+
+.link-arrow svg {
+  transition: transform var(--d2) var(--ease);
+}
+
+.link-arrow:hover svg {
+  transform: translateX(2px);
+}
+
+/* Paper card: the one container style on the page. */
+.card {
+  background: var(--paper);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-e1), inset 0 0 0 1px var(--line);
+}
+
+/* Archive prints: they lean a little and straighten when you point at them (hover devices only). */
+.print {
+  transition:
+    transform var(--d3) var(--ease-out),
+    box-shadow var(--d3) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .print {
+    transform: rotate(var(--lean, 0deg));
+  }
+  .print:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-e2), inset 0 0 0 1px var(--line);
+  }
+}
+
+/* ---------- signature device ---------- */
+
+/* Mehrab: photographs of artists sit in a temple arch, edged by a hairline. */
+.arch {
+  border-radius: 50% 50% 0.75rem 0.75rem / 32% 32% 0.75rem 0.75rem;
+  overflow: hidden;
+  background: var(--sage-deep);
+  position: relative;
+  isolation: isolate;
+}
+
+.arch-frame {
+  border-radius: 50% 50% 1rem 1rem / 32% 32% 1rem 1rem;
+  outline: 1px solid var(--line-strong);
+  outline-offset: 5px;
+}
+
+/* Photographs "develop" from black and white into colour as they arrive (My Postcards). */
+.develop img {
+  transition: filter 1100ms var(--ease-out);
+}
+
+.develop[data-in="false"] img {
+  filter: grayscale(1) contrast(1.05) brightness(1.04);
+}
+
+/* ---------- reveal on scroll ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity var(--d3) var(--ease-out),
+    transform 560ms var(--ease-out);
+}
+
+.reveal[data-in="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- motion ---------- */
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes ticket-issue {
+  0% {
+    transform: translateY(1.25rem) rotate(-3deg) scale(0.96);
+    opacity: 0.4;
+  }
+  60% {
+    transform: translateY(-0.2rem) rotate(0.4deg) scale(1.01);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes count-bump {
+  50% {
+    transform: scale(1.12);
+    color: var(--maroon);
+  }
+}
+
+dialog::backdrop {
+  background: rgb(31 41 25 / 0.7);
+  backdrop-filter: blur(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .develop[data-in="false"] img {
+    filter: none;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

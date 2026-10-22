@@ -1,0 +1,114 @@
+"use client";
+
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import type { PassData } from "@/lib/epass/render-pass";
+
+interface EPassContextValue {
+  /** Total passes issued so far, or null until the first response (or if the counter is unavailable). */
+  count: number | null;
+  /** Passes this browser has made, newest first. */
+  passes: PassData[];
+  recordIssued: (pass: PassData, count: number) => void;
+  /** Scrolls to the e-pass section and puts the cursor in the name field. */
+  goToPass: () => void;
+  /** The studio registers how to focus its first field. */
+  registerFocus: (fn: (() => void) | null) => void;
+}
+
+const EPassContext = createContext<EPassContextValue | null>(null);
+
+/* The passes this browser holds live in localStorage. Read through useSyncExternalStore so server and
+   first client render agree (no passes) and the real list arrives without an effect-driven setState. */
+const STORAGE_KEY = "rws-epass-iaaf-2026-v2";
+const CHANGE_EVENT = "rws-epass-change";
+let memoryRaw: string | null = null; // used when localStorage is blocked
+
+function subscribe(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(CHANGE_EVENT, onChange);
+  };
+}
+
+function getSnapshot(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY) ?? memoryRaw;
+  } catch {
+    return memoryRaw;
+  }
+}
+
+function parsePasses(raw: string | null): PassData[] {
+  if (!raw) return [];
+  try {
+    const list = JSON.parse(raw) as PassData[];
+    return Array.isArray(list)
+      ? list.filter((p) => p && typeof p.id === "string" && typeof p.name === "string").map((p) => ({ ...p, days: p.days ?? "both" }))
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+const NO_PASSES: PassData[] = [];
+
+export function EPassProvider({ children }: { children: React.ReactNode }) {
+  const [count, setCount] = useState<number | null>(null);
+  const raw = useSyncExternalStore(subscribe, getSnapshot, () => null);
+  const parsed = useMemo(() => parsePasses(raw), [raw]);
+  const passes = parsed.length ? parsed : NO_PASSES;
+  const focusRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = () =>
+      fetch("/api/epass", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error("unavailable"))))
+        .then((d: { count: number }) => {
+          if (!cancelled) setCount(d.count);
+        })
+        .catch(() => {});
+    load();
+    // Keep the number fresh for people who leave the tab open.
+    const t = setInterval(() => document.visibilityState === "visible" && load(), 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, []);
+
+  const recordIssued = useCallback((p: PassData, total: number) => {
+    setCount(total);
+    const next = JSON.stringify([p, ...parsePasses(getSnapshot()).filter((x) => x.id !== p.id)].slice(0, 12));
+    memoryRaw = next;
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      /* private mode: the pass still downloaded, we just can't remember it across visits */
+    }
+    window.dispatchEvent(new Event(CHANGE_EVENT));
+  }, []);
+
+  const registerFocus = useCallback((fn: (() => void) | null) => {
+    focusRef.current = fn;
+  }, []);
+
+  const goToPass = useCallback(() => {
+    const el = document.getElementById("e-pass");
+    el?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    // Wait for the scroll to settle so the on-screen keyboard doesn't fight it.
+    window.setTimeout(() => focusRef.current?.(), 650);
+  }, []);
+
+  const value = useMemo(() => ({ count, passes, recordIssued, goToPass, registerFocus }), [count, passes, recordIssued, goToPass, registerFocus]);
+
+  return <EPassContext.Provider value={value}>{children}</EPassContext.Provider>;
+}
+
+export function useEPass(): EPassContextValue {
+  const ctx = useContext(EPassContext);
+  if (!ctx) throw new Error("useEPass must be used inside <EPassProvider>");
+  return ctx;
+}

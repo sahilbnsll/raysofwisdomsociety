@@ -1,0 +1,13 @@
+node_modules
+.next
+.data
+.env*.local
+next-env.d.ts
+*.tsbuildinfo
+
+# Client's original photographs (~380 MB, one 45 MB TIFF): too large for Git.
+# Keep them locally or in shared storage; `npm run images` builds public/images from them.
+IAAF (2026) artist photographs/
+
+# Local editor and agent tooling
+.claude/
