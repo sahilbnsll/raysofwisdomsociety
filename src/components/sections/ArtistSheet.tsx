@@ -20,7 +20,7 @@ export const ArtistSheet = forwardRef<HTMLDialogElement, { session: Session }>(f
     >
       <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-line bg-paper/95 px-6 py-5 backdrop-blur sm:px-8">
         <div>
-          <p className="serif italic text-ink-muted">{session.artForm}</p>
+          {session.artForm.trim().toLowerCase() !== session.title.trim().toLowerCase() && <p className="serif italic text-ink-muted">{session.artForm}</p>}
           <h3 id={`sheet-${session.id}`} className="display mt-1 text-3xl leading-tight">
             {session.title}
           </h3>

@@ -76,6 +76,8 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
   const leads = s.artists.filter((a) => a.billing === "lead");
   const guests = s.artists.filter((a) => a.billing === "guest");
   const others = s.artists.filter((a) => !a.billing);
+  // "Bharatanatyam" as both label and title would read twice: show it once.
+  const sameName = s.title.trim().toLowerCase() === s.artForm.trim().toLowerCase();
 
   return (
     <li className="grid items-center gap-10 border-t border-line py-14 md:grid-cols-12 md:gap-12 lg:gap-16">
@@ -83,10 +85,12 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
 
       <Reveal delay={100} className="md:col-span-7">
         <p className="serif italic text-olive">{s.tagline ?? s.artForm}</p>
-        <h4 className="serif mt-1.5 text-[clamp(1.15rem,1.05rem+0.5vw,1.45rem)] font-medium leading-snug text-ink-muted">
-          {s.title}
-          {s.tagline && <span className="font-normal"> · {s.artForm}</span>}
-        </h4>
+        {!sameName && (
+          <h4 className="serif mt-1.5 text-[clamp(1.15rem,1.05rem+0.5vw,1.45rem)] font-medium leading-snug text-ink-muted">
+            {s.title}
+            {s.tagline && <span className="font-normal"> · {s.artForm}</span>}
+          </h4>
+        )}
 
         {/* The artists are the headline of every performance */}
         <div className="mt-4 space-y-3">
