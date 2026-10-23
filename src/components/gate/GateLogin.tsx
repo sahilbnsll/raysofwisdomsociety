@@ -4,6 +4,9 @@ import Image from "next/image";
 import { useState } from "react";
 import { brand } from "@/content/event";
 
+/** Only our own pass and gate pages are valid places to return to ("//evil.com" and the like are not). */
+const safeNext = (next?: string) => (next && /^\/(?:gate|p\/[A-Za-z0-9-]{1,24}|pass\/[A-Za-z0-9-]{1,24})$/.test(next) ? next : "/gate");
+
 export function GateLogin({ configured, next }: { configured: boolean; next?: string }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +21,7 @@ export function GateLogin({ configured, next }: { configured: boolean; next?: st
       const data = (await r.json()) as { error?: string };
       if (!r.ok) throw new Error(data.error ?? "Could not sign in.");
       // Back to the pass that was scanned, if that is how staff got here.
-      location.href = next && next.startsWith("/") ? next : "/gate";
+      location.href = safeNext(next);
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);
@@ -40,8 +43,11 @@ export function GateLogin({ configured, next }: { configured: boolean; next?: st
               id="pin"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
-              inputMode="numeric"
-              autoComplete="one-time-code"
+              type="password"
+              autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="PIN"
               className="mt-6 w-full rounded-xl border border-line-strong bg-paper px-4 py-3.5 text-center text-2xl tracking-[0.4em] outline-none focus:border-ink-muted"
             />
@@ -55,7 +61,7 @@ export function GateLogin({ configured, next }: { configured: boolean; next?: st
             </button>
           </>
         ) : (
-          <p className="mt-6 rounded-xl bg-cream p-4 text-sm text-ink-muted">Check-in is not set up yet. Add a GATE_PIN in the site&apos;s settings.</p>
+          <p className="mt-6 rounded-xl bg-cream p-4 text-sm text-ink-muted">Check-in is not set up yet. Add GATE_PIN and GATE_SECRET in the site&apos;s settings.</p>
         )}
       </form>
     </main>

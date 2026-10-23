@@ -3,57 +3,54 @@ import { isStaff } from "@/lib/epass/gate";
 import { getPassStore, normalisePassId, PASS_ID } from "@/lib/epass/store";
 import { defaultEvening, type Evening } from "@/lib/epass/evening";
 import { toGatePass, verdictFor } from "@/lib/epass/verdict";
+import { json, sameOrigin } from "@/lib/http";
 
-const NO_STORE = { "Cache-Control": "no-store" };
 const EVENINGS: Evening[] = ["day1", "day2"];
 
 const eveningFrom = (v: unknown): Evening => (EVENINGS.includes(v as Evening) ? (v as Evening) : defaultEvening());
 
 /** Looks a pass up for gate staff: GET ?id=RWS26-XXXXXX&evening=day1 */
 export async function GET(request: NextRequest) {
-  if (!(await isStaff())) return Response.json({ error: "Sign in at /gate first." }, { status: 401, headers: NO_STORE });
+  if (!(await isStaff())) return json({ error: "Sign in at /gate first." }, 401);
   const id = normalisePassId(request.nextUrl.searchParams.get("id") ?? "");
   const evening = eveningFrom(request.nextUrl.searchParams.get("evening"));
-  if (!PASS_ID.test(id)) return Response.json(verdictFor(null, evening), { headers: NO_STORE });
+  if (!PASS_ID.test(id)) return json(verdictFor(null, evening));
   try {
     const pass = await getPassStore().get(id);
-    return Response.json(verdictFor(pass && toGatePass(pass), evening), { headers: NO_STORE });
+    return json(verdictFor(pass && toGatePass(pass), evening));
   } catch (error) {
     console.error("[gate] lookup failed:", error);
-    return Response.json({ error: "Could not check the pass. Try again." }, { status: 503, headers: NO_STORE });
+    return json({ error: "Could not check the pass. Try again." }, 503);
   }
 }
 
 /** Admits (or with undo: true, un-admits) a pass for an evening: POST { id, evening, undo? } */
 export async function POST(request: NextRequest) {
-  if (!(await isStaff())) return Response.json({ error: "Sign in at /gate first." }, { status: 401, headers: NO_STORE });
+  if (!sameOrigin(request)) return json({ error: "Not allowed." }, 403);
+  if (!(await isStaff())) return json({ error: "Sign in at /gate first." }, 401);
   let body: { id?: unknown; evening?: unknown; undo?: unknown };
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid request." }, { status: 400, headers: NO_STORE });
+    return json({ error: "Invalid request." }, 400);
   }
+  if (!body || typeof body !== "object") return json({ error: "Invalid request." }, 400);
   const id = normalisePassId(String(body.id ?? ""));
   const evening = eveningFrom(body.evening);
-  if (!PASS_ID.test(id)) return Response.json(verdictFor(null, evening), { headers: NO_STORE });
+  if (!PASS_ID.test(id)) return json(verdictFor(null, evening));
   try {
     const store = getPassStore();
     if (body.undo === true) {
       const pass = await store.undoAdmit(id, evening);
-      return Response.json({ ...verdictFor(pass && toGatePass(pass), evening), undone: true }, { headers: NO_STORE });
+      return json({ ...verdictFor(pass && toGatePass(pass), evening), undone: true });
     }
     const result = await store.admit(id, evening);
-    if (result.status === "not-found") return Response.json(verdictFor(null, evening), { headers: NO_STORE });
+    if (result.status === "not-found") return json(verdictFor(null, evening));
     const pass = toGatePass(result.pass);
-    // "admitted" is reported as a fresh check-in; "already" keeps the earlier time.
-    return Response.json(
-      result.status === "admitted"
-        ? { state: "admitted", evening, pass, admittedAt: pass.admitted[evening] }
-        : { state: "already", evening, pass, admittedAt: pass.admitted[evening] },
-      { headers: NO_STORE },
-    );
+    // "admitted" is a fresh check-in; "already" keeps the earlier time.
+    return json({ state: result.status, evening, pass, admittedAt: pass.admitted[evening] });
   } catch (error) {
     console.error("[gate] admit failed:", error);
-    return Response.json({ error: "Could not record the check-in. Try again." }, { status: 503, headers: NO_STORE });
+    return json({ error: "Could not record the check-in. Try again." }, 503);
   }
 }

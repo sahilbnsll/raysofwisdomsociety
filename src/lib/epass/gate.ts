@@ -18,8 +18,16 @@ export function gatePin(): string | null {
   return process.env.GATE_PIN || (dev ? "2026" : null);
 }
 
+/**
+ * Signs staff cookies. It must be something an attacker cannot guess, otherwise they could forge a
+ * cookie by trying PINs offline: GATE_SECRET if set, else the database key (also server-only), mixed
+ * with the PIN so changing the PIN signs everyone out. With neither, the gate stays off in production.
+ */
 function secret(): string | null {
-  return process.env.GATE_SECRET || (gatePin() ? `iaaf-gate:${gatePin()}` : null);
+  const pin = gatePin();
+  if (!pin) return null;
+  const base = process.env.GATE_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || (dev ? "iaaf-gate-dev" : null);
+  return base ? `${base}:${pin}` : null;
 }
 
 function sign(payload: string): string {
@@ -59,4 +67,4 @@ export async function isStaff(): Promise<boolean> {
   return sig.length === expected.length && timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
 }
 
-export const gateConfigured = () => !!gatePin();
+export const gateConfigured = () => !!secret();
