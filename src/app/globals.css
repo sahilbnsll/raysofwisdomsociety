@@ -469,28 +469,23 @@ html:has(dialog[open]) {
   }
 }
 
-/* The festival emblem behind the hero: turns very slowly and breathes, faded into the paper. */
-.emblem-turn {
-  animation: emblem-turn 220s linear infinite;
+/* The artists' collage in the hero: faded to nothing at every edge, drifting very slowly. */
+.collage {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 6%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 6%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+  mask-composite: intersect;
 }
-.emblem-breathe {
-  opacity: 0.06;
-  animation: emblem-breathe 14s ease-in-out infinite;
+.collage-drift {
+  transform-origin: 50% 80%;
+  animation: collage-drift 34s ease-in-out infinite alternate;
 }
-@keyframes emblem-turn {
+@keyframes collage-drift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
   to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes emblem-breathe {
-  0%,
-  100% {
-    opacity: 0.045;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.09;
-    transform: scale(1.035);
+    transform: scale(1.045) translate3d(0, -1.2%, 0);
   }
 }
 
@@ -505,5 +500,41 @@ html:has(dialog[open]) {
   }
   to {
     transform: rotate(5deg) scale(1.03);
+  }
+}
+
+/* Petals that fall slowly through the wallpaper, each swaying and turning on its own. */
+.petal {
+  position: absolute;
+  top: -8vh;
+  opacity: 0.5;
+  animation: petal-fall 30s linear infinite;
+}
+.petal-spin {
+  animation: petal-spin 8s ease-in-out infinite alternate;
+}
+@keyframes petal-fall {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(2.5vw, 28vh, 0);
+  }
+  50% {
+    transform: translate3d(-1.5vw, 58vh, 0);
+  }
+  75% {
+    transform: translate3d(2vw, 86vh, 0);
+  }
+  100% {
+    transform: translate3d(0, 116vh, 0);
+  }
+}
+@keyframes petal-spin {
+  from {
+    transform: rotate(-35deg) rotateY(0deg);
+  }
+  to {
+    transform: rotate(40deg) rotateY(70deg);
   }
 }

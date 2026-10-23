@@ -3,11 +3,10 @@
 import Image from "next/image";
 import { forwardRef } from "react";
 import type { Session } from "@/content/event";
-import { initials } from "@/components/ui/Avatar";
 
 /**
- * "Meet the artists": the people behind one performance, each with a portrait (or a monogram where
- * no photograph was supplied) and a short bio. Opens over the programme so the list itself stays
+ * "Meet the artists": the people behind one performance, each with a portrait where a photograph
+ * was supplied (and no stand-in where it was not) and a short bio. Opens over the programme so the list itself stays
  * short enough to scan (Portfolio's skill-dialog pattern).
  */
 export const ArtistSheet = forwardRef<HTMLDialogElement, { session: Session }>(function ArtistSheet({ session }, ref) {
@@ -35,17 +34,10 @@ export const ArtistSheet = forwardRef<HTMLDialogElement, { session: Session }>(f
 
       <ul className="divide-y divide-line px-6 sm:px-8">
         {session.artists.map((a) => (
-          <li key={a.name} className="grid grid-cols-[5.5rem_1fr] gap-5 py-6 sm:grid-cols-[7rem_1fr]">
-            {a.photo ? (
+          <li key={a.name} className={`grid gap-5 py-6 ${a.photo ? "grid-cols-[5.5rem_1fr] sm:grid-cols-[7rem_1fr]" : ""}`}>
+            {a.photo && (
               <span className="relative block aspect-[4/5] w-full overflow-hidden rounded-[50%_50%_0.75rem_0.75rem/32%_32%_0.75rem_0.75rem] bg-sage-deep ring-1 ring-line">
                 <Image src={a.photo.src} alt={a.photo.alt} fill sizes="112px" className="object-cover" style={{ objectPosition: a.photo.position ?? "50% 25%" }} />
-              </span>
-            ) : (
-              <span
-                aria-hidden="true"
-                className="display grid aspect-[4/5] w-full place-items-center rounded-[50%_50%_0.75rem_0.75rem/32%_32%_0.75rem_0.75rem] bg-sage text-2xl text-olive ring-1 ring-line"
-              >
-                {initials(a.name)}
               </span>
             )}
             <div className="min-w-0 self-center">

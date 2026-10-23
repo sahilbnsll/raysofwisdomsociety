@@ -136,6 +136,8 @@ export interface Day {
   date: string; // ISO yyyy-mm-dd
   /** Shown beside the evening: "First evening: Classical and Folk Dance". */
   theme: string;
+  /** One word for tight spaces, such as the e-pass tiles. */
+  short: string;
   blurb: string;
   sessions: Session[];
 }
@@ -207,6 +209,7 @@ export const event = {
       label: "First evening",
       date: "2026-11-25",
       theme: "Classical and Folk Dance",
+      short: "Dance",
       blurb:
         "The first evening opens with Sanskrit: The Mantra Bhasha, then moves through Bharatanatyam and Kuchipudi to a Kathak and Sudarushka collaboration.",
       sessions: [
@@ -297,6 +300,7 @@ export const event = {
       label: "Second evening",
       date: "2026-11-26",
       theme: "Classical Music",
+      short: "Music",
       blurb:
         "The second evening turns to the meditative dimensions of music, and concludes with a Hindustani classical vocal recital.",
       sessions: [

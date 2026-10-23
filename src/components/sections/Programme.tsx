@@ -62,7 +62,7 @@ function Leads({ s, flip }: { s: Session; flip: boolean }) {
 function Chip({ a }: { a: Artist }) {
   return (
     <li className="flex items-center gap-3">
-      <Avatar artist={a} />
+      {a.thumb ?? a.photo ? <Avatar artist={a} /> : <span aria-hidden="true" className="size-1.5 shrink-0 rotate-45 bg-gold" />}
       <span className="min-w-0 leading-tight">
         <span className="block font-semibold">{a.name}</span>
         <span className="serif text-[0.95rem] italic text-ink-muted">{a.role}</span>
@@ -170,11 +170,11 @@ export function Programme() {
         <SectionHeader title="Two evenings of dance and music" intro={event.programmeIntro} />
 
         {/* The evening switch follows you down the page, so you never scroll back up to change day */}
-        <div className="sticky top-[calc(var(--header-h)+0.5rem)] z-30 mt-10">
-          <div role="tablist" aria-label="Festival evenings" className="relative mx-auto grid max-w-2xl grid-cols-2 rounded-2xl bg-paper/95 p-1.5 shadow-e2 ring-1 ring-line backdrop-blur">
+        <div className="sticky top-[calc(var(--header-h)+0.375rem)] z-30 mt-8 flex justify-center">
+          <div role="tablist" aria-label="Festival evenings" className="relative grid w-[min(100%,25rem)] grid-cols-2 rounded-full bg-paper/90 p-1 shadow-e1 ring-1 ring-line backdrop-blur-md">
             <span
               aria-hidden="true"
-              className="absolute inset-y-1.5 left-1.5 w-[calc(50%-0.375rem)] rounded-xl bg-ink shadow-e1 transition-transform duration-[var(--d3)] ease-[var(--ease-move)]"
+              className="absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-ink transition-transform duration-[var(--d3)] ease-[var(--ease-move)]"
               style={{ transform: `translateX(${active * 100}%)` }}
             />
             {event.days.map((d, i) => (
@@ -190,19 +190,19 @@ export function Programme() {
                 tabIndex={i === active ? 0 : -1}
                 onClick={() => choose(i)}
                 onKeyDown={(e) => onKeyDown(e, i)}
-                className={`relative z-10 rounded-xl px-3 py-2.5 text-center transition-colors duration-[var(--d2)] sm:px-5 ${i === active ? "text-paper" : "text-ink hover:bg-ink/[0.04]"}`}
+                className={`relative z-10 rounded-full px-3 py-1.5 text-center transition-colors duration-[var(--d2)] ${i === active ? "text-paper" : "text-ink hover:text-maroon"}`}
               >
-                <span className="display block text-[1.2rem] leading-tight sm:text-[1.4rem]">
+                <span className="block text-[0.95rem] font-semibold leading-tight">
                   Day {i + 1}
-                  <span className="font-sans text-[0.8rem] font-semibold opacity-80 sm:text-sm"> · {fmtDate(d.date, { day: "numeric", month: "short" })}</span>
+                  <span className="font-normal opacity-75"> · {fmtDate(d.date, { day: "numeric", month: "short" })}</span>
                 </span>
-                <span className={`serif block text-[0.85rem] italic leading-tight sm:text-[0.95rem] ${i === active ? "opacity-75" : "text-ink-muted"}`}>{d.theme}</span>
+                <span className={`serif block text-[0.74rem] italic leading-tight ${i === active ? "opacity-70" : "text-ink-muted"}`}>{d.theme}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <div ref={panel} role="tabpanel" id={`panel-${day.id}`} aria-labelledby={`tab-${day.id}`} tabIndex={0} className="mt-12 outline-none">
+        <div ref={panel} role="tabpanel" id={`panel-${day.id}`} aria-labelledby={`tab-${day.id}`} tabIndex={0} className="mt-10 outline-none">
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6">
             <div className="max-w-2xl">
               <h3 className="display text-4xl">

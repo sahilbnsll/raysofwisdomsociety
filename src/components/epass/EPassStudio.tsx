@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { event, eveningLabels, type Evenings } from "@/content/event";
 import { canvasToBlob, downloadBlob, drawPass, PASS_H, PASS_W, PREVIEW_ID, type PassData } from "@/lib/epass/render-pass";
 import { downloadCalendar } from "@/lib/ics";
+import { Florals } from "@/components/ui/Florals";
 import { Hills } from "@/components/ui/Ornaments";
 import { Reveal } from "@/components/ui/Reveal";
 import { Swap } from "@/components/ui/Swap";
@@ -158,11 +159,15 @@ export function EPassStudio() {
 
   return (
     <section id="e-pass" className="relative overflow-hidden bg-sage" aria-labelledby="epass-title">
+      {/* The page's flowers carry on over this green band: the same ones, clipped to the section */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 [clip-path:inset(0)]">
+        <Florals overlay />
+      </div>
       {/* The cream page meets the green section along the poster's hills */}
-      <div className="bg-cream">
+      <div className="relative z-10 bg-cream">
         <Hills className="h-16 sm:h-24" fade="var(--sage)" />
       </div>
-      <div className="wrap pb-[clamp(4.5rem,3rem+5vw,8rem)] pt-8">
+      <div className="wrap relative z-10 pb-[clamp(4.5rem,3rem+5vw,8rem)] pt-8">
         <Reveal className="mx-auto max-w-3xl text-center">
           <h2 id="epass-title" className="section-title">
             {current ? "Your e‑pass is ready" : "Get your e‑pass"}
@@ -190,7 +195,6 @@ export function EPassStudio() {
                 style={{ aspectRatio: `${PASS_W} / ${PASS_H}` }}
               />
             </div>
-            {!current && <p className="mt-4 text-center text-sm text-ink-muted">Live preview. It updates as you type.</p>}
           </div>
 
           <div className="order-2 lg:order-1">

@@ -1,6 +1,5 @@
 import QRCode from "qrcode";
 import { brand, event, eveningLabels, org, sponsors, type Evenings } from "@/content/event";
-import { fmtDate } from "@/lib/format";
 
 export interface PassData {
   id: string;
@@ -54,6 +53,15 @@ async function qrFor(text: string): Promise<HTMLCanvasElement> {
   return canvas;
 }
 
+/** "sahil bansal" and "SAHIL BANSAL" print as "Sahil Bansal"; a name already in mixed case is left as typed. */
+export function niceName(name: string): string {
+  const letters = name.replace(/[^\p{L}]/gu, "");
+  if (letters && (letters === letters.toLowerCase() || letters === letters.toUpperCase())) {
+    return name.toLowerCase().replace(/(^|[\s\-'’.])(\p{L})/gu, (_, a: string, b: string) => a + b.toUpperCase());
+  }
+  return name;
+}
+
 /** The short address in the QR: it opens the pass for guests and the check-in screen for gate staff. */
 export function passUrl(id: string, origin: string): string {
   return `${origin}/p/${id}`;
@@ -77,105 +85,6 @@ function fit(ctx: CanvasRenderingContext2D, text: string, font: (px: number) => 
     ctx.font = font(px);
   }
   return px;
-}
-
-function diamond(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
-  ctx.beginPath();
-  ctx.moveTo(x, y - r);
-  ctx.lineTo(x + r, y);
-  ctx.lineTo(x, y + r);
-  ctx.lineTo(x - r, y);
-  ctx.closePath();
-  ctx.fill();
-}
-
-/** Line, diamond, lotus, diamond, line: the rule under the poster's title. */
-function lotusRule(ctx: CanvasRenderingContext2D, cx: number, y: number) {
-  ctx.save();
-  ctx.strokeStyle = C.gold;
-  ctx.fillStyle = C.gold;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(cx - 300, y);
-  ctx.lineTo(cx - 60, y);
-  ctx.moveTo(cx + 60, y);
-  ctx.lineTo(cx + 300, y);
-  ctx.stroke();
-  diamond(ctx, cx - 48, y, 8);
-  diamond(ctx, cx + 48, y, 8);
-  // lotus
-  ctx.beginPath();
-  ctx.moveTo(cx, y - 22);
-  ctx.bezierCurveTo(cx + 12, y - 10, cx + 10, y + 2, cx, y + 10);
-  ctx.bezierCurveTo(cx - 10, y + 2, cx - 12, y - 10, cx, y - 22);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx, y + 10);
-  ctx.bezierCurveTo(cx - 14, y + 8, cx - 26, y - 2, cx - 28, y - 12);
-  ctx.bezierCurveTo(cx - 14, y - 10, cx - 5, y - 2, cx, y + 10);
-  ctx.moveTo(cx, y + 10);
-  ctx.bezierCurveTo(cx + 14, y + 8, cx + 26, y - 2, cx + 28, y - 12);
-  ctx.bezierCurveTo(cx + 14, y - 10, cx + 5, y - 2, cx, y + 10);
-  ctx.stroke();
-  ctx.restore();
-}
-
-/** Soft watercolour hills, as at the foot of the poster. */
-function hills(ctx: CanvasRenderingContext2D, top: number, height: number) {
-  const band = (color: string, alpha: number, pts: number[], blur = 0) => {
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = color;
-    if (blur) ctx.filter = `blur(${blur}px)`;
-    ctx.beginPath();
-    ctx.moveTo(0, top + height);
-    ctx.lineTo(0, top + pts[0]);
-    ctx.bezierCurveTo(PASS_W * 0.25, top + pts[1], PASS_W * 0.5, top + pts[2], PASS_W * 0.72, top + pts[3]);
-    ctx.bezierCurveTo(PASS_W * 0.86, top + pts[4], PASS_W * 0.95, top + pts[5], PASS_W, top + pts[6]);
-    ctx.lineTo(PASS_W, top + height);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  };
-  band(C.rose, 0.55, [40, 0, 70, 30, 10, 30, 22], 6);
-  band(C.sageDeep, 0.65, [70, 34, 96, 58, 44, 64, 50]);
-  band(C.paper, 1, [96, 80, 112, 92, 82, 98, 90]);
-}
-
-function sprig(ctx: CanvasRenderingContext2D, x: number, y: number, flip: boolean) {
-  ctx.save();
-  ctx.translate(x, y);
-  if (flip) ctx.scale(-1, 1);
-  ctx.strokeStyle = C.gold;
-  ctx.globalAlpha = 0.6;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, 150);
-  ctx.bezierCurveTo(40, 110, 90, 60, 160, 0);
-  ctx.stroke();
-  const leaves = [
-    [30, 124, -0.9],
-    [58, 96, -0.35],
-    [84, 72, -1.05],
-    [110, 48, -0.45],
-    [136, 24, -1.15],
-  ] as const;
-  leaves.forEach(([lx, ly, r], i) => {
-    ctx.save();
-    ctx.translate(lx, ly);
-    ctx.rotate(r);
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.bezierCurveTo(10, -14, 30, -16, 44, -6);
-    ctx.bezierCurveTo(30, 4, 10, 6, 0, 0);
-    if (i % 2) {
-      ctx.fillStyle = C.sageDeep;
-      ctx.fill();
-    }
-    ctx.stroke();
-    ctx.restore();
-  });
-  ctx.restore();
 }
 
 /** Text set along an arc, centred on `angle` (radians, 0 = top). */
@@ -229,40 +138,6 @@ function seal(ctx: CanvasRenderingContext2D, logo: HTMLImageElement, cx: number,
   ctx.restore();
 }
 
-function drawLogoRow(ctx: CanvasRenderingContext2D, imgs: HTMLImageElement[], heights: number[], y: number) {
-  const gap = 56;
-  const widths = imgs.map((img, i) => (img.naturalWidth / img.naturalHeight) * heights[i]);
-  const total = widths.reduce((a, b) => a + b, 0) + gap * (imgs.length - 1);
-  let x = (PASS_W - total) / 2;
-  const rowH = Math.max(...heights);
-  imgs.forEach((img, i) => {
-    ctx.drawImage(img, x, y + (rowH - heights[i]) / 2, widths[i], heights[i]);
-    x += widths[i] + gap;
-  });
-}
-
-/** Arch outline: straight sides, a round top, square feet. */
-function archPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
-  const r = w / 2;
-  ctx.beginPath();
-  ctx.moveTo(x, y + h);
-  ctx.lineTo(x, y + r);
-  ctx.arc(x + r, y + r, r, Math.PI, 0);
-  ctx.lineTo(x + w, y + h);
-  ctx.closePath();
-}
-
-/** Draws an image to fill a box, cropped around a focal point (CSS object-position, in %). */
-function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number, position = "50% 50%") {
-  const [px, py] = position.split(" ").map((v) => parseFloat(v) / 100);
-  const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-  const sw = w / scale;
-  const sh = h / scale;
-  const sx = (img.naturalWidth - sw) * (Number.isFinite(px) ? px : 0.5);
-  const sy = (img.naturalHeight - sh) * (Number.isFinite(py) ? py : 0.5);
-  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
-}
-
 /** Validity tile on the holder panel: what gate staff look at first. */
 function tile(
   ctx: CanvasRenderingContext2D,
@@ -295,30 +170,6 @@ function tile(
   ctx.restore();
 }
 
-/** The front edge of the hills, drawn over the arches' feet so they stand in the landscape. */
-function hillFront(ctx: CanvasRenderingContext2D, top: number) {
-  const curve = () => {
-    ctx.moveTo(0, top + 40);
-    ctx.bezierCurveTo(260, top - 2, 560, top + 32, 780, top + 6);
-    ctx.bezierCurveTo(900, top - 8, 1000, top + 6, PASS_W, top);
-  };
-  ctx.save();
-  ctx.fillStyle = C.paper;
-  ctx.beginPath();
-  curve();
-  ctx.lineTo(PASS_W, top + 120);
-  ctx.lineTo(0, top + 120);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = C.gold;
-  ctx.globalAlpha = 0.5;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  curve();
-  ctx.stroke();
-  ctx.restore();
-}
-
 /** Draws the e-pass into `canvas`. The same picture is shown live in the form and downloaded. */
 export async function drawPass(canvas: HTMLCanvasElement, pass: PassData, origin: string, isStale?: () => boolean): Promise<void> {
   const { display, serif, sans } = fonts();
@@ -330,14 +181,7 @@ export async function drawPass(canvas: HTMLCanvasElement, pass: PassData, origin
     document.fonts.load(`600 30px ${sans}`),
   ]).catch(() => {});
 
-  const [logo, rays, s1, s2, qr, ...arcadeImgs] = await Promise.all([
-    load(brand.logo.src),
-    load(brand.rays.src),
-    load(sponsors[0].src),
-    load(sponsors[1].src),
-    qrFor(passUrl(pass.id, origin)),
-    ...event.arcade.map((a) => load(a.photo.src)),
-  ]);
+  const [logo, poster, qr] = await Promise.all([load(brand.logo.src), load(event.poster.src), qrFor(passUrl(pass.id, origin))]);
   if (isStale?.()) return; // a newer draw has started; don't paint over it
 
   canvas.width = PASS_W;
@@ -356,93 +200,12 @@ export async function drawPass(canvas: HTMLCanvasElement, pass: PassData, origin
 
   /* ---------- the printed pass ---------- */
 
+  // The festival's own poster, exactly as the client made it (1080 x 1080)
   ctx.fillStyle = C.cream;
   ctx.fillRect(0, 0, PASS_W, PERF);
-  sprig(ctx, 30, 34, false);
-  sprig(ctx, PASS_W - 30, 34, true);
-
-  // Logo row, as on the printed pass: the festival, the sponsors, the organiser
-  drawLogoRow(ctx, [logo, s1, s2, rays], [128, 84, 58, 110], 70);
-
-  // Title with the poster's big "9th"
-  ctx.fillStyle = C.ink;
+  ctx.drawImage(poster, 0, 0, PASS_W, 1080);
+  ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  const t1 = "International";
-  ctx.font = `400 98px ${display}`;
-  const tw = ctx.measureText(t1).width;
-  ctx.font = `400 156px ${display}`;
-  const nine = ctx.measureText("9").width;
-  ctx.font = `400 50px ${display}`;
-  const th = ctx.measureText("th").width;
-  const startX = (PASS_W - (nine + th + 18 + tw)) / 2;
-  ctx.textAlign = "left";
-  ctx.font = `400 156px ${display}`;
-  ctx.fillText("9", startX, 384);
-  ctx.font = `400 50px ${display}`;
-  ctx.fillText("th", startX + nine + 2, 296);
-  ctx.font = `400 98px ${display}`;
-  ctx.fillText(t1, startX + nine + th + 18, 384);
-  ctx.textAlign = "center";
-  fit(ctx, "Ancient Arts Festival 2026", (px) => `400 ${px}px ${display}`, 94, PASS_W - 140, 60);
-  ctx.fillText("Ancient Arts Festival 2026", PASS_W / 2, 488);
-
-  lotusRule(ctx, PASS_W / 2, 540);
-
-  // Date and venue in the poster's maroon: "November 25 – 26, 2026 | Kamani Auditorium, New Delhi"
-  ctx.fillStyle = C.maroon;
-  const dates = `${fmtDate(event.startDate, { month: "long" })} ${fmtDate(event.startDate, { day: "numeric" })} – ${fmtDate(event.endDate, { day: "numeric" })}, ${fmtDate(event.endDate, { year: "numeric" })}`;
-  const dateLine = `${dates}  |  ${event.venue.name}, ${event.venue.area}`;
-  fit(ctx, dateLine, (px) => `500 ${px}px ${serif}`, 38, PASS_W - 130, 26);
-  ctx.fillText(dateLine, PASS_W / 2, 612);
-
-  ctx.fillStyle = C.ink;
-  ctx.font = `400 32px ${serif}`;
-  ctx.fillText(`Festival Director: ${event.director}`, PASS_W / 2, 662);
-
-  // Motto with gold diamonds
-  ctx.font = `400 32px ${serif}`;
-  const ww = event.motto.map((w) => ctx.measureText(w).width);
-  const mGap = 54;
-  let mx = (PASS_W - (ww.reduce((a, b) => a + b, 0) + mGap * (event.motto.length - 1))) / 2;
-  ctx.textAlign = "left";
-  event.motto.forEach((w, i) => {
-    ctx.fillStyle = C.ink;
-    ctx.fillText(w, mx, 714);
-    mx += ww[i];
-    if (i < event.motto.length - 1) {
-      ctx.fillStyle = C.gold;
-      diamond(ctx, mx + mGap / 2, 704, 6);
-      mx += mGap;
-    }
-  });
-  ctx.textAlign = "center";
-
-  // Five arches standing on the hills: the traditions on stage, like the dancers on the poster
-  hills(ctx, 900, 200);
-  const aw = 172;
-  const gap = 22;
-  const ax0 = (PASS_W - (aw * 5 + gap * 4)) / 2;
-  const drop = [34, 14, 0, 14, 34];
-  arcadeImgs.forEach((img, i) => {
-    const x = ax0 + i * (aw + gap);
-    const y = 772 + drop[i];
-    const h = 270 - drop[i];
-    ctx.save();
-    archPath(ctx, x, y, aw, h);
-    ctx.clip();
-    ctx.fillStyle = C.sageDeep;
-    ctx.fillRect(x, y, aw, h);
-    drawCover(ctx, img, x, y, aw, h, event.arcade[i].photo.position);
-    ctx.restore();
-    ctx.save();
-    archPath(ctx, x - 7, y - 7, aw + 14, h + 7);
-    ctx.strokeStyle = C.gold;
-    ctx.globalAlpha = 0.65;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.restore();
-  });
-  hillFront(ctx, 1020);
 
   /* ---------- the holder ---------- */
 
@@ -460,8 +223,38 @@ export async function drawPass(canvas: HTMLCanvasElement, pass: PassData, origin
   ctx.letterSpacing = "0px";
 
   ctx.fillStyle = C.ink;
-  fit(ctx, pass.name, (px) => `400 ${px}px ${display}`, 100, PASS_W - 160, 44);
-  ctx.fillText(pass.name, PASS_W / 2, 1226);
+  const holder = niceName(pass.name);
+  const nameFont = (px: number) => `400 ${px}px ${display}`;
+  const nameMax = PASS_W - 160;
+  const nameSize = fit(ctx, holder, nameFont, 100, nameMax, 56);
+  if (ctx.measureText(holder).width <= nameMax) {
+    ctx.fillText(holder, PASS_W / 2, 1226);
+  } else {
+    // Too long for one line even when smaller: break it in two, at the space nearest the middle.
+    const words = holder.split(" ");
+    let cut = Math.ceil(words.length / 2);
+    let best = Infinity;
+    for (let i = 1; i < words.length; i++) {
+      ctx.font = nameFont(nameSize);
+      const gap = Math.abs(ctx.measureText(words.slice(0, i).join(" ")).width - ctx.measureText(words.slice(i).join(" ")).width);
+      if (gap < best) {
+        best = gap;
+        cut = i;
+      }
+    }
+    const lines = words.length > 1 ? [words.slice(0, cut).join(" "), words.slice(cut).join(" ")] : [holder];
+    const size = Math.min(
+      52,
+      ...lines.map((l) => fit(ctx, l, nameFont, 52, nameMax, 28)),
+    );
+    ctx.font = nameFont(size);
+    if (lines.length === 1) {
+      ctx.fillText(lines[0], PASS_W / 2, 1226);
+    } else {
+      ctx.fillText(lines[0], PASS_W / 2, 1204);
+      ctx.fillText(lines[1], PASS_W / 2, 1204 + size * 0.98);
+    }
+  }
 
   // Three tiles: how many it admits, and which evenings it is valid for
   const tw3 = 296;
@@ -470,27 +263,13 @@ export async function drawPass(canvas: HTMLCanvasElement, pass: PassData, origin
   const valid1 = pass.days === "both" || pass.days === "day1";
   const valid2 = pass.days === "both" || pass.days === "day2";
   tile(ctx, tx0, 1270, tw3, 128, true, "ADMITS", `${pass.guests} ${pass.guests === 1 ? "person" : "people"}`, f);
-  tile(ctx, tx0 + tw3 + tg, 1270, tw3, 128, valid1, `25 NOV · ${event.days[0].theme.toUpperCase()}`, valid1 ? "Valid" : "Not valid", f);
-  tile(ctx, tx0 + (tw3 + tg) * 2, 1270, tw3, 128, valid2, `26 NOV · ${event.days[1].theme.toUpperCase()}`, valid2 ? "Valid" : "Not valid", f);
+  tile(ctx, tx0 + tw3 + tg, 1270, tw3, 128, valid1, `25 NOV · ${event.days[0].short.toUpperCase()}`, valid1 ? "Valid" : "Not valid", f);
+  tile(ctx, tx0 + (tw3 + tg) * 2, 1270, tw3, 128, valid2, `26 NOV · ${event.days[1].short.toUpperCase()}`, valid2 ? "Valid" : "Not valid", f);
 
   ctx.fillStyle = C.muted;
   ctx.font = `500 27px ${sans}`;
   fit(ctx, `${event.timeLabel}  ·  ${event.venue.address}`, (px) => `500 ${px}px ${sans}`, 27, PASS_W - 120, 20);
   ctx.fillText(`${event.timeLabel}  ·  ${event.venue.address}`, PASS_W / 2, 1450);
-
-  // Gold double frame around the printed part, like a ticket
-  ctx.save();
-  ctx.strokeStyle = C.gold;
-  ctx.globalAlpha = 0.7;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.roundRect(22, 22, PASS_W - 44, PERF - 44, 30);
-  ctx.stroke();
-  ctx.globalAlpha = 0.35;
-  ctx.beginPath();
-  ctx.roundRect(32, 32, PASS_W - 64, PERF - 64, 24);
-  ctx.stroke();
-  ctx.restore();
 
   /* ---------- the stub ---------- */
 
