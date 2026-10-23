@@ -7,7 +7,7 @@ import type { Photo } from "@/content/event";
 
 /**
  * A quiet way to see more photographs without crowding the page: one photograph at a time, laid in a
- * cream "print" over a dark veil, with its caption beneath. Step with the arrows, the keyboard (left and
+ * cream "print" over a dark veil. Step with the arrows, the keyboard (left and
  * right), a swipe, or the thumbnails along the bottom. The neighbours load in the background, so
  * stepping is instant. Modelled on the lightbox in My Postcards, in this festival's colours.
  */
@@ -156,13 +156,12 @@ export function GalleryViewer({ photos, index, origin, title, onIndexChange, onC
                   style={{
                     aspectRatio: `${photo.w} / ${photo.h}`,
                     // as large as fits: the screen width, or the height left under the header and strip
-                    width: `min(calc(100vw - 2.5rem), 72rem, calc((100svh - 16.5rem) * ${ratio}))`,
+                    width: `min(calc(100vw - 2.5rem), 72rem, calc((100svh - 13.5rem) * ${ratio}))`,
                   }}
                 >
                   <Image src={photo.src} alt={photo.alt} fill sizes="(min-width:1024px) 72rem, 100vw" quality={90} priority className="object-contain" />
                 </div>
               </div>
-              <figcaption className="serif mt-3 max-w-[min(90vw,40rem)] text-center text-[1.05rem] italic leading-snug text-paper/90">{photo.caption ?? photo.alt}</figcaption>
             </figure>
 
             {count > 1 && (

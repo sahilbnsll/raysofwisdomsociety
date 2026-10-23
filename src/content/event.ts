@@ -119,6 +119,8 @@ export const brand = {
   logoSmall: { src: "/images/brand/iaaf-logo-sm.webp", w: 192, h: 192 },
   /** The emblem pre-toned to one warm colour for the slowly turning watermark behind the hero title. */
   emblem: { src: "/images/brand/emblem-soft.webp", w: 640, h: 641 },
+  /** The performing artists, cut out and grouped; it fills the right of the hero, standing on the hills. */
+  collage: { src: "/images/artists-collage.webp", w: 2000, h: 1375, alt: "The festival's artists together: Odissi, Bharatanatyam, Kuchipudi and Kathak dancers, a Russian folk dancer, a santoor player, a rabab player and a ballet dancer" },
   rays: { src: "/images/brand/rays-logo.png", w: 360, h: 317, alt: "Rays of Wisdom Society logo: a tree beneath a rising sun" },
 };
 

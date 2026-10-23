@@ -19,11 +19,7 @@ export function Award() {
     const seen = new Set<string>();
     return [
       a.portrait,
-      ...a.archive.map((p) => ({
-        ...p.photo,
-        // the title is only added when the caption does not already say it
-        caption: `${p.year ? `${p.year} · ` : ""}${p.caption.toLowerCase().includes(p.title.toLowerCase()) ? p.caption : `${p.title}. ${p.caption}`}`,
-      })),
+      ...a.archive.map((p) => p.photo),
       ...awardGallery(),
     ].filter((p) => !seen.has(p.src) && !!seen.add(p.src));
   }, [a]);
