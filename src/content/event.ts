@@ -72,14 +72,14 @@ export interface Logo {
 }
 
 export const brand = {
-  logo: { src: "/images/brand/iaaf-logo.png", w: 900, h: 901, alt: "Ancient Arts festival emblem: a dancer in silhouette inside a twelve-petal lotus" },
-  rays: { src: "/images/brand/rays-logo.png", w: 700, h: 616, alt: "Rays of Wisdom Society logo: a tree beneath a rising sun" },
+  logo: { src: "/images/brand/iaaf-logo.png", w: 512, h: 513, alt: "Ancient Arts festival emblem: a dancer in silhouette inside a twelve-petal lotus" },
+  rays: { src: "/images/brand/rays-logo.png", w: 360, h: 317, alt: "Rays of Wisdom Society logo: a tree beneath a rising sun" },
 };
 
 /** Sponsors, in the order they appear on the printed pass. */
 export const sponsors: Logo[] = [
-  { name: "Chadha Papers", src: "/images/brand/chadha-papers.png", w: 600, h: 370 },
-  { name: "Modi Groups", src: "/images/brand/modi-groups.png", w: 640, h: 276 },
+  { name: "Chadha Papers", src: "/images/brand/chadha-papers.png", w: 360, h: 222 },
+  { name: "Modi Groups", src: "/images/brand/modi-groups.png", w: 360, h: 155 },
 ];
 
 export const curator = {
@@ -87,8 +87,8 @@ export const curator = {
   roles: "Odissi dancer, choreographer, author and researcher",
   affiliations: ["Senior Fellow, Ministry of Culture", "Founder and Director, Rays of Wisdom Society"],
   bio: [
-    "Reela Hota began learning Odissi at eight under Guru Gangadhar Pradhan and went on to study with Guru Kelucharan Mohapatra and Madhavi Mudgal, this year's Ancient Arts Award laureate.",
-    "Raised around dance, yoga and ashram life by her mother, the yoga teacher Bijoylaxmi Hota, she has spent her career bringing the spiritual and therapeutic side of Odissi to the stage, the subject of her book Odissi Dance: Therapeutics, Aesthetics and Metaphysics.",
+    "Reela Hota began Odissi at eight under Guru Gangadhar Pradhan, then studied with Guru Kelucharan Mohapatra and Madhavi Mudgal, this year's Ancient Arts Award laureate.",
+    "Raised on dance, yoga and ashram life by her mother, the yoga teacher Bijoylaxmi Hota, she brings the spiritual and therapeutic side of Odissi to the stage, the subject of her book Odissi Dance: Therapeutics, Aesthetics and Metaphysics.",
   ],
   // The namaste pose is the festival director's pose on the official poster.
   photo: photos.reelaSeated,
@@ -135,7 +135,8 @@ export interface ArchivePrint {
 export type Evenings = "both" | "day1" | "day2";
 
 export const event = {
-  isDraft: true,
+  // Kept out of search engines until NEXT_PUBLIC_INDEXABLE=true is set on the live site (after client sign-off).
+  isDraft: process.env.NEXT_PUBLIC_INDEXABLE !== "true",
   slug: "iaaf-2026",
   edition: "9th",
   title: "International Ancient Arts Festival",
@@ -159,7 +160,7 @@ export const event = {
     src: "/images/poster.jpg",
     width: 1080,
     height: 1080,
-    alt: "Poster for the 9th International Ancient Art Festival 2026 with nine classical dancers and musicians in colourful costume.",
+    alt: "Poster for the 9th International Ancient Arts Festival 2026 with classical dancers and musicians in colourful costume.",
   },
   /** The five arches under the hero title: dance and music, one photograph of each tradition. */
   arcade: [
@@ -169,16 +170,19 @@ export const event = {
     { photo: photos.gauriTwirl, label: "Kathak" },
     { photo: photos.abhayPortrait, label: "Santoor" },
   ],
+  /** Meta description: one sentence, under about 160 characters. */
+  seoDescription:
+    "Two evenings of Indian classical dance and music at Kamani Auditorium, New Delhi, 25 and 26 November 2026. Get your e-pass.",
   intro: "Art has always been more than a performance.",
   about: [
-    "Across civilisations, ancient arts have offered a way to understand ourselves, connect with others, and experience the deeper unity that binds humanity.",
-    "Since its inception in 2010, the International Ancient Arts Festival has sought to highlight two essential dimensions of ancient arts: their relevance to our well-being and the unifying power of the aesthetic experience.",
-    "In a world marked by stress, conflict and growing divisions, these traditions remind us of our shared humanity and our connection to a universal consciousness and energy. When we experience each other's traditions, we begin to recognise what connects us rather than what divides us.",
+    "Across civilisations, ancient arts have offered a way to understand ourselves, connect with others and feel the deeper unity that binds humanity.",
+    "Since 2010, the festival has highlighted two things: how ancient arts support our well-being, and the unifying power of the aesthetic experience.",
+    "In a world of stress, conflict and division, these traditions remind us of our shared humanity. When we experience each other's traditions, we recognise what connects us rather than what divides us.",
   ],
   closing:
-    "Join us for two evenings of classical brilliance, cross-cultural collaboration and the timeless wisdom of ancient arts.",
+    "Two evenings of classical brilliance, cross-cultural collaboration and the timeless wisdom of ancient arts.",
   programmeIntro:
-    "Across these two evenings, dance becomes prayer, movement becomes a shared language, instrumental music opens a dialogue between cultures, and classical singing carries forward the wisdom of an ancient musical heritage.",
+    "Across two evenings, dance becomes prayer, movement a shared language, instrumental music a dialogue between cultures, and classical singing carries an ancient heritage forward.",
   // Running order inside each evening follows the order of the client's text; confirm with them.
   days: [
     {
@@ -188,7 +192,7 @@ export const event = {
       date: "2026-11-25",
       theme: "Dance",
       blurb:
-        "The evening opens with the sacred language of mantra and moves through classical dance, ending with a meeting of Indian and Russian circle dance.",
+        "From the sacred language of mantra through classical dance, ending where Indian and Russian circle dance meet.",
       sessions: [
         {
           id: "mantra-bhasha",
@@ -201,7 +205,7 @@ export const event = {
             {
               name: "Reela Hota",
               role: "Odissi, festival director",
-              bio: "An Odissi dancer, choreographer and author trained by Guru Gangadhar Pradhan, Guru Kelucharan Mohapatra and Madhavi Mudgal, known for bringing the spiritual and therapeutic dimension of Odissi to the stage.",
+              bio: "An Odissi dancer, choreographer and author, trained by Gurus Gangadhar Pradhan and Kelucharan Mohapatra and by Madhavi Mudgal, known for the spiritual and therapeutic side of Odissi.",
               photo: photos.reelaPortrait,
             },
             { name: "Joe Mathew", role: "Dancer" },
@@ -221,7 +225,7 @@ export const event = {
               name: "Arupa Lahiri",
               role: "Bharatanatyam",
               photo: photos.arupaSeated,
-              bio: "A dancer of the Vazhuvoor style, she trained for more than fifteen years under Padma Shri Chitra Visweswaran in Chennai. She received the Sangeet Natak Akademi's Ustad Bismillah Khan Yuva Puraskar in 2019 and has performed across India and in the UK, USA, France, Germany and Australia.",
+              bio: "A Bharatanatyam dancer of the Vazhuvoor style, trained for over fifteen years by Padma Shri Chitra Visweswaran. She won the Ustad Bismillah Khan Yuva Puraskar in 2019 and has performed across India and in the UK, USA, France, Germany and Australia.",
             },
           ],
         },
@@ -236,7 +240,7 @@ export const event = {
             {
               name: "Amrita Lahiri",
               role: "Kuchipudi",
-              bio: "She began Kuchipudi in Washington, D.C. with Anuradha Nehru, made her solo debut at the India International Centre in 1996 and went on to train in Bharatanatyam with Leela Samson. An empanelled artist of the Indian Council for Cultural Relations, she has toured as a soloist in India and abroad and has led dance programming at the National Centre for the Performing Arts, Mumbai.",
+              bio: "She began Kuchipudi in Washington, D.C. with Anuradha Nehru, made her solo debut at the India International Centre in 1996 and trained in Bharatanatyam with Leela Samson. An empanelled artist of the Indian Council for Cultural Relations, she has toured widely and led dance programming at the NCPA, Mumbai.",
               photo: photos.amritaPortrait,
             },
           ],
@@ -252,13 +256,13 @@ export const event = {
             {
               name: "Gauri Diwakar",
               role: "Kathak",
-              bio: "Born in Jamshedpur, she trained at Kathak Kendra, New Delhi under Pandit Jaikishan Maharaj and Pandit Birju Maharaj, and was for many years a lead dancer with Aditi Mangaldas's Drishtikon Dance Foundation. A recipient of the Ustad Bismillah Khan Yuva Puraskar (2008), she has presented her work at Sadler's Wells in London and the Edinburgh Festival Fringe, and teaches at Kathak Kendra.",
+              bio: "Trained at Kathak Kendra, New Delhi under Pandit Jaikishan Maharaj and Pandit Birju Maharaj, and for many years a lead dancer with Aditi Mangaldas's Drishtikon. She won the Ustad Bismillah Khan Yuva Puraskar (2008), has performed at Sadler's Wells and the Edinburgh Fringe, and teaches at Kathak Kendra.",
               photo: photos.gauriPortrait,
             },
             {
               name: "Mariia Timashova, Mariia Agafonova and Yana",
               role: "Sudarushka, Russian folk dance",
-              bio: "Sudarushka, loosely \"sweetheart\", is a Russian folk dance. Here it is danced in the spirit of the khorovod, the old Slavic circle dance in which dancers join hands and move together in a ring.",
+              bio: "Sudarushka, loosely \"sweetheart\", is a Russian folk dance, here in the spirit of the khorovod, the old Slavic circle dance in which dancers join hands and move in a ring.",
               photo: photos.sudarushkaGroup,
             },
           ],
@@ -272,7 +276,7 @@ export const event = {
       date: "2026-11-26",
       theme: "Music",
       blurb:
-        "The evening turns to the meditative dimensions of music, from the strings of the santoor and rabab to the raga of the Banaras Gharana.",
+        "The meditative side of music, from the strings of the santoor and rabab to the raga of the Banaras Gharana.",
       sessions: [
         {
           id: "santoor-rabab",
@@ -286,18 +290,18 @@ export const event = {
               name: "Pandit Abhay Rustum Sopori",
               role: "Santoor",
               photo: photos.abhayPortrait,
-              bio: "A santoor player, composer and conductor from Kashmir, he is the son and disciple of the santoor maestro Pandit Bhajan Sopori and carries forward the Sufiana gharana, a family tradition of more than 300 years. He is among the youngest recipients of the Ustad Bismillah Khan Yuva Puraskar.",
+              bio: "A santoor player, composer and conductor from Kashmir, son and disciple of Pandit Bhajan Sopori and carrier of the Sufiana gharana, a family tradition of over 300 years. One of the youngest recipients of the Ustad Bismillah Khan Yuva Puraskar.",
             },
             {
               name: "Pandit Mukesh Sharma",
               role: "Rabab",
               photo: photos.mukeshRabab,
-              bio: "A Delhi-based sarod virtuoso who also plays the rabab, the older lute from which the sarod descends. He has toured widely and collaborated with musicians in France and Germany and with flamenco artists in Spain.",
+              bio: "A Delhi-based sarod virtuoso who also plays the rabab, the older lute from which the sarod descends. He has toured widely and worked with musicians in France and Germany and flamenco artists in Spain.",
             },
             {
               name: "Rishi Shankar Upadhyay",
               role: "Pakhawaj",
-              bio: "A pakhawaj player from Gaya, Bihar, trained by his father Pandit Ravi Shankar Upadhyay in the family's Pandit Vasudev Upadhyay tradition. He received the Ustad Bismillah Khan Yuva Puraskar in 2023 and is an A-grade artist of All India Radio.",
+              bio: "A pakhawaj player from Gaya, Bihar, trained by his father Pandit Ravi Shankar Upadhyay. He won the Ustad Bismillah Khan Yuva Puraskar in 2023 and is an A-grade artist of All India Radio.",
             },
             { name: "Durjay Bhowmick", role: "Tabla" },
           ],
@@ -314,13 +318,13 @@ export const event = {
               name: "Pandit Ritesh Mishra and Pandit Rajnish Mishra",
               role: "Vocal duo, Banaras Gharana",
               photo: photos.mishraDuo,
-              bio: "Sons of Padma Bhushan Pandit Rajan Mishra and nephews of Pandit Sajan Mishra, the brothers are the sixth generation of a Banaras Gharana family with a musical lineage of some 400 years. Singing together for more than three decades, they have performed at the BBC Proms at the Royal Albert Hall, at Lincoln Center in New York and at the closing ceremony of the 2002 Commonwealth Games, and are Top Grade vocalists of All India Radio.",
+              bio: "Sons of Padma Bhushan Pandit Rajan Mishra and nephews of Pandit Sajan Mishra, the brothers are the sixth generation of a 400-year Banaras Gharana lineage. Singing together for over three decades, they have performed at the BBC Proms and Lincoln Center and are Top Grade vocalists of All India Radio.",
             },
             { name: "Durjay Bhowmick", role: "Tabla" },
             {
               name: "Sumit Mishra",
               role: "Harmonium",
-              bio: "A harmonium player of the Banaras Gharana, taught by his father Pandit Sohan Lal Mishra and uncle Pandit Mohan Lal Mishra with guidance from Pandit Kishan Maharaj, he has accompanied Pandit Rajan and Sajan Mishra on tours of Europe.",
+              bio: "A Banaras Gharana harmonium player, taught by his father Pandit Sohan Lal Mishra and uncle Pandit Mohan Lal Mishra, who has accompanied Pandit Rajan and Sajan Mishra on tours of Europe.",
             },
           ],
         },
@@ -330,10 +334,10 @@ export const event = {
   award: {
     title: "Ancient Arts Award 2026",
     recipient: "Padma Shri Madhavi Mudgal",
-    text: "A special highlight of the festival: the presentation of the Ancient Arts Award 2026, honouring Padma Shri Madhavi Mudgal's outstanding contribution to Indian classical dance.",
+    text: "A highlight of the festival: the Ancient Arts Award 2026, honouring Padma Shri Madhavi Mudgal's contribution to Indian classical dance.",
     bio: [
-      "Born in 1951 into the family of Vinay Chandra Maudgalya, founder of Delhi's Gandharva Mahavidyalaya, Madhavi Mudgal studied Kathak and Bharatanatyam before giving her life to Odissi under gurus including Kelucharan Mohapatra.",
-      "Across more than five decades as a dancer, choreographer and teacher she has taken Odissi to stages around the world and trained generations of dancers, among them the festival's own director. Her honours include the Padma Shri (1990) and the Sangeet Natak Akademi Award (2000).",
+      "Born in 1951 into the family of Vinay Chandra Maudgalya, founder of Delhi's Gandharva Mahavidyalaya, Madhavi Mudgal studied Kathak and Bharatanatyam before devoting herself to Odissi under gurus including Kelucharan Mohapatra.",
+      "In over five decades as dancer, choreographer and teacher she has taken Odissi around the world and trained generations of dancers, including the festival's director. Her honours include the Padma Shri (1990) and the Sangeet Natak Akademi Award (2000).",
     ],
     portrait: photos.madhavi,
     archiveIntro: "Photographs from her early years on stage, from 1976 to 1984.",
@@ -349,19 +353,19 @@ export const event = {
   faqs: [
     {
       q: "Do I need an e-pass?",
-      a: "Yes. Make one in the e-pass section, then show it at the gate on your phone or as a printout.",
+      a: "Yes. Make one in the e-pass section and show it at the gate, on your phone or printed.",
     },
     {
       q: "Can one pass cover my family?",
-      a: "Yes. A single e-pass admits up to 4 people, including you. For a larger group, make another pass with \"Get a pass for someone else\".",
+      a: "Yes. One e-pass admits up to 4 people, including you. For a larger group, make another with \"Get a pass for someone else\".",
     },
     {
       q: "Is one pass valid for both evenings?",
-      a: "Choose \"Both evenings\" when you make it and it is checked in once each evening. A pass for one date is valid on that evening only.",
+      a: "Yes, if you choose \"Both evenings\". It is checked in once each evening. A single-evening pass is valid that evening only.",
     },
     {
       q: "I lost my pass. What now?",
-      a: "Open this page on the same phone and your pass is still there. You can also tell the gate team your name and pass number.",
+      a: "Open this page on the same phone and it is still there. Or give the gate team your name and pass number.",
     },
     {
       q: "Who do I contact with questions?",
