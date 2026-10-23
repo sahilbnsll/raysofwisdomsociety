@@ -172,7 +172,7 @@ export function EPassStudio() {
             {event.closing} Make your pass here, keep it on your phone and show it at the gate.
           </p>
           <div className="mt-6 flex justify-center">
-            <EPassCounter variant="feature" />
+            <EPassCounter variant="banner" />
           </div>
         </Reveal>
 

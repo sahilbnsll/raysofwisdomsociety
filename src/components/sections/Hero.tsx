@@ -1,5 +1,6 @@
 import { event, org } from "@/content/event";
 import { EPassLink } from "@/components/epass/EPassLink";
+import { EPassCounter } from "@/components/epass/EPassCounter";
 import { Frame } from "@/components/ui/Frame";
 import { Hills, LotusRule, Sprig } from "@/components/ui/Ornaments";
 import { Reveal } from "@/components/ui/Reveal";
@@ -72,6 +73,12 @@ export function Hero() {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+          </a>
+        </Reveal>
+
+        <Reveal delay={240} className="mt-5">
+          <a href="#e-pass" className="inline-block rounded-full transition-transform hover:-translate-y-0.5">
+            <EPassCounter variant="pill" />
           </a>
         </Reveal>
       </div>
