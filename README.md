@@ -1,6 +1,6 @@
 # 9th International Ancient Arts Festival 2026: event page (draft)
 
-Event page for Rays of Wisdom Society with a live e-pass maker and an "e-passes downloaded" counter.
+Event page for Rays of Wisdom Society with a live e-pass maker and a live count of guests who already hold a pass.
 Next.js (App Router) + Tailwind 4. Look: cream paper, sage and olive greens from the festival poster,
 and maroon kept for the e-pass and one dignified band (the award). Motion tokens follow the Portfolio
 project; the "photographs develop from black and white" reveal and the chapter rail follow My Postcards.
