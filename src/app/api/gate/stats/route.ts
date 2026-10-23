@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { isStaff } from "@/lib/epass/gate";
-import { getPassStore, usingSharedStore } from "@/lib/epass/store";
+import { explainStoreError, getPassStore, usingSharedStore } from "@/lib/epass/store";
 import { defaultEvening, type Evening } from "@/lib/epass/evening";
 import { json } from "@/lib/http";
 
@@ -14,6 +14,6 @@ export async function GET(request: NextRequest) {
     return json({ evening, ...stats, shared: usingSharedStore() });
   } catch (error) {
     console.error("[gate] stats failed:", error);
-    return json({ error: "Could not load the numbers." }, 503);
+    return json({ error: "Could not load the numbers.", hint: explainStoreError(error) }, 503);
   }
 }

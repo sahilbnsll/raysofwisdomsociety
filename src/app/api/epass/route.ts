@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { getPassStore, usingSharedStore } from "@/lib/epass/store";
+import { explainStoreError, getPassStore, usingSharedStore } from "@/lib/epass/store";
 import type { Evenings } from "@/content/event";
 import { clientKey, createLimiter, json, sameOrigin } from "@/lib/http";
 
@@ -11,7 +11,7 @@ export async function GET() {
     return json({ people, shared: usingSharedStore() });
   } catch (error) {
     console.error("[epass] guest count failed:", error);
-    return json({ error: "unavailable" }, 503);
+    return json({ error: "unavailable", hint: explainStoreError(error) }, 503);
   }
 }
 
@@ -67,6 +67,6 @@ export async function POST(request: NextRequest) {
     return json({ id: pass.id, name: pass.name, guests: pass.guests, days: pass.days, people });
   } catch (error) {
     console.error("[epass] issue failed:", error);
-    return json({ error: "We could not create your pass. Please try again." }, 503);
+    return json({ error: "We could not create your pass. Please try again.", hint: explainStoreError(error) }, 503);
   }
 }

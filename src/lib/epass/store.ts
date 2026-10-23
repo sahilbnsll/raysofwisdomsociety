@@ -40,6 +40,19 @@ interface PassStore {
   stats(evening: Evening): Promise<GateStats>;
 }
 
+/**
+ * Turns a database error into a short, safe hint for the site owner (never the raw message, which can
+ * name tables or hosts). The full error is always in the server log.
+ */
+export type StoreHint = "table-missing" | "bad-key" | "unreachable" | "other";
+export function explainStoreError(error: unknown): StoreHint {
+  const m = error instanceof Error ? error.message : String(error);
+  if (/relation .* does not exist|could not find the table|schema cache|PGRST205|42P01/i.test(m)) return "table-missing";
+  if (/invalid api key|invalid jwt|jwt|apikey|unauthorized|forbidden|permission denied|not authorized/i.test(m)) return "bad-key";
+  if (/fetch failed|enotfound|econnrefused|getaddrinfo|invalid url|network/i.test(m)) return "unreachable";
+  return "other";
+}
+
 // No 0/O/1/I so a pass number read aloud at the gate is unambiguous.
 const ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 const PREFIX = "RWS26";

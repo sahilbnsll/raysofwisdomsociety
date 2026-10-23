@@ -7,6 +7,8 @@ import type { PassData } from "@/lib/epass/render-pass";
 interface EPassContextValue {
   /** Everyone covered by the passes issued so far (guests, not passes), or null until the first response. */
   people: number | null;
+  /** True when the count could not be loaded (for example the database is down), so it is hidden, not shown as a blank. */
+  countFailed: boolean;
   /** Passes this browser has made, newest first. */
   passes: PassData[];
   /** The evening a visitor picked elsewhere on the page (e.g. under a day of the programme). */
@@ -59,6 +61,7 @@ const NO_PASSES: PassData[] = [];
 
 export function EPassProvider({ children }: { children: React.ReactNode }) {
   const [people, setPeople] = useState<number | null>(null);
+  const [countFailed, setCountFailed] = useState(false);
   const [preferred, setPreferred] = useState<{ value: Evenings; at: number } | null>(null);
   const raw = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const parsed = useMemo(() => parsePasses(raw), [raw]);
@@ -71,9 +74,14 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
       fetch("/api/epass", { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error("unavailable"))))
         .then((d: { people: number }) => {
-          if (!cancelled) setPeople(d.people);
+          if (!cancelled) {
+            setPeople(d.people);
+            setCountFailed(false);
+          }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (!cancelled) setCountFailed(true);
+        });
     load();
     // Keep the number fresh for people who leave the tab open.
     const t = setInterval(() => document.visibilityState === "visible" && load(), 30_000);
@@ -108,8 +116,8 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ people, passes, preferred, recordIssued, goToPass, registerFocus }),
-    [people, passes, preferred, recordIssued, goToPass, registerFocus],
+    () => ({ people, countFailed, passes, preferred, recordIssued, goToPass, registerFocus }),
+    [people, countFailed, passes, preferred, recordIssued, goToPass, registerFocus],
   );
 
   return <EPassContext.Provider value={value}>{children}</EPassContext.Provider>;

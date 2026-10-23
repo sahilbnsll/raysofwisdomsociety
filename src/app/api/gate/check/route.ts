@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { isStaff } from "@/lib/epass/gate";
-import { getPassStore, normalisePassId, PASS_ID, usingSharedStore } from "@/lib/epass/store";
+import { explainStoreError, getPassStore, normalisePassId, PASS_ID, usingSharedStore } from "@/lib/epass/store";
 import { defaultEvening, type Evening } from "@/lib/epass/evening";
 import { toGatePass, verdictFor } from "@/lib/epass/verdict";
 import { json, sameOrigin } from "@/lib/http";
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     return answer(verdictFor(pass && toGatePass(pass), evening));
   } catch (error) {
     console.error("[gate] lookup failed:", error);
-    return json({ error: "Could not check the pass. Try again." }, 503);
+    return json({ error: "Could not check the pass. Try again.", hint: explainStoreError(error) }, 503);
   }
 }
 
@@ -53,6 +53,6 @@ export async function POST(request: NextRequest) {
     return answer({ state: result.status, evening, pass, admittedAt: pass.admitted[evening] });
   } catch (error) {
     console.error("[gate] admit failed:", error);
-    return json({ error: "Could not record the check-in. Try again." }, 503);
+    return json({ error: "Could not record the check-in. Try again.", hint: explainStoreError(error) }, 503);
   }
 }

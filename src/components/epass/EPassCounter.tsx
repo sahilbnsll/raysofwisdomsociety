@@ -57,7 +57,7 @@ export function EPassCounter({
   short?: boolean;
   className?: string;
 }) {
-  const { people } = useEPass();
+  const { people, countFailed } = useEPass();
   const { shown, bump } = useCountUp(people);
   const bumpStyle = bump ? { animation: "count-bump 520ms var(--ease-out)" } : undefined;
   const value =
@@ -67,6 +67,9 @@ export function EPassCounter({
       nf.format(shown)
     );
 
+  // The count could not be loaded: show nothing rather than a placeholder that never fills in.
+  const hidden = people === null && countFailed;
+
   const dot = (
     <span className="relative flex size-2 shrink-0" aria-hidden="true">
       <span className="absolute inset-0 rounded-full bg-maroon" style={{ animation: "pulse-ring 2.4s ease-out infinite" }} />
@@ -75,6 +78,8 @@ export function EPassCounter({
   );
   const shell = variant === "chip" ? "gap-2 rounded-full bg-paper/80 py-1.5 pl-3 pr-3.5 text-sm ring-1 ring-line" : "gap-2.5 text-sm";
   const base = `inline-flex items-center text-ink-muted ${shell} ${className}`;
+
+  if (hidden) return null;
 
   // Before the first pass, "0 guests" reads as "nobody is coming"; invite instead.
   if (people === 0) {
