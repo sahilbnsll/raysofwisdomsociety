@@ -76,9 +76,9 @@ export function Hero() {
           </a>
         </Reveal>
 
-        <Reveal delay={240} className="mt-5">
-          <a href="#e-pass" className="inline-block rounded-full transition-transform hover:-translate-y-0.5">
-            <EPassCounter variant="pill" />
+        <Reveal delay={240} className="mt-4 md:hidden">
+          <a href="#e-pass" className="inline-block rounded-full px-2 py-1">
+            <EPassCounter />
           </a>
         </Reveal>
       </div>
