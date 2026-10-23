@@ -42,10 +42,13 @@ export const ArtistSheet = forwardRef<HTMLDialogElement, { session: Session }>(f
             )}
             <div className="min-w-0 self-center">
               <p className="text-lg font-semibold leading-snug">{a.name}</p>
-              <p className="serif italic text-ink-muted">
-                {a.role}
-                {a.billing === "guest" && " · guest appearance"}
-              </p>
+              {/* A role that only repeats the performance's name (the sheet header) is left out */}
+              {(() => {
+                const role = [session.title, session.artForm].some((x) => x.trim().toLowerCase() === a.role.trim().toLowerCase()) ? "" : a.role;
+                const guest = a.billing === "guest" ? "guest appearance" : "";
+                const line = [role, guest].filter(Boolean).join(" · ");
+                return line ? <p className="serif italic text-ink-muted">{line}</p> : null;
+              })()}
               {a.bio && <p className="reading mt-2 !text-base">{a.bio}</p>}
             </div>
           </li>

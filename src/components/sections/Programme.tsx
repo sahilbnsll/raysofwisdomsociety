@@ -78,6 +78,15 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
   const others = s.artists.filter((a) => !a.billing);
   // "Bharatanatyam" as both label and title would read twice: show it once.
   const sameName = s.title.trim().toLowerCase() === s.artForm.trim().toLowerCase();
+  // Everything already said above the names (label, title, art form). A role is only shown for what it
+  // adds: "Bharatanatyam" under Arupa Lahiri is left out, "Odissi, festival director" keeps "festival director".
+  const said = [s.tagline ?? s.artForm, sameName ? "" : s.title, s.tagline ? s.artForm : ""].join(" ").toLowerCase();
+  const newInRole = (role: string) =>
+    role
+      .split(",")
+      .map((p) => p.trim())
+      .filter((p) => p && !said.includes(p.toLowerCase()))
+      .join(", ");
 
   return (
     <li className="grid items-center gap-10 border-t border-line py-14 md:grid-cols-12 md:gap-12 lg:gap-16">
@@ -97,7 +106,7 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
           {leads.map((a) => (
             <div key={a.name}>
               <p className={`display ${nameSize(a.name)} leading-[1.02]`}>{a.name}</p>
-              <p className="serif mt-1 text-lg italic text-maroon">{a.role}</p>
+              {newInRole(a.role) && <p className="serif mt-1 text-lg italic text-maroon first-letter:uppercase">{newInRole(a.role)}</p>}
             </div>
           ))}
         </div>

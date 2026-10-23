@@ -271,7 +271,8 @@ export const event = {
         {
           id: "kathak-sudarushka",
           title: "Indian Kathak meets Russian Sudarushka",
-          artForm: "Kathak and Russian folk dance",
+          tagline: "Two traditions in one shared circle of movement",
+          artForm: "Classical and folk dance",
           note: "Indian classical dance in dialogue with Sudarushka, the Russian folk circle dance. Two traditions, rooted in different histories, come together in a shared circle of movement, demonstrating how artistic expression can celebrate cultural diversity while revealing a common human language.",
           leadPhotos: [photos.gauriTwirl, photos.sudarushkaGroup],
           stage: photos.sudarushkaStage,
@@ -285,7 +286,7 @@ export const event = {
             },
             {
               name: "Mariia Timashova, Mariia Agafonova and Yana",
-              role: "Sudarushka, Russian folk dance",
+              role: "Sudarushka",
               billing: "lead",
               bio: "Sudarushka, loosely \"sweetheart\", is a Russian folk dance, here in the spirit of the khorovod, the old Slavic circle dance in which dancers join hands and move in a ring.",
               photo: photos.sudarushkaGroup,
@@ -340,14 +341,14 @@ export const event = {
         {
           id: "vocal",
           title: "Hindustani classical vocal",
-          tagline: "The festival concludes with the Banaras Gharana",
-          artForm: "Vocal recital",
+          tagline: "The closing recital of the festival",
+          artForm: "Banaras Gharana",
           note: "A musical lineage in which the raga becomes a vehicle for emotion, devotion and contemplative experience: two voices, one musical lineage, and a living tradition passed from generation to generation.",
           leadPhotos: [photos.mishraDuo],
           artists: [
             {
               name: "Pandit Ritesh Mishra and Pandit Rajnish Mishra",
-              role: "Vocal duo, Banaras Gharana",
+              role: "Sons of Pandit Rajan Mishra",
               billing: "lead",
               photo: photos.mishraDuo,
               bio: "Sons of Padma Bhushan Pandit Rajan Mishra and nephews of Pandit Sajan Mishra, the brothers are the sixth generation of a 400-year Banaras Gharana lineage. Singing together for over three decades, they have performed at the BBC Proms and Lincoln Center and are Top Grade vocalists of All India Radio.",
