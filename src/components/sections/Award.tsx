@@ -72,10 +72,17 @@ export function Award() {
           <ul className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:gap-x-8 lg:gap-y-10">
             {a.archive.map((p, i) => (
               <Reveal as="li" key={p.photo.src} delay={(i % 6) * 60}>
-                <figure className="card print h-full p-2.5" style={{ "--lean": lean[i % lean.length] } as React.CSSProperties}>
+                <figure className="card print h-full p-2.5 pb-4" style={{ "--lean": lean[i % lean.length] } as React.CSSProperties}>
                   <button type="button" onClick={(e) => openAt(p.photo.src, e.currentTarget)} aria-label={`Enlarge photograph: ${p.title}${p.year ? `, ${p.year}` : ""}`} className="block w-full cursor-zoom-in">
                     <Frame photo={p.photo} ratio="4 / 5" sizes="(min-width:768px) 30vw, 46vw" className="!rounded-[0.6rem]" />
                   </button>
+                  <figcaption className="px-2 pt-4">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className="display block text-2xl leading-tight">{p.title}</span>
+                      {p.year && <span className="shrink-0 text-sm tabular-nums text-ink-muted">{p.year}</span>}
+                    </span>
+                    <span className="serif mt-1.5 block text-[0.98rem] leading-relaxed text-ink-muted">{p.caption}</span>
+                  </figcaption>
                 </figure>
               </Reveal>
             ))}
