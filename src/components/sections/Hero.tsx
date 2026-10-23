@@ -1,18 +1,17 @@
 import Image from "next/image";
 import { brand, event, org } from "@/content/event";
 import { EPassLink } from "@/components/epass/EPassLink";
-import { LotusRule, Sprig } from "@/components/ui/Ornaments";
+import { Hills, LotusRule, Sprig } from "@/components/ui/Ornaments";
 import { Reveal } from "@/components/ui/Reveal";
 
 /**
  * Opens like the printed pass, on a quiet field: the organiser's mark, who presents it, the title with
  * its big "9th", the lotus rule, the festival's own words, date and venue in maroon, the director and
- * the four words, with the festival emblem turning slowly and faintly behind them. Below, the artists of
- * the poster stand together, feathered into the paper and drifting very slowly.
+ * the four words, with the festival emblem turning slowly and faintly behind them, on the poster's hills.
  */
 export function Hero() {
   return (
-    <section id="top" className="relative isolate -mt-[var(--header-h)] flex flex-col overflow-hidden pt-[var(--header-h)]">
+    <section id="top" className="relative isolate -mt-[var(--header-h)] flex min-h-[min(100svh,58rem)] flex-col overflow-hidden pt-[var(--header-h)]">
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20 bg-[radial-gradient(46rem_26rem_at_100%_0%,rgba(214,150,150,0.2),transparent_70%),radial-gradient(40rem_24rem_at_0%_10%,rgba(176,194,140,0.22),transparent_70%)]"
@@ -21,7 +20,7 @@ export function Hero() {
       <Sprig className="absolute left-0 top-16 -z-10 hidden w-44 md:block lg:w-56" />
       <Sprig className="absolute right-0 top-16 -z-10 hidden w-44 md:block lg:w-56" flip />
 
-      <div className="wrap relative flex flex-col items-center pb-6 pt-8 text-center sm:pb-2 sm:pt-12">
+      <div className="wrap relative flex flex-1 flex-col items-center justify-center pb-28 pt-8 text-center sm:pb-36 sm:pt-12">
         {/* The festival emblem, faded and slowly turning behind the title */}
         <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[44%] -z-10 w-[min(118vw,48rem)] -translate-x-1/2 -translate-y-1/2">
           <div className="emblem-breathe">
@@ -89,21 +88,8 @@ export function Hero() {
         </Reveal>
       </div>
 
-      {/* The artists from the poster, cut out of it: feathered at every edge so they stand in the page itself */}
-      <div className="relative mx-auto mt-2 w-full max-w-[74rem]">
-        <div className="collage aspect-[4/3.1] w-full overflow-hidden sm:aspect-[1080/618]">
-          <Image
-            src="/images/artists-collage.jpg"
-            alt="The festival's artists together: classical dancers and musicians in colourful costume, from the festival poster"
-            width={2160}
-            height={1236}
-            quality={90}
-            sizes="(min-width:1184px) 1184px, 100vw"
-            priority
-            className="collage-drift h-full w-full object-cover"
-          />
-        </div>
-      </div>
+      {/* The poster's hills close the opening */}
+      <Hills className="absolute inset-x-0 bottom-0 -z-10 h-28 sm:h-40" />
     </section>
   );
 }
