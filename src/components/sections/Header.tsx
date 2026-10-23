@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { brand, event } from "@/content/event";
 import { EPassLink } from "@/components/epass/EPassLink";
-import { EPassCounter } from "@/components/epass/EPassCounter";
 import { useActiveSection } from "@/components/ui/useActiveSection";
 
 const links = [
@@ -57,9 +56,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <a href="#e-pass" className="hidden rounded-full md:inline-flex" aria-label="Number of e-passes downloaded, go to the e-pass section">
-            <EPassCounter variant="chip" short />
-          </a>
           {/* Short label on the narrowest phones so the bar never overflows */}
           <EPassLink className="btn btn-primary !min-h-10 !px-4 text-sm whitespace-nowrap">
             <span>

@@ -29,8 +29,8 @@ export interface GateStats {
 export type AdmitResult = { status: "admitted"; pass: IssuedPass } | { status: "already"; pass: IssuedPass } | { status: "not-found" };
 
 interface PassStore {
-  /** Everyone covered by an issued pass: the sum of guests, not the number of passes. */
-  people(): Promise<number>;
+  /** A cheap round trip to the database, so the site can report whether it is reachable. */
+  ping(): Promise<void>;
   issue(input: { name: string; guests: number; days: Evenings }): Promise<IssuedPass>;
   get(id: string): Promise<IssuedPass | null>;
   /** Marks the pass as in for this evening. Never overwrites an earlier check-in. */
@@ -126,8 +126,6 @@ async function allRows<T>(page: (from: number, to: number) => PromiseLike<{ data
   }
 }
 
-let peopleCache: { value: number; at: number } | null = null;
-
 function supabaseStore(): PassStore | null {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -136,22 +134,15 @@ function supabaseStore(): PassStore | null {
   const table = () => db.from("epass_issues");
 
   return {
-    async people() {
-      // Many visitors poll this, so share one database read between them for a few seconds.
-      if (peopleCache && Date.now() - peopleCache.at < 5000) return peopleCache.value;
-      const rows = await allRows<{ guests: number }>((from, to) => table().select("guests").order("created_at").range(from, to));
-      const value = rows.reduce((n, r) => n + r.guests, 0);
-      peopleCache = { value, at: Date.now() };
-      return value;
+    async ping() {
+      const { error } = await table().select("id", { head: true, count: "exact" }).limit(1);
+      if (error) throw new Error(error.message);
     },
     async issue({ name, guests, days }) {
       // Retry on the (very unlikely) id collision.
       for (let attempt = 0; attempt < 4; attempt++) {
         const { data, error } = await table().insert({ id: newPassId(), name, guests, days }).select(COLS).single();
-        if (!error && data) {
-          peopleCache = null;
-          return fromRow(data as Row);
-        }
+        if (!error && data) return fromRow(data as Row);
         if (error && error.code !== "23505") throw new Error(error.message);
       }
       throw new Error("Could not allocate a pass number");
@@ -217,8 +208,8 @@ async function writeAll(rows: IssuedPass[]) {
 }
 
 const localStore: PassStore = {
-  async people() {
-    return (await readAll()).reduce((n, r) => n + r.guests, 0);
+  async ping() {
+    await readAll();
   },
   async issue({ name, guests, days }) {
     const rows = await readAll();

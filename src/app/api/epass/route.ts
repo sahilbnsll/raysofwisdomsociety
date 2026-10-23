@@ -3,20 +3,23 @@ import { explainStoreError, getPassStore, usingSharedStore } from "@/lib/epass/s
 import type { Evenings } from "@/content/event";
 import { clientKey, createLimiter, json, sameOrigin } from "@/lib/http";
 
-/** How many guests already hold an e-pass: GET /api/epass -> { people, shared } */
+/**
+ * Is the pass system working? GET /api/epass -> { ok, shared }. It never reveals how many passes exist:
+ * that number is for gate staff only. `shared` is true when passes are in the database, false when they
+ * only live in one server's memory (a set-up problem).
+ */
 export async function GET() {
   try {
-    const people = await getPassStore().people();
-    // `shared` says whether the number comes from the database (true) or a local file / server memory (false).
-    return json({ people, shared: usingSharedStore() });
+    await getPassStore().ping();
+    return json({ ok: true, shared: usingSharedStore() });
   } catch (error) {
-    console.error("[epass] guest count failed:", error);
+    console.error("[epass] health check failed:", error);
     return json({ error: "unavailable", hint: explainStoreError(error) }, 503);
   }
 }
 
 /* Small per-instance rate limit: 5 passes per client per 10 minutes. It only stops a script from
-   inflating the guest count; a person getting passes for a family never gets near it. */
+   inflating the numbers; a person getting passes for a family never gets near it. */
 const limiter = createLimiter(5, 10 * 60 * 1000);
 
 const clean = (value: unknown) =>
@@ -38,7 +41,7 @@ export async function POST(request: NextRequest) {
 
   // Hidden field only a script fills in: pretend it worked, store nothing.
   if (clean(body.website)) {
-    return json({ id: "RWS26-222222", name: "", guests: 1, days: "both", people: 0 });
+    return json({ id: "RWS26-222222", name: "", guests: 1, days: "both" });
   }
 
   const name = clean(body.name);
@@ -63,8 +66,7 @@ export async function POST(request: NextRequest) {
   try {
     const store = getPassStore();
     const pass = await store.issue({ name, guests, days });
-    const people = await store.people();
-    return json({ id: pass.id, name: pass.name, guests: pass.guests, days: pass.days, people });
+    return json({ id: pass.id, name: pass.name, guests: pass.guests, days: pass.days });
   } catch (error) {
     console.error("[epass] issue failed:", error);
     return json({ error: "We could not create your pass. Please try again.", hint: explainStoreError(error) }, 503);

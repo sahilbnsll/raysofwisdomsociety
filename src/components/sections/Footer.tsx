@@ -38,6 +38,14 @@ export function Footer() {
       body: (
         <>
           <p>
+            <span className="font-semibold text-paper">{org.coordinator.name}</span>
+            <span className="block text-paper/55">{org.coordinator.role}</span>
+            <a className="hover:text-paper" href={`tel:${org.coordinator.phone.replace(/\s/g, "")}`}>
+              {org.coordinator.phone}
+            </a>
+          </p>
+          <p className="!mt-3 text-paper/55">Festival office</p>
+          <p>
             <a className="hover:text-paper" href={`tel:${org.mobile.replace(/\s/g, "")}`}>
               {org.mobile}
             </a>

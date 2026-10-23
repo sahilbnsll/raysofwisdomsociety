@@ -3,15 +3,7 @@
 import Image from "next/image";
 import { forwardRef } from "react";
 import type { Session } from "@/content/event";
-
-const initials = (name: string) =>
-  name
-    .replace(/^(Pandit|Dr\.)\s+/i, "")
-    .split(/\s+/)
-    .filter((w) => /^[A-Z]/.test(w))
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("");
+import { initials } from "@/components/ui/Avatar";
 
 /**
  * "Meet the artists": the people behind one performance, each with a portrait (or a monogram where
@@ -58,7 +50,10 @@ export const ArtistSheet = forwardRef<HTMLDialogElement, { session: Session }>(f
             )}
             <div className="min-w-0 self-center">
               <p className="text-lg font-semibold leading-snug">{a.name}</p>
-              <p className="serif italic text-ink-muted">{a.role}</p>
+              <p className="serif italic text-ink-muted">
+                {a.role}
+                {a.billing === "guest" && " · guest appearance"}
+              </p>
               {a.bio && <p className="reading mt-2 !text-base">{a.bio}</p>}
             </div>
           </li>

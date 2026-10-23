@@ -47,6 +47,11 @@ export const photos = {
   sudarushkaGroup: art("sudarushka-group", 1030, 1600, "Russian dancers in blue and white folk costume gathered together in a forest", { position: "50% 30%" }),
   abhaySantoor: art("abhay-santoor", 2000, 1694, "Abhay Sopori in a cream embroidered kurta seated behind his santoor", { position: "50% 40%" }),
   abhayPortrait: art("abhay-portrait", 1261, 1800, "Abhay Sopori in a cream embroidered kurta, hands poised over the santoor strings", { position: "50% 22%" }),
+  joeMathew: art("joe-mathew-1", 1086, 1448, "Joe Mathew in white, leaning back with one arm raised and his gaze lifted", { position: "50% 22%" }),
+  joeMathewB: art("joe-mathew-2", 1086, 1448, "Joe Mathew in white, arms spread wide in a balanced ballet pose", { position: "55% 24%" }),
+  joeMathewHead: art("joe-mathew-head", 400, 400, "Joe Mathew, head and shoulders", { position: "50% 40%" }),
+  mukeshPortrait: art("mukesh-portrait", 959, 1280, "Pandit Mukesh Sharma in a cream kurta and blue shawl, holding the rabab", { position: "55% 30%" }),
+  mukeshHead: art("mukesh-head", 400, 400, "Pandit Mukesh Sharma, head and shoulders", { position: "50% 40%" }),
   mukeshRabab: art("mukesh-rabab", 1280, 1060, "Mukesh Sharma in a dark kurta playing the rabab", { position: "36% 30%" }),
   mishraDuo: art("mishra-duo", 1201, 1800, "Ritesh and Rajnish Mishra in brown silk kurtas seated close together against a black backdrop", { position: "50% 30%" }),
   madhavi: art("madhavi-color-a", 1333, 1800, "Madhavi Mudgal in a red Odissi costume with silver jewellery, mid-gesture", { credit: "Ajay Lal", position: "50% 25%" }),
@@ -62,6 +67,8 @@ export const org = {
   email: "raysofwisdom@gmail.com",
   site: "https://www.raysofwisdomsociety.net",
   registration: "Regd. no. 54348/80 G",
+  /** Festival contact for visitors and the press. */
+  coordinator: { name: "Nishant Sharma", role: "Project Coordinator, IAAF 2026", phone: "+91 89555 91445" },
 } as const;
 
 export interface Logo {
@@ -97,20 +104,28 @@ export const curator = {
 export interface Artist {
   name: string;
   role: string;
+  /** "lead" artists are the faces of a performance; "guest" artists appear briefly and are kept quieter. */
+  billing?: "lead" | "guest";
   bio?: string;
   /** Portrait for the bio sheet; artists without a photograph get a monogram. */
   photo?: Photo;
+  /** Small head-and-shoulders picture for the round portraits under a performance. */
+  thumb?: Photo;
 }
 
 export interface Session {
   id: string;
   time?: string; // omit until the client supplies per-performance times
   title: string;
+  /** One line from the client's text that sets the scene, shown above the title. */
+  tagline?: string;
   artForm: string;
+  /** The client's own description of the performance. */
   note: string;
-  /** Short line under the title naming who performs. */
-  performers: string;
-  images: Photo[];
+  /** Large photographs of the lead artists, one or two. */
+  leadPhotos: Photo[];
+  /** An optional smaller picture of the performance itself. */
+  stage?: Photo;
   artists: Artist[];
 }
 
@@ -119,6 +134,7 @@ export interface Day {
   evening: "day1" | "day2";
   label: string;
   date: string; // ISO yyyy-mm-dd
+  /** Shown beside the evening: "First evening: Classical and Folk Dance". */
   theme: string;
   blurb: string;
   sessions: Session[];
@@ -182,7 +198,7 @@ export const event = {
   closing:
     "Two evenings of classical brilliance, cross-cultural collaboration and the timeless wisdom of ancient arts.",
   programmeIntro:
-    "Across two evenings, dance becomes prayer, movement a shared language, instrumental music a dialogue between cultures, and classical singing carries an ancient heritage forward.",
+    "Across these two evenings, dance becomes prayer, movement becomes a shared language, instrumental music opens a dialogue between cultures, and classical singing carries forward the wisdom of an ancient musical heritage.",
   // Running order inside each evening follows the order of the client's text; confirm with them.
   days: [
     {
@@ -190,25 +206,28 @@ export const event = {
       evening: "day1",
       label: "First evening",
       date: "2026-11-25",
-      theme: "Dance",
+      theme: "Classical and Folk Dance",
       blurb:
-        "From the sacred language of mantra through classical dance, ending where Indian and Russian circle dance meet.",
+        "The first evening opens with Sanskrit: The Mantra Bhasha, then moves through Bharatanatyam and Kuchipudi to a Kathak and Sudarushka collaboration.",
       sessions: [
         {
           id: "mantra-bhasha",
           title: "Sanskrit: The Mantra Bhasha",
+          tagline: "A meeting of sacred movement, language and sound",
           artForm: "Odissi and Classical Ballet",
-          performers: "Reela Hota, Joe Mathew, Princess Panigrahi and Priyanka Das",
-          note: "An innovative collaboration exploring the healing potential of ancient language, movement and music, as Odissi and classical ballet share one stage.",
-          images: [photos.mantraTemple, photos.mantraDuo],
+          note: "An innovative collaboration exploring the healing potential of ancient language, movement and music through Odissi and Classical Ballet.",
+          leadPhotos: [photos.reelaPoseB],
+          stage: photos.mantraTemple,
           artists: [
             {
               name: "Reela Hota",
               role: "Odissi, festival director",
+              billing: "lead",
               bio: "An Odissi dancer, choreographer and author, trained by Gurus Gangadhar Pradhan and Kelucharan Mohapatra and by Madhavi Mudgal, known for the spiritual and therapeutic side of Odissi.",
               photo: photos.reelaPortrait,
+              thumb: photos.reelaPortrait,
             },
-            { name: "Joe Mathew", role: "Dancer" },
+            { name: "Joe Mathew", role: "Ballet dancer", photo: photos.joeMathew, thumb: photos.joeMathewHead },
             { name: "Princess Panigrahi", role: "Dancer" },
             { name: "Priyanka Das", role: "Dancer" },
           ],
@@ -217,13 +236,13 @@ export const event = {
           id: "bharatanatyam",
           title: "Bharatanatyam",
           artForm: "Bharatanatyam",
-          performers: "Arupa Lahiri",
           note: "Where dance reaches back to its sacred origins and becomes a pathway to prayer and inner stillness.",
-          images: [photos.arupa],
+          leadPhotos: [photos.arupa],
           artists: [
             {
               name: "Arupa Lahiri",
               role: "Bharatanatyam",
+              billing: "lead",
               photo: photos.arupaSeated,
               bio: "A Bharatanatyam dancer of the Vazhuvoor style, trained for over fifteen years by Padma Shri Chitra Visweswaran. She won the Ustad Bismillah Khan Yuva Puraskar in 2019 and has performed across India and in the UK, USA, France, Germany and Australia.",
             },
@@ -233,13 +252,14 @@ export const event = {
           id: "kuchipudi",
           title: "Kuchipudi",
           artForm: "Kuchipudi",
-          performers: "Amrita Lahiri",
-          note: "An ancient tradition that continues to evolve through generations of artists.",
-          images: [photos.amritaLeap, photos.amritaRays],
+          note: "Celebrating an ancient tradition that continues to evolve through generations of artists.",
+          leadPhotos: [photos.amritaRed],
+          stage: photos.amritaLeap,
           artists: [
             {
               name: "Amrita Lahiri",
               role: "Kuchipudi",
+              billing: "lead",
               bio: "She began Kuchipudi in Washington, D.C. with Anuradha Nehru, made her solo debut at the India International Centre in 1996 and trained in Bharatanatyam with Leela Samson. An empanelled artist of the Indian Council for Cultural Relations, she has toured widely and led dance programming at the NCPA, Mumbai.",
               photo: photos.amritaPortrait,
             },
@@ -247,21 +267,23 @@ export const event = {
         },
         {
           id: "kathak-sudarushka",
-          title: "Kathak meets Sudarushka",
+          title: "Indian Kathak meets Russian Sudarushka",
           artForm: "Kathak and Russian folk dance",
-          performers: "Gauri Diwakar with Mariia Timashova, Mariia Agafonova and Yana",
-          note: "Indian classical dance in dialogue with the Russian folk circle dance: two traditions, rooted in different histories, in one shared circle of movement.",
-          images: [photos.sudarushkaStage, photos.gauriBend],
+          note: "Indian classical dance in dialogue with Sudarushka, the Russian folk circle dance. Two traditions, rooted in different histories, come together in a shared circle of movement, demonstrating how artistic expression can celebrate cultural diversity while revealing a common human language.",
+          leadPhotos: [photos.gauriTwirl, photos.sudarushkaGroup],
+          stage: photos.sudarushkaStage,
           artists: [
             {
               name: "Gauri Diwakar",
               role: "Kathak",
+              billing: "lead",
               bio: "Trained at Kathak Kendra, New Delhi under Pandit Jaikishan Maharaj and Pandit Birju Maharaj, and for many years a lead dancer with Aditi Mangaldas's Drishtikon. She won the Ustad Bismillah Khan Yuva Puraskar (2008), has performed at Sadler's Wells and the Edinburgh Fringe, and teaches at Kathak Kendra.",
               photo: photos.gauriPortrait,
             },
             {
               name: "Mariia Timashova, Mariia Agafonova and Yana",
               role: "Sudarushka, Russian folk dance",
+              billing: "lead",
               bio: "Sudarushka, loosely \"sweetheart\", is a Russian folk dance, here in the spirit of the khorovod, the old Slavic circle dance in which dancers join hands and move in a ring.",
               photo: photos.sudarushkaGroup,
             },
@@ -274,28 +296,33 @@ export const event = {
       evening: "day2",
       label: "Second evening",
       date: "2026-11-26",
-      theme: "Music",
+      theme: "Classical Music",
       blurb:
-        "The meditative side of music, from the strings of the santoor and rabab to the raga of the Banaras Gharana.",
+        "The second evening turns to the meditative dimensions of music, and concludes with a Hindustani classical vocal recital.",
       sessions: [
         {
           id: "santoor-rabab",
           title: "Santoor and rabab",
+          tagline: "The ancient stringed voices of different musical traditions",
           artForm: "Instrumental",
-          performers: "Pandit Abhay Sopori and Pandit Mukesh Sharma, with Rishi Shankar Upadhyay and Durjay Bhowmick",
-          note: "The resonance of the Iranian rabab and the Indian santoor in a dialogue across cultures, celebrating music's capacity to carry memory and identity beyond the boundaries of language.",
-          images: [photos.abhaySantoor, photos.mukeshRabab],
+          note: "The resonance of the Iranian rabab and the Indian santoor creates a dialogue across cultures, celebrating music's capacity to carry memory, emotion and cultural identity beyond the boundaries of language.",
+          leadPhotos: [photos.abhayPortrait],
+          stage: photos.abhaySantoor,
           artists: [
             {
               name: "Pandit Abhay Rustum Sopori",
               role: "Santoor",
+              billing: "lead",
               photo: photos.abhayPortrait,
+              thumb: photos.abhayPortrait,
               bio: "A santoor player, composer and conductor from Kashmir, son and disciple of Pandit Bhajan Sopori and carrier of the Sufiana gharana, a family tradition of over 300 years. One of the youngest recipients of the Ustad Bismillah Khan Yuva Puraskar.",
             },
             {
               name: "Pandit Mukesh Sharma",
               role: "Rabab",
-              photo: photos.mukeshRabab,
+              billing: "guest",
+              photo: photos.mukeshPortrait,
+              thumb: photos.mukeshHead,
               bio: "A Delhi-based sarod virtuoso who also plays the rabab, the older lute from which the sarod descends. He has toured widely and worked with musicians in France and Germany and flamenco artists in Spain.",
             },
             {
@@ -309,14 +336,15 @@ export const event = {
         {
           id: "vocal",
           title: "Hindustani classical vocal",
-          artForm: "Banaras Gharana",
-          performers: "Pandit Ritesh Mishra and Pandit Rajnish Mishra, with Durjay Bhowmick and Sumit Mishra",
-          note: "Two voices, one musical lineage: the raga as a vehicle for emotion, devotion and contemplation, passed from generation to generation.",
-          images: [photos.mishraDuo],
+          tagline: "The festival concludes with the Banaras Gharana",
+          artForm: "Vocal recital",
+          note: "A musical lineage in which the raga becomes a vehicle for emotion, devotion and contemplative experience: two voices, one musical lineage, and a living tradition passed from generation to generation.",
+          leadPhotos: [photos.mishraDuo],
           artists: [
             {
               name: "Pandit Ritesh Mishra and Pandit Rajnish Mishra",
               role: "Vocal duo, Banaras Gharana",
+              billing: "lead",
               photo: photos.mishraDuo,
               bio: "Sons of Padma Bhushan Pandit Rajan Mishra and nephews of Pandit Sajan Mishra, the brothers are the sixth generation of a 400-year Banaras Gharana lineage. Singing together for over three decades, they have performed at the BBC Proms and Lincoln Center and are Top Grade vocalists of All India Radio.",
             },
@@ -336,9 +364,11 @@ export const event = {
     recipient: "Padma Shri Madhavi Mudgal",
     text: "A highlight of the festival: the Ancient Arts Award 2026, honouring Padma Shri Madhavi Mudgal's contribution to Indian classical dance.",
     bio: [
-      "Born in 1951 into the family of Vinay Chandra Maudgalya, founder of Delhi's Gandharva Mahavidyalaya, Madhavi Mudgal studied Kathak and Bharatanatyam before devoting herself to Odissi under gurus including Kelucharan Mohapatra.",
-      "In over five decades as dancer, choreographer and teacher she has taken Odissi around the world and trained generations of dancers, including the festival's director. Her honours include the Padma Shri (1990) and the Sangeet Natak Akademi Award (2000).",
+      "Some journeys begin in childhood and become a lifetime of devotion. Madhavi Mudgal grew up in a family deeply connected with music, art and learning. Her father, a distinguished educationist, encouraged her artistic journey, and Kathak became her first training ground.",
+      "She then turned to Odissi under the legendary Guru Kelucharan Mohapatra, developing a language of dance at once disciplined, lyrical and deeply expressive. Her artistry travelled to prestigious festivals around the world, and as a choreographer she explored new possibilities in group presentations and collaborated closely with musicians, expanding the vocabulary of Odissi while preserving its classical integrity.",
+      "In 1990 she received the Padma Shri, recognising her outstanding contribution to Indian dance. At Gandharva Mahavidyalaya, the institution founded by her father, her journey continues as Guru Madhavi Mudgal, shaping young dancers with the same rigour, sensitivity and commitment that shaped her own life.",
     ],
+    legacy: "A lifetime given to dance, and a legacy passed on through her disciples.",
     portrait: photos.madhavi,
     archiveIntro: "Photographs from her early years on stage, from 1976 to 1984.",
     archive: [
@@ -369,7 +399,7 @@ export const event = {
     },
     {
       q: "Who do I contact with questions?",
-      a: `Call ${org.landline} or ${org.mobile}, or write to ${org.email}.`,
+      a: `Call the project coordinator, ${org.coordinator.name}, on ${org.coordinator.phone}, or the office on ${org.mobile} or ${org.landline}. You can also write to ${org.email}.`,
     },
   ],
 };

@@ -22,6 +22,7 @@ export function Award() {
                 <p key={p.slice(0, 24)}>{p}</p>
               ))}
             </div>
+            <p className="serif mt-7 max-w-xl border-l-2 border-gold pl-5 text-[clamp(1.25rem,1.1rem+0.6vw,1.55rem)] italic leading-snug text-maroon">{a.legacy}</p>
           </Reveal>
           <Reveal develop delay={100} className="mx-auto w-full max-w-[22rem]">
             <div className="arch-frame">

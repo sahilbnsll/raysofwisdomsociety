@@ -117,6 +117,20 @@ export function GateConsole() {
         ))}
       </div>
 
+      <section aria-label="All e-passes" className="card mt-4 flex items-center justify-between gap-4 p-5">
+        <div>
+          <p className="text-sm text-ink-muted">E-passes downloaded so far</p>
+          <p className="display mt-1 text-5xl tabular-nums text-maroon">
+            {stats ? stats.people : "–"}
+            <span className="ml-2 font-sans text-base text-ink-muted">guests</span>
+          </p>
+        </div>
+        <p className="text-right text-sm text-ink-muted">
+          <span className="display block text-3xl tabular-nums text-ink">{stats ? stats.passes : "–"}</span>
+          {stats?.passes === 1 ? "pass" : "passes"}
+        </p>
+      </section>
+
       <section aria-label="Tonight so far" className="card mt-4 p-5">
         <div className="flex items-baseline justify-between gap-3">
           <p className="text-sm text-ink-muted">Inside for {eveningName[evening]}</p>

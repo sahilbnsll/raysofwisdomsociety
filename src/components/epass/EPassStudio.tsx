@@ -7,7 +7,6 @@ import { downloadCalendar } from "@/lib/ics";
 import { Hills } from "@/components/ui/Ornaments";
 import { Reveal } from "@/components/ui/Reveal";
 import { Swap } from "@/components/ui/Swap";
-import { EPassCounter } from "./EPassCounter";
 import { useEPass } from "./EPassProvider";
 import { GateView } from "./GateView";
 
@@ -103,13 +102,13 @@ export function EPassStudio() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: trimmed, guests, days, website: honeypot.current?.value ?? "" }),
       });
-      const data = (await res.json()) as { error?: string; field?: string; id: string; name: string; guests: number; days: Evenings; people: number };
+      const data = (await res.json()) as { error?: string; field?: string; id: string; name: string; guests: number; days: Evenings };
       if (!res.ok) {
         setError({ field: data.field, message: data.error ?? "Something went wrong. Please try again." });
         return;
       }
       const issued: PassData = { id: data.id, name: data.name, guests: data.guests, days: data.days };
-      recordIssued(issued, data.people);
+      recordIssued(issued);
       setCreating(false);
       setSelectedId(issued.id);
       setJustIssued(issued.id);
@@ -171,9 +170,6 @@ export function EPassStudio() {
           <p className="reading mx-auto mt-4 max-w-xl">
             {event.closing} Make your pass here, keep it on your phone and show it at the gate.
           </p>
-          <div className="mt-6 flex justify-center">
-            <EPassCounter />
-          </div>
         </Reveal>
 
 

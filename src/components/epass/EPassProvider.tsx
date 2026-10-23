@@ -1,19 +1,15 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { Evenings } from "@/content/event";
 import type { PassData } from "@/lib/epass/render-pass";
 
 interface EPassContextValue {
-  /** Everyone covered by the passes issued so far (guests, not passes), or null until the first response. */
-  people: number | null;
-  /** True when the count could not be loaded (for example the database is down), so it is hidden, not shown as a blank. */
-  countFailed: boolean;
   /** Passes this browser has made, newest first. */
   passes: PassData[];
   /** The evening a visitor picked elsewhere on the page (e.g. under a day of the programme). */
   preferred: { value: Evenings; at: number } | null;
-  recordIssued: (pass: PassData, people: number) => void;
+  recordIssued: (pass: PassData) => void;
   /** Scrolls to the e-pass section and puts the cursor in the name field, optionally choosing an evening. */
   goToPass: (evening?: Evenings) => void;
   /** The studio registers how to focus its first field. */
@@ -60,39 +56,13 @@ function parsePasses(raw: string | null): PassData[] {
 const NO_PASSES: PassData[] = [];
 
 export function EPassProvider({ children }: { children: React.ReactNode }) {
-  const [people, setPeople] = useState<number | null>(null);
-  const [countFailed, setCountFailed] = useState(false);
   const [preferred, setPreferred] = useState<{ value: Evenings; at: number } | null>(null);
   const raw = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const parsed = useMemo(() => parsePasses(raw), [raw]);
   const passes = parsed.length ? parsed : NO_PASSES;
   const focusRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = () =>
-      fetch("/api/epass", { cache: "no-store" })
-        .then((r) => (r.ok ? r.json() : Promise.reject(new Error("unavailable"))))
-        .then((d: { people: number }) => {
-          if (!cancelled) {
-            setPeople(d.people);
-            setCountFailed(false);
-          }
-        })
-        .catch(() => {
-          if (!cancelled) setCountFailed(true);
-        });
-    load();
-    // Keep the number fresh for people who leave the tab open.
-    const t = setInterval(() => document.visibilityState === "visible" && load(), 30_000);
-    return () => {
-      cancelled = true;
-      clearInterval(t);
-    };
-  }, []);
-
-  const recordIssued = useCallback((p: PassData, total: number) => {
-    setPeople(total);
+  const recordIssued = useCallback((p: PassData) => {
     const next = JSON.stringify([p, ...parsePasses(getSnapshot()).filter((x) => x.id !== p.id)].slice(0, 12));
     memoryRaw = next;
     try {
@@ -116,8 +86,8 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ people, countFailed, passes, preferred, recordIssued, goToPass, registerFocus }),
-    [people, countFailed, passes, preferred, recordIssued, goToPass, registerFocus],
+    () => ({ passes, preferred, recordIssued, goToPass, registerFocus }),
+    [passes, preferred, recordIssued, goToPass, registerFocus],
   );
 
   return <EPassContext.Provider value={value}>{children}</EPassContext.Provider>;

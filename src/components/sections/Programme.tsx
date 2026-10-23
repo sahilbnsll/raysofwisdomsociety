@@ -1,46 +1,132 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { event, type Session } from "@/content/event";
+import { event, type Artist, type Session } from "@/content/event";
 import { fmtDate } from "@/lib/format";
 import { downloadCalendar } from "@/lib/ics";
 import { EPassLink } from "@/components/epass/EPassLink";
+import { Avatar } from "@/components/ui/Avatar";
 import { Frame } from "@/components/ui/Frame";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ArtistSheet } from "./ArtistSheet";
 
-function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
-  const sheet = useRef<HTMLDialogElement>(null);
-  const [first, second] = s.images;
-  const tall = first.h > first.w;
-  const withBios = s.artists.filter((a) => a.bio).length;
+/** The bigger the name, the more of the page it takes: long names step down so they stay on two lines. */
+const nameSize = (name: string) =>
+  name.length > 32
+    ? "text-[clamp(1.7rem,1.3rem+1.6vw,2.5rem)]"
+    : name.length > 20
+      ? "text-[clamp(2.1rem,1.5rem+2.4vw,3.25rem)]"
+      : "text-[clamp(2.5rem,1.7rem+3.2vw,4.25rem)]";
 
+function Leads({ s, flip }: { s: Session; flip: boolean }) {
+  const leads = s.artists.filter((a) => a.billing === "lead");
+  const [first, second] = s.leadPhotos;
   return (
-    <li className="grid items-center gap-8 border-t border-line py-12 md:grid-cols-12 md:gap-14">
-      <Reveal develop className={`md:col-span-6 ${flip ? "md:order-2" : ""}`}>
-        {second ? (
-          <div className="grid grid-cols-[1.35fr_1fr] items-start gap-3">
-            <Frame photo={first} ratio={first.w > first.h ? "4 / 3" : "4 / 5"} sizes="(min-width:768px) 30vw, 56vw" className="shadow-e2" />
-            <Frame photo={second} ratio="4 / 5" sizes="(min-width:768px) 22vw, 40vw" className="mt-12 shadow-e2" />
-          </div>
-        ) : tall ? (
-          <div className="arch-frame mx-auto w-[min(100%,24rem)]">
+    <Reveal develop className={`md:col-span-5 ${flip ? "md:order-2" : ""}`}>
+      {second ? (
+        // Two lead artists (a collaboration): two arches, the second set lower, each named
+        <div className="grid grid-cols-2 items-start gap-3 sm:gap-4">
+          {[first, second].map((photo, i) => (
+            <figure key={photo.src} className={`relative ${i === 1 ? "mt-10" : ""}`}>
+              <div className="arch-frame">
+                <Frame photo={photo} ratio="3 / 4.2" arch sizes="(min-width:768px) 20vw, 44vw" />
+              </div>
+              {leads[i] && (
+                <figcaption className="absolute inset-x-0 -bottom-3.5 flex justify-center">
+                  <span className="serif max-w-[95%] truncate rounded-full bg-paper px-3 py-1 text-[0.85rem] italic leading-none text-ink shadow-e1 ring-1 ring-[color-mix(in_srgb,var(--gold)_45%,transparent)] sm:px-4 sm:py-1.5 sm:text-[0.95rem]">
+                    {i === 0 ? leads[i].name : "Sudarushka"}
+                  </span>
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      ) : (
+        // One lead artist: a tall arch, with a smaller picture of the performance resting on its corner
+        <div className="relative mx-auto w-[min(100%,24rem)] pb-8">
+          <div className="arch-frame">
             <Frame photo={first} ratio="4 / 5" arch sizes="(min-width:768px) 26vw, 80vw" />
           </div>
-        ) : (
-          <Frame photo={first} ratio="3 / 2" sizes="(min-width:768px) 48vw, 100vw" className="shadow-e2" />
-        )}
-      </Reveal>
+          {s.stage && (
+            <div className="absolute -bottom-0 -right-2 w-[44%] rotate-[2deg] rounded-2xl bg-paper p-1.5 shadow-e2 ring-1 ring-line sm:-right-6">
+              <Frame photo={s.stage} ratio="4 / 3" sizes="12rem" className="!rounded-xl" />
+            </div>
+          )}
+        </div>
+      )}
+    </Reveal>
+  );
+}
 
-      <Reveal delay={100} className="md:col-span-6">
-        <p className="serif italic text-olive">{s.time ? `${s.time} · ${s.artForm}` : s.artForm}</p>
-        <h4 className="display mt-2 text-[clamp(2.1rem,1.7rem+1.4vw,3rem)] leading-[1.04]">{s.title}</h4>
-        <p className="mt-4 text-lg font-medium leading-snug">{s.performers}</p>
-        <p className="reading mt-3 max-w-lg">{s.note}</p>
-        <button type="button" onClick={() => sheet.current?.showModal()} className="link-arrow mt-4">
+function Chip({ a }: { a: Artist }) {
+  return (
+    <li className="flex items-center gap-3">
+      <Avatar artist={a} />
+      <span className="min-w-0 leading-tight">
+        <span className="block font-semibold">{a.name}</span>
+        <span className="serif text-[0.95rem] italic text-ink-muted">{a.role}</span>
+      </span>
+    </li>
+  );
+}
+
+function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
+  const sheet = useRef<HTMLDialogElement>(null);
+  const leads = s.artists.filter((a) => a.billing === "lead");
+  const guests = s.artists.filter((a) => a.billing === "guest");
+  const others = s.artists.filter((a) => !a.billing);
+
+  return (
+    <li className="grid items-center gap-10 border-t border-line py-14 md:grid-cols-12 md:gap-12 lg:gap-16">
+      <Leads s={s} flip={flip} />
+
+      <Reveal delay={100} className="md:col-span-7">
+        <p className="serif italic text-olive">{s.tagline ?? s.artForm}</p>
+        <h4 className="serif mt-1.5 text-[clamp(1.15rem,1.05rem+0.5vw,1.45rem)] font-medium leading-snug text-ink-muted">
+          {s.title}
+          {s.tagline && <span className="font-normal"> · {s.artForm}</span>}
+        </h4>
+
+        {/* The artists are the headline of every performance */}
+        <div className="mt-4 space-y-3">
+          {leads.map((a) => (
+            <div key={a.name}>
+              <p className={`display ${nameSize(a.name)} leading-[1.02]`}>{a.name}</p>
+              <p className="serif mt-1 text-lg italic text-maroon">{a.role}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="reading mt-5 max-w-xl">{s.note}</p>
+
+        {(others.length > 0 || guests.length > 0) && (
+          <div className="mt-6 border-t border-line pt-5">
+            {others.length > 0 && (
+              <>
+                <p className="serif text-sm italic text-ink-muted">{leads.length ? "With" : "Performing"}</p>
+                <ul className="mt-3 flex flex-wrap gap-x-7 gap-y-3.5">
+                  {others.map((a) => (
+                    <Chip key={a.name} a={a} />
+                  ))}
+                </ul>
+              </>
+            )}
+            {guests.length > 0 && (
+              <div className={others.length > 0 ? "mt-5" : ""}>
+                <p className="serif text-sm italic text-ink-muted">Guest appearance</p>
+                <ul className="mt-3 flex flex-wrap gap-x-7 gap-y-3.5">
+                  {guests.map((a) => (
+                    <Chip key={a.name} a={a} />
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        <button type="button" onClick={() => sheet.current?.showModal()} className="link-arrow mt-6">
           {s.artists.length === 1 ? "Meet the artist" : `Meet the ${s.artists.length} artists`}
-          {withBios > 0 && <span className="sr-only">, with biographies</span>}
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -54,7 +140,17 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
 export function Programme() {
   const [active, setActive] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const panel = useRef<HTMLDivElement>(null);
   const day = event.days[active];
+
+  function choose(i: number) {
+    setActive(i);
+    // The switch stays on screen as you scroll, so after changing evening bring the new list to the top.
+    requestAnimationFrame(() => {
+      const top = panel.current?.getBoundingClientRect().top ?? 0;
+      if (top < 0) panel.current?.scrollIntoView({ block: "start" });
+    });
+  }
 
   // Arrow keys move between day tabs, per the WAI-ARIA tabs pattern.
   function onKeyDown(e: React.KeyboardEvent, i: number) {
@@ -62,7 +158,7 @@ export function Programme() {
     const next = e.key === "ArrowRight" ? (i === last ? 0 : i + 1) : e.key === "ArrowLeft" ? (i === 0 ? last : i - 1) : e.key === "Home" ? 0 : e.key === "End" ? last : null;
     if (next === null) return;
     e.preventDefault();
-    setActive(next);
+    choose(next);
     tabs.current[next]?.focus();
   }
 
@@ -71,40 +167,42 @@ export function Programme() {
   return (
     <section id="programme" className="section border-t border-line">
       <div className="wrap">
-        <SectionHeader
-          title="Two evenings of dance and music"
-          intro={event.programmeIntro}
-          action={
-            <div role="tablist" aria-label="Festival evenings" className="relative grid w-full grid-cols-2 rounded-full bg-paper p-1 shadow-e1 ring-1 ring-line lg:w-[22rem]">
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-ink shadow-e1 transition-transform duration-[var(--d3)] ease-[var(--ease-move)]"
-                style={{ transform: `translateX(${active * 100}%)` }}
-              />
-              {event.days.map((d, i) => (
-                <button
-                  key={d.id}
-                  ref={(el) => {
-                    tabs.current[i] = el;
-                  }}
-                  role="tab"
-                  id={`tab-${d.id}`}
-                  aria-selected={i === active}
-                  aria-controls={`panel-${d.id}`}
-                  tabIndex={i === active ? 0 : -1}
-                  onClick={() => setActive(i)}
-                  onKeyDown={(e) => onKeyDown(e, i)}
-                  className={`relative z-10 rounded-full px-4 py-2.5 text-center transition-colors duration-[var(--d2)] ${i === active ? "text-paper" : "text-ink-muted hover:text-ink"}`}
-                >
-                  <span className="block text-[0.95rem] font-semibold">{d.theme}</span>
-                  <span className="block text-xs opacity-80">{fmtDate(d.date, { weekday: "short", day: "numeric", month: "short" })}</span>
-                </button>
-              ))}
-            </div>
-          }
-        />
+        <SectionHeader title="Two evenings of dance and music" intro={event.programmeIntro} />
 
-        <div role="tabpanel" id={`panel-${day.id}`} aria-labelledby={`tab-${day.id}`} tabIndex={0} className="mt-14 outline-none">
+        {/* The evening switch follows you down the page, so you never scroll back up to change day */}
+        <div className="sticky top-[calc(var(--header-h)+0.5rem)] z-30 mt-10">
+          <div role="tablist" aria-label="Festival evenings" className="relative mx-auto grid max-w-2xl grid-cols-2 rounded-2xl bg-paper/95 p-1.5 shadow-e2 ring-1 ring-line backdrop-blur">
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-1.5 left-1.5 w-[calc(50%-0.375rem)] rounded-xl bg-ink shadow-e1 transition-transform duration-[var(--d3)] ease-[var(--ease-move)]"
+              style={{ transform: `translateX(${active * 100}%)` }}
+            />
+            {event.days.map((d, i) => (
+              <button
+                key={d.id}
+                ref={(el) => {
+                  tabs.current[i] = el;
+                }}
+                role="tab"
+                id={`tab-${d.id}`}
+                aria-selected={i === active}
+                aria-controls={`panel-${d.id}`}
+                tabIndex={i === active ? 0 : -1}
+                onClick={() => choose(i)}
+                onKeyDown={(e) => onKeyDown(e, i)}
+                className={`relative z-10 rounded-xl px-3 py-2.5 text-center transition-colors duration-[var(--d2)] sm:px-5 ${i === active ? "text-paper" : "text-ink hover:bg-ink/[0.04]"}`}
+              >
+                <span className="display block text-[1.2rem] leading-tight sm:text-[1.4rem]">
+                  Day {i + 1}
+                  <span className="font-sans text-[0.8rem] font-semibold opacity-80 sm:text-sm"> · {fmtDate(d.date, { day: "numeric", month: "short" })}</span>
+                </span>
+                <span className={`serif block text-[0.85rem] italic leading-tight sm:text-[0.95rem] ${i === active ? "opacity-75" : "text-ink-muted"}`}>{d.theme}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div ref={panel} role="tabpanel" id={`panel-${day.id}`} aria-labelledby={`tab-${day.id}`} tabIndex={0} className="mt-12 outline-none">
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6">
             <div className="max-w-2xl">
               <h3 className="display text-4xl">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { EPassCounter } from "@/components/epass/EPassCounter";
+import { event } from "@/content/event";
 import { EPassLink } from "@/components/epass/EPassLink";
 
 /** Phone-only bar that keeps the main action in reach once the hero has scrolled away. */
@@ -26,7 +26,7 @@ export function StickyCta() {
       }`}
       inert={!show}
     >
-      <EPassCounter short />
+      <span className="serif text-[0.95rem] italic text-ink-muted">{event.shortTitle} · 25 and 26 Nov</span>
       <EPassLink className="btn btn-primary !min-h-11 !px-5 text-sm whitespace-nowrap" />
     </div>
   );

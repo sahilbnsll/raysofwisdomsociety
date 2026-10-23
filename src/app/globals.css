@@ -468,3 +468,42 @@ html:has(dialog[open]) {
     display: none !important;
   }
 }
+
+/* The festival emblem behind the hero: turns very slowly and breathes, faded into the paper. */
+.emblem-turn {
+  animation: emblem-turn 220s linear infinite;
+}
+.emblem-breathe {
+  opacity: 0.06;
+  animation: emblem-breathe 14s ease-in-out infinite;
+}
+@keyframes emblem-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes emblem-breathe {
+  0%,
+  100% {
+    opacity: 0.045;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.09;
+    transform: scale(1.035);
+  }
+}
+
+/* Backdrop flowers sway a little on their own between scroll movements. */
+.floral-sway {
+  transform-origin: 50% 60%;
+  animation: floral-sway 11s ease-in-out infinite alternate;
+}
+@keyframes floral-sway {
+  from {
+    transform: rotate(-5deg) scale(0.98);
+  }
+  to {
+    transform: rotate(5deg) scale(1.03);
+  }
+}

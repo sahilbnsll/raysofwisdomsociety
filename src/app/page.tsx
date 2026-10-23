@@ -6,6 +6,7 @@ import { Award } from "@/components/sections/Award";
 import { Footer } from "@/components/sections/Footer";
 import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
+import { Florals } from "@/components/ui/Florals";
 import { Partners } from "@/components/sections/Partners";
 import { Programme } from "@/components/sections/Programme";
 import { StickyCta } from "@/components/sections/StickyCta";
@@ -19,6 +20,7 @@ import { Visit } from "@/components/sections/Visit";
 export default function EventPage() {
   return (
     <EPassProvider>
+      <Florals />
       <Header />
       <EventJsonLd />
       <main id="main">
