@@ -28,6 +28,7 @@ export function Frame({
         width={photo.w}
         height={photo.h}
         sizes={sizes}
+        quality={85}
         priority={priority}
         className="absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: photo.position ?? "50% 50%" }}

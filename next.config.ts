@@ -13,7 +13,8 @@ const security = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  images: { formats: ["image/avif", "image/webp"] },
+  // The default quality (75) visibly softens the festival photographs, so they use 85 and the hero 90.
+  images: { formats: ["image/avif", "image/webp"], qualities: [75, 85, 90] },
   async headers() {
     return [
       { source: "/:path*", headers: security },

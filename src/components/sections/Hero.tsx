@@ -86,8 +86,9 @@ export function Hero() {
           <Image
             src="/images/artists-collage.jpg"
             alt="The festival's artists together: classical dancers and musicians in colourful costume, from the festival poster"
-            width={1080}
-            height={618}
+            width={2160}
+            height={1236}
+            quality={90}
             sizes="(min-width:1184px) 1184px, 100vw"
             priority
             className="collage-drift h-full w-full object-cover"
