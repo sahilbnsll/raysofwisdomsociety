@@ -34,10 +34,10 @@ export const ArtistSheet = forwardRef<HTMLDialogElement, { session: Session }>(f
 
       <ul className="divide-y divide-line px-6 sm:px-8">
         {session.artists.map((a) => (
-          <li key={a.name} className={`grid gap-5 py-6 ${a.photo ? "grid-cols-[5.5rem_1fr] sm:grid-cols-[7rem_1fr]" : ""}`}>
+          <li key={a.name} className={`grid gap-5 py-6 ${a.photo ? "grid-cols-[6.5rem_1fr] sm:grid-cols-[9rem_1fr]" : ""}`}>
             {a.photo && (
               <span className="relative block aspect-[4/5] w-full overflow-hidden rounded-[50%_50%_0.75rem_0.75rem/32%_32%_0.75rem_0.75rem] bg-sage-deep ring-1 ring-line">
-                <Image src={a.photo.src} alt={a.photo.alt} fill sizes="112px" className="object-cover" style={{ objectPosition: a.photo.position ?? "50% 25%" }} />
+                <Image src={a.photo.src} alt={a.photo.alt} fill sizes="(min-width:640px) 144px, 104px" quality={90} className="object-cover" style={{ objectPosition: a.photo.position ?? "50% 25%" }} />
               </span>
             )}
             <div className="min-w-0 self-center">

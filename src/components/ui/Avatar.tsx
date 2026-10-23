@@ -7,7 +7,7 @@ export function Avatar({ artist, size = "size-12" }: { artist: Artist; size?: st
   if (!photo) return null;
   return (
     <span className={`relative block ${size} shrink-0 overflow-hidden rounded-full bg-sage-deep ring-2 ring-paper`}>
-      <Image src={photo.src} alt="" fill sizes="64px" className="object-cover" style={{ objectPosition: photo.position ?? "50% 30%" }} />
+      <Image src={photo.src} alt="" fill sizes="96px" quality={90} className="object-cover" style={{ objectPosition: photo.position ?? "50% 30%" }} />
     </span>
   );
 }
