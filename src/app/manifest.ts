@@ -14,6 +14,8 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#f6efe0",
     lang: "en-IN",
     categories: ["events", "entertainment"],
+    // Long-press the installed icon for a shortcut straight to the pass
+    shortcuts: [{ name: "Get your e-pass", short_name: "E-pass", url: "/#e-pass", icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }] }],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

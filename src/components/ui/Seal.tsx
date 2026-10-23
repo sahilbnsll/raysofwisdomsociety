@@ -43,7 +43,7 @@ export function Seal({
         <circle cx="20" cy="100" r="2.6" />
         <circle cx="180" cy="100" r="2.6" />
       </g>
-      <image href={brand.logo.src} x="50" y="50" width="100" height="100" />
+      <image href={brand.logoSmall.src} x="50" y="50" width="100" height="100" />
     </svg>
   );
 }

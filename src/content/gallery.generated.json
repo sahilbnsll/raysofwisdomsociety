@@ -1,0 +1,186 @@
+{
+  "award": [
+    {
+      "src": "/images/gallery/award/01-as-a-child.jpg",
+      "w": 1158,
+      "h": 1752,
+      "caption": "Already in costume, already holding the pose."
+    },
+    {
+      "src": "/images/gallery/award/02-a-young-dancer.jpg",
+      "w": 778,
+      "h": 1030,
+      "caption": "Another early photograph: young, serious, in position."
+    },
+    {
+      "src": "/images/gallery/award/03-with-dr-radhakrishnan.jpg",
+      "w": 1703,
+      "h": 2200,
+      "caption": "With Dr. Radhakrishnan, then Vice President of India."
+    },
+    {
+      "src": "/images/gallery/award/04-1972.jpg",
+      "w": 1348,
+      "h": 1000,
+      "caption": "1972."
+    },
+    {
+      "src": "/images/gallery/award/05-1972-on-stage.jpg",
+      "w": 1650,
+      "h": 2200,
+      "caption": "1972, on stage."
+    },
+    {
+      "src": "/images/gallery/award/06-early-performance-with-musicians.jpg",
+      "w": 1648,
+      "h": 1163,
+      "caption": "An early performance, the musicians seated behind her."
+    },
+    {
+      "src": "/images/gallery/award/07-1979.jpg",
+      "w": 1468,
+      "h": 2200,
+      "caption": "1979, palms joined above her head."
+    },
+    {
+      "src": "/images/gallery/award/08-1981-in-profile.jpg",
+      "w": 1010,
+      "h": 1495,
+      "caption": "1981, in profile, her hands close to her face."
+    },
+    {
+      "src": "/images/gallery/award/09-with-pandit-durga-lal.jpg",
+      "w": 1400,
+      "h": 1724,
+      "caption": "In duet with Pandit Durga Lal."
+    },
+    {
+      "src": "/images/gallery/award/10-in-green-and-purple.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Bowing low in green and purple."
+    },
+    {
+      "src": "/images/gallery/award/11-in-white-and-red.jpg",
+      "w": 1600,
+      "h": 1150,
+      "caption": "Both hands at her ears, in white and red."
+    },
+    {
+      "src": "/images/gallery/award/12-a-profile-in-red.jpg",
+      "w": 1600,
+      "h": 1067,
+      "caption": "In red, in profile, fingers shaped for the next gesture."
+    }
+  ],
+  "kuchipudi": [
+    {
+      "src": "/images/gallery/kuchipudi/01-a-close-portrait.jpg",
+      "w": 1761,
+      "h": 2200,
+      "caption": "Hands open, eyes steady, and the story has already begun."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/02-in-green-and-purple.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Green silk, violet light, one quiet pause between two steps."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/03-in-orange-on-stage.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "One hand lifted, the rest of the stage left dark so you only watch her."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/04-in-blue-and-silver.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Her fingers point into the light and the whole frame follows them."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/05-mid-leap-in-blue.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Mid-leap, the blue skirt still catching up with her."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/06-leaning-in-orange.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "A slow lean in orange, held a moment longer than you expect."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/07-arms-wide.jpg",
+      "w": 1633,
+      "h": 2200,
+      "caption": "Arms stretched wide over a blue-lit floor."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/08-beside-the-lamp.jpg",
+      "w": 1760,
+      "h": 2200,
+      "caption": "Down on one knee beside the lamp and the garlanded deity."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/09-in-red.jpg",
+      "w": 1724,
+      "h": 2200,
+      "caption": "The red skirt opens like a fan around her."
+    },
+    {
+      "src": "/images/gallery/kuchipudi/10-red-arms-spread.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Red light, red silk, arms flung wide."
+    }
+  ],
+  "mantra-bhasha": [
+    {
+      "src": "/images/gallery/mantra-bhasha/01-standing-in-red.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Hands drawn in, weight settled: the quiet before the next movement."
+    },
+    {
+      "src": "/images/gallery/mantra-bhasha/02-copper-and-red.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Copper and red, one foot lifted, every line deliberate."
+    },
+    {
+      "src": "/images/gallery/mantra-bhasha/03-a-close-portrait.jpg",
+      "w": 1467,
+      "h": 2200,
+      "caption": "Dark-lined eyes, fingers shaped into a mudra, looking straight at you."
+    },
+    {
+      "src": "/images/gallery/mantra-bhasha/04-two-dancers-in-step.jpg",
+      "w": 2200,
+      "h": 1467,
+      "caption": "Green beside blue, two dancers moving to the same beat."
+    }
+  ],
+  "santoor-rabab": [
+    {
+      "src": "/images/gallery/santoor-rabab/01-at-the-santoor.jpg",
+      "w": 1362,
+      "h": 1057,
+      "caption": "Santoor on his lap, a half smile, in no hurry to begin."
+    },
+    {
+      "src": "/images/gallery/santoor-rabab/02-with-the-rabab.jpg",
+      "w": 960,
+      "h": 1280,
+      "caption": "Pandit Mukesh Sharma at home with the rabab, mid-thought."
+    }
+  ],
+  "vocal": [
+    {
+      "src": "/images/gallery/vocal/01-in-white-with-stoles.jpg",
+      "w": 1736,
+      "h": 2200,
+      "caption": "In white with printed stoles: one seated with a painted string instrument, the other standing close behind."
+    }
+  ]
+}

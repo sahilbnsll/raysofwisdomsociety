@@ -7,6 +7,8 @@ import { downloadCalendar } from "@/lib/ics";
 import { EPassLink } from "@/components/epass/EPassLink";
 import { Avatar } from "@/components/ui/Avatar";
 import { Frame } from "@/components/ui/Frame";
+import { GalleryViewer } from "@/components/ui/GalleryViewer";
+import { sessionPhotos } from "@/lib/gallery";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ArtistSheet } from "./ArtistSheet";
@@ -19,39 +21,37 @@ const nameSize = (name: string) =>
       ? "text-[clamp(2.1rem,1.5rem+2.4vw,3.25rem)]"
       : "text-[clamp(2.5rem,1.7rem+3.2vw,4.25rem)]";
 
-function Leads({ s, flip }: { s: Session; flip: boolean }) {
-  const leads = s.artists.filter((a) => a.billing === "lead");
+function Leads({ s, flip, extras, onOpen }: { s: Session; flip: boolean; extras: number; onOpen: (src: string, from: Element) => void }) {
   const [first, second] = s.leadPhotos;
   return (
     <Reveal develop className={`md:col-span-5 ${flip ? "md:order-2" : ""}`}>
       {second ? (
-        // Two lead artists (a collaboration): two arches, the second set lower, each named
+        // Two lead artists (a collaboration): two arches, the second set lower
         <div className="grid grid-cols-2 items-start gap-3 sm:gap-4">
           {[first, second].map((photo, i) => (
             <figure key={photo.src} className={`relative ${i === 1 ? "mt-10" : ""}`}>
-              <div className="arch-frame">
+              <button type="button" onClick={(e) => onOpen(photo.src, e.currentTarget)} aria-label={`Enlarge photograph: ${photo.alt}`} className="arch-frame block w-full cursor-zoom-in">
                 <Frame photo={photo} ratio="3 / 4.2" arch sizes="(min-width:768px) 20vw, 44vw" />
-              </div>
-              {leads[i] && (
-                <figcaption className="absolute inset-x-0 -bottom-3.5 flex justify-center">
-                  <span className="serif max-w-[95%] truncate rounded-full bg-paper px-3 py-1 text-[0.85rem] italic leading-none text-ink shadow-e1 ring-1 ring-[color-mix(in_srgb,var(--gold)_45%,transparent)] sm:px-4 sm:py-1.5 sm:text-[0.95rem]">
-                    {i === 0 ? leads[i].name : "Sudarushka"}
-                  </span>
-                </figcaption>
-              )}
+              </button>
             </figure>
           ))}
         </div>
       ) : (
         // One lead artist: a tall arch, with a smaller picture of the performance resting on its corner
         <div className="relative mx-auto w-[min(100%,24rem)] pb-8">
-          <div className="arch-frame">
+          <button type="button" onClick={(e) => onOpen(first.src, e.currentTarget)} aria-label={`Enlarge photograph: ${first.alt}`} className="arch-frame block w-full cursor-zoom-in">
             <Frame photo={first} ratio="4 / 5" arch sizes="(min-width:768px) 26vw, 80vw" />
-          </div>
+          </button>
           {s.stage && (
-            <div className="absolute -bottom-0 -right-2 w-[44%] rotate-[2deg] rounded-2xl bg-paper p-1.5 shadow-e2 ring-1 ring-line sm:-right-6">
+            <button
+              type="button"
+              onClick={(e) => onOpen(s.stage!.src, e.currentTarget)}
+              aria-label={extras > 0 ? `Open ${extras + 1} more photographs` : `Enlarge photograph: ${s.stage.alt}`}
+              className="absolute -bottom-0 -right-2 block w-[44%] rotate-[2deg] cursor-zoom-in rounded-2xl bg-paper p-1.5 text-left shadow-e2 ring-1 ring-line transition-transform duration-[var(--d2)] hover:rotate-0 sm:-right-6"
+            >
               <Frame photo={s.stage} ratio="4 / 3" sizes="12rem" className="!rounded-xl" />
-            </div>
+              {extras > 0 && <span className="absolute left-3 top-3 rounded-full bg-ink/85 px-2 py-0.5 text-[0.72rem] font-semibold text-paper">+{extras}</span>}
+            </button>
           )}
         </div>
       )}
@@ -73,6 +73,11 @@ function Chip({ a }: { a: Artist }) {
 
 function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
   const sheet = useRef<HTMLDialogElement>(null);
+  // The sheet's contents (portraits, bios) are built the first time it is opened
+  const [sheetBuilt, setSheetBuilt] = useState(false);
+  const { all, extras } = sessionPhotos(s);
+  const [view, setView] = useState<{ i: number; origin: DOMRect | null } | null>(null);
+  const openAt = (src: string, from: Element) => setView({ i: Math.max(0, all.findIndex((p) => p.src === src)), origin: from.getBoundingClientRect() });
   const leads = s.artists.filter((a) => a.billing === "lead");
   const guests = s.artists.filter((a) => a.billing === "guest");
   const others = s.artists.filter((a) => !a.billing);
@@ -90,14 +95,14 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
 
   return (
     <li className="grid items-center gap-10 border-t border-line py-14 md:grid-cols-12 md:gap-12 lg:gap-16">
-      <Leads s={s} flip={flip} />
+      <Leads s={s} flip={flip} extras={extras} onOpen={openAt} />
 
       <Reveal delay={100} className="md:col-span-7">
         <p className="serif italic text-olive">{s.tagline ?? s.artForm}</p>
         {!sameName && (
           <h4 className="serif mt-1.5 text-[clamp(1.15rem,1.05rem+0.5vw,1.45rem)] font-medium leading-snug text-ink-muted">
             {s.title}
-            {s.tagline && <span className="font-normal"> · {s.artForm}</span>}
+            {s.tagline && !s.hideArtForm && <span className="font-normal"> · {s.artForm}</span>}
           </h4>
         )}
 
@@ -106,7 +111,10 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
           {leads.map((a) => (
             <div key={a.name}>
               <p className={`display ${nameSize(a.name)} leading-[1.02]`}>{a.name}</p>
-              {newInRole(a.role) && <p className="serif mt-1 text-lg italic text-maroon first-letter:uppercase">{newInRole(a.role)}</p>}
+              {/* With two lead artists each name keeps its own dance underneath; with one, only what is new */}
+              {(leads.length > 1 ? a.role : newInRole(a.role)) && (
+                <p className="serif mt-1 text-lg italic text-maroon first-letter:uppercase">{leads.length > 1 ? a.role : newInRole(a.role)}</p>
+              )}
             </div>
           ))}
         </div>
@@ -138,14 +146,39 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
           </div>
         )}
 
-        <button type="button" onClick={() => sheet.current?.showModal()} className="link-arrow mt-6">
-          {s.artists.length === 1 ? "Meet the artist" : `Meet the ${s.artists.length} artists`}
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+        <div className="mt-6 flex flex-wrap items-center gap-x-7">
+          <button
+            type="button"
+            onClick={() => {
+              setSheetBuilt(true);
+              sheet.current?.showModal();
+            }}
+            className="link-arrow"
+          >
+            {s.artists.length === 1 ? "Meet the artist" : `Meet the ${s.artists.length} artists`}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          {extras > 0 && (
+            <button type="button" onClick={(e) => setView({ i: 0, origin: e.currentTarget.getBoundingClientRect() })} className="link-arrow">
+              Photographs · {all.length}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+        </div>
       </Reveal>
-      <ArtistSheet ref={sheet} session={s} />
+      <ArtistSheet ref={sheet} session={s} built={sheetBuilt} />
+      <GalleryViewer
+        photos={view ? all : null}
+        index={view?.i ?? 0}
+        origin={view?.origin ?? null}
+        title={leads.length === 1 && sameName ? `${leads[0].name} · ${s.title}` : s.title}
+        onIndexChange={(i) => setView((v) => (v ? { ...v, i } : v))}
+        onClose={() => setView(null)}
+      />
     </li>
   );
 }

@@ -15,6 +15,8 @@ export interface Photo {
   w: number;
   h: number;
   alt: string;
+  /** A line shown under the photograph in the gallery viewer (falls back to the alt text). */
+  caption?: string;
   /** CSS object-position for crops, e.g. "50% 20%" keeps faces in frame. */
   position?: string;
   credit?: string;
@@ -29,7 +31,8 @@ const art = (file: string, w: number, h: number, alt: string, extra: Partial<Pho
 });
 
 export const photos = {
-  mantraTemple: art("mantra-temple", 2200, 1467, "Two Odissi dancers seated in a carved stone temple doorway", { position: "50% 60%" }),
+  mantraTemple: art("mantra-temple", 2200, 1467, "Princess Panigrahi and Priyanka Das in Odissi costume, seated in a carved stone temple doorway", { position: "50% 60%" }),
+  mantraPairHead: art("mantra-pair-head", 400, 400, "Princess Panigrahi and Priyanka Das, in Odissi costume", { position: "50% 40%" }),
   mantraDuo: art("mantra-duo", 2200, 1467, "Two Odissi dancers in green and blue costumes in a playful duet on a dark stage", { position: "45% 50%" }),
   reelaPortrait: art("reela-portrait", 1201, 1800, "Reela Hota in red silk and silver jewellery, hands raised in an expressive mudra", { position: "50% 22%" }),
   reelaSeated: art("reela-seated", 1201, 1800, "Reela Hota seated in a namaste pose in a red and maroon Odissi costume", { position: "50% 38%" }),
@@ -57,6 +60,38 @@ export const photos = {
   madhavi: art("madhavi-color-a", 1333, 1800, "Madhavi Mudgal in a red Odissi costume with silver jewellery, mid-gesture", { credit: "Ajay Lal", position: "50% 25%" }),
 };
 
+/**
+ * What a visitor reads under a photograph in the viewer. The alt text above stays a plain description for
+ * screen readers; these are written to sit beside the dancers and musicians: what you actually see, said simply.
+ */
+const captions: Partial<Record<keyof typeof photos, string>> = {
+  mantraTemple: "Princess Panigrahi and Priyanka Das in an old stone doorway, in plum and marigold.",
+  mantraDuo: "One leans in, the other reaches back.",
+  reelaPortrait: "Reela Hota, hands raised in a mudra.",
+  reelaSeated: "Reela Hota, seated, palms joined in namaste.",
+  reelaPoseB: "The tribhangi, Odissi's three bends: head, torso and hips, each leaning its own way.",
+  joeMathew: "Leaning back, one arm reaching up, his eyes following it.",
+  joeMathewB: "Arms spread wide, feet crossed, holding the balance.",
+  arupa: "Balanced on one leg, her skirt fanned out around her.",
+  arupaSeated: "Arupa Lahiri kneeling in abhinaya, the story told in her face and hands.",
+  amritaRed: "Red silk, one arm high above her head.",
+  amritaLeap: "Arm to the sky, mid-leap.",
+  amritaRays: "Lit from behind in red, as if she is stepping out of the light.",
+  amritaPortrait: "Amrita Lahiri in cream and blue, pointing into the distance.",
+  gauriTwirl: "Mid-twirl, the purple blurring into the dark.",
+  gauriBend: "Leaning far back, arms wide, trusting the spin.",
+  gauriPortrait: "Gauri Diwakar, hands lifted, looking off to one side.",
+  sudarushkaStage: "Blue sarafans, shawls held wide, a circle about to form.",
+  sudarushkaGroup: "Three dancers in blue and white, close together among the trees.",
+  abhaySantoor: "Mallets hovering over the strings, a breath before the first note.",
+  abhayPortrait: "Hands poised over the strings.",
+  mukeshRabab: "Pandit Mukesh Sharma on stage, the rabab resting against him.",
+  mukeshPortrait: "Pandit Mukesh Sharma with the rabab, in cream and blue.",
+  mishraDuo: "Brothers in brown silk, seated close, just as they sing.",
+  madhavi: "Madhavi Mudgal in red, mid-gesture.",
+};
+for (const [key, caption] of Object.entries(captions)) photos[key as keyof typeof photos].caption = caption;
+
 export const org = {
   name: "Rays of Wisdom Society",
   short: "RWS",
@@ -80,6 +115,10 @@ export interface Logo {
 
 export const brand = {
   logo: { src: "/images/brand/iaaf-logo.png", w: 512, h: 513, alt: "Ancient Arts festival emblem: a dancer in silhouette inside a twelve-petal lotus" },
+  /** A 192 px copy of the emblem for the small festival seals (the full one is 512 px). */
+  logoSmall: { src: "/images/brand/iaaf-logo-sm.webp", w: 192, h: 192 },
+  /** The emblem pre-toned to one warm colour for the slowly turning watermark behind the hero title. */
+  emblem: { src: "/images/brand/emblem-soft.webp", w: 640, h: 641 },
   rays: { src: "/images/brand/rays-logo.png", w: 360, h: 317, alt: "Rays of Wisdom Society logo: a tree beneath a rising sun" },
 };
 
@@ -107,6 +146,8 @@ export interface Artist {
   /** "lead" artists are the faces of a performance; "guest" artists appear briefly and are kept quieter. */
   billing?: "lead" | "guest";
   bio?: string;
+  /** What we know from the programme, shown when there is no bio yet. Replace it with a bio once the artist sends one. */
+  details?: string;
   /** Portrait for the bio sheet; artists without a photograph get a monogram. */
   photo?: Photo;
   /** Small head-and-shoulders picture for the round portraits under a performance. */
@@ -120,12 +161,20 @@ export interface Session {
   /** One line from the client's text that sets the scene, shown above the title. */
   tagline?: string;
   artForm: string;
+  /** Leave the art form out of the title line and the artist sheet (when the title already says it). */
+  hideArtForm?: boolean;
   /** The client's own description of the performance. */
   note: string;
   /** Large photographs of the lead artists, one or two. */
   leadPhotos: Photo[];
   /** An optional smaller picture of the performance itself. */
   stage?: Photo;
+  /**
+   * More photographs for the gallery viewer. They never appear on the page itself, so the page stays
+   * calm: visitors open them from the "Photographs" link. Photographs dropped into the gallery folder
+   * (see README, "Adding photographs") are added automatically; list one here only to reuse a picture.
+   */
+  gallery?: Photo[];
   artists: Artist[];
 }
 
@@ -190,15 +239,17 @@ export const event = {
   ],
   /** Meta description: one sentence, under about 160 characters. */
   seoDescription:
-    "Two evenings of Indian classical dance and music at Kamani Auditorium, New Delhi, 25 and 26 November 2026. Get your e-pass.",
+    "Two evenings of classical and folk dance and classical music at Kamani Auditorium, New Delhi, 25 and 26 November 2026. Get your e-pass.",
   intro: "Art has always been more than a performance.",
+  // The client's own words, as in the script they sent (22 Oct 2026)
   about: [
-    "Across civilisations, ancient arts have offered a way to understand ourselves, connect with others and feel the deeper unity that binds humanity.",
-    "Since 2010, the festival has highlighted two things: how ancient arts support our well-being, and the unifying power of the aesthetic experience.",
-    "In a world of stress, conflict and division, these traditions remind us of our shared humanity. When we experience each other's traditions, we recognise what connects us rather than what divides us.",
+    "Across civilisations, ancient arts have offered a way to understand ourselves, connect with others, and experience the deeper unity that binds humanity.",
+    "Since its inception in 2010, the International Ancient Arts Festival has sought to highlight two essential dimensions of ancient arts: their relevance to our well-being and the unifying power of the aesthetic experience.",
+    "In a world marked by stress, conflict and growing divisions, these traditions remind us of our shared humanity and our connection to a universal consciousness and energy. They invite us to look beyond geography, language and culture, recognising that understanding one another is an essential step towards a more peaceful society. When we experience each other's traditions, we begin to recognise what connects us rather than what divides us.",
+    "In this spirit, the 9th International Ancient Arts Festival 2026, curated and directed by Reela Hota, brings together India's rich classical traditions and international artistic expressions through an exciting programme of dance and music.",
   ],
   closing:
-    "Two evenings of classical brilliance, cross-cultural collaboration and the timeless wisdom of ancient arts.",
+    "Join us for two evenings of classical brilliance, cross-cultural collaboration and the timeless wisdom of ancient arts.",
   programmeIntro:
     "Across these two evenings, dance becomes prayer, movement becomes a shared language, instrumental music opens a dialogue between cultures, and classical singing carries forward the wisdom of an ancient musical heritage.",
   // Running order inside each evening follows the order of the client's text; confirm with them.
@@ -221,6 +272,7 @@ export const event = {
           note: "An innovative collaboration exploring the healing potential of ancient language, movement and music through Odissi and Classical Ballet.",
           leadPhotos: [photos.reelaPoseB],
           stage: photos.mantraTemple,
+          gallery: [photos.mantraDuo, photos.joeMathewB],
           artists: [
             {
               name: "Reela Hota",
@@ -230,9 +282,20 @@ export const event = {
               photo: photos.reelaPortrait,
               thumb: photos.reelaPortrait,
             },
-            { name: "Joe Mathew", role: "Ballet dancer", photo: photos.joeMathew, thumb: photos.joeMathewHead },
-            { name: "Princess Panigrahi", role: "Dancer" },
-            { name: "Priyanka Das", role: "Dancer" },
+            {
+              name: "Joe Mathew",
+              role: "Ballet dancer",
+              details: "Brings classical ballet to Sanskrit: The Mantra Bhasha, the Odissi and ballet collaboration led by Reela Hota.",
+              photo: photos.joeMathew,
+              thumb: photos.joeMathewHead,
+            },
+            {
+              name: "Princess Panigrahi and Priyanka Das",
+              role: "Dancers",
+              details: "Dance with Reela Hota in Sanskrit: The Mantra Bhasha, exploring the healing potential of ancient language, movement and music.",
+              photo: photos.mantraTemple,
+              thumb: photos.mantraPairHead,
+            },
           ],
         },
         {
@@ -258,6 +321,7 @@ export const event = {
           note: "Celebrating an ancient tradition that continues to evolve through generations of artists.",
           leadPhotos: [photos.amritaRed],
           stage: photos.amritaLeap,
+          gallery: [photos.amritaRays],
           artists: [
             {
               name: "Amrita Lahiri",
@@ -273,9 +337,11 @@ export const event = {
           title: "Indian Kathak meets Russian Sudarushka",
           tagline: "Two traditions in one shared circle of movement",
           artForm: "Classical and folk dance",
+          hideArtForm: true,
           note: "Indian classical dance in dialogue with Sudarushka, the Russian folk circle dance. Two traditions, rooted in different histories, come together in a shared circle of movement, demonstrating how artistic expression can celebrate cultural diversity while revealing a common human language.",
           leadPhotos: [photos.gauriTwirl, photos.sudarushkaGroup],
           stage: photos.sudarushkaStage,
+          gallery: [photos.gauriBend],
           artists: [
             {
               name: "Gauri Diwakar",
@@ -313,6 +379,7 @@ export const event = {
           note: "The resonance of the Iranian rabab and the Indian santoor creates a dialogue across cultures, celebrating music's capacity to carry memory, emotion and cultural identity beyond the boundaries of language.",
           leadPhotos: [photos.abhaySantoor],
           stage: photos.abhayPortrait,
+          gallery: [photos.mukeshRabab],
           artists: [
             {
               name: "Pandit Abhay Rustum Sopori",
@@ -335,7 +402,11 @@ export const event = {
               role: "Pakhawaj",
               bio: "A pakhawaj player from Gaya, Bihar, trained by his father Pandit Ravi Shankar Upadhyay. He won the Ustad Bismillah Khan Yuva Puraskar in 2023 and is an A-grade artist of All India Radio.",
             },
-            { name: "Durjay Bhowmick", role: "Tabla" },
+            {
+              name: "Durjay Bhowmick",
+              role: "Tabla",
+              details: "Accompanies on tabla for both musical performances of the second evening: the santoor and rabab, and the Banaras Gharana vocal recital.",
+            },
           ],
         },
         {
@@ -353,7 +424,11 @@ export const event = {
               photo: photos.mishraDuo,
               bio: "Sons of Padma Bhushan Pandit Rajan Mishra and nephews of Pandit Sajan Mishra, the brothers are the sixth generation of a 400-year Banaras Gharana lineage. Singing together for over three decades, they have performed at the BBC Proms and Lincoln Center and are Top Grade vocalists of All India Radio.",
             },
-            { name: "Durjay Bhowmick", role: "Tabla" },
+            {
+              name: "Durjay Bhowmick",
+              role: "Tabla",
+              details: "Accompanies on tabla for both musical performances of the second evening: the santoor and rabab, and the Banaras Gharana vocal recital.",
+            },
             {
               name: "Sumit Mishra",
               role: "Harmonium",
@@ -377,12 +452,12 @@ export const event = {
     portrait: photos.madhavi,
     archiveIntro: "Photographs from her early years on stage, from 1976 to 1984.",
     archive: [
-      { year: "1976", title: "In profile", caption: "The eyes and hands that carry Odissi's storytelling.", photo: art("madhavi-1976", 893, 1400, "Black and white profile portrait of a young Madhavi Mudgal in Odissi make-up and jewellery", { credit: "Avinash Pasricha" }) },
-      { year: "1977", title: "Abhinaya", caption: "A seated moment of expression, the dancer's art of telling a story without words.", photo: art("madhavi-1977", 969, 1400, "Black and white photograph of Madhavi Mudgal seated in an Odissi pose with a garland of flowers in her hair", { credit: "Avinash Pasricha" }) },
-      { year: "1979", title: "Among temple spires", caption: "Dancing before ancient stone, where India's classical dance first found its home.", photo: art("madhavi-1979", 1059, 1400, "Black and white photograph of Madhavi Mudgal dancing in front of ancient temple spires", { credit: "Avinash Pasricha" }) },
-      { year: "1981", title: "Tribhangi", caption: "The triple bend of head, torso and hip at the heart of Odissi.", photo: art("madhavi-1981", 988, 1400, "Black and white photograph of Madhavi Mudgal in a standing Odissi pose", { credit: "Avinash Pasricha" }) },
-      { year: "1984", title: "Joy", caption: "A smile caught mid-performance, light and unguarded.", photo: art("madhavi-1984", 1018, 1400, "Black and white close portrait of Madhavi Mudgal smiling, hand at her chin, in a high-contrast print", { credit: "Avinash Pasricha" }) },
-      { title: "With Pandit Durga Lal", caption: "In duet with the Kathak maestro: two traditions sharing one stage.", photo: art("madhavi-duet", 1137, 1400, "Black and white photograph of Madhavi Mudgal and Pandit Durga Lal dancing a Kathak duet", { credit: "Avinash Pasricha" }) },
+      { year: "1976", title: "In profile", caption: "One line from forehead to fingertips, and the whole mood is in it.", photo: art("madhavi-1976", 893, 1400, "Black and white profile portrait of a young Madhavi Mudgal in Odissi make-up and jewellery", { credit: "Avinash Pasricha" }) },
+      { year: "1977", title: "Abhinaya", caption: "Seated, a flower in her hair, telling a story with no words at all.", photo: art("madhavi-1977", 969, 1400, "Black and white photograph of Madhavi Mudgal seated in an Odissi pose with a garland of flowers in her hair", { credit: "Avinash Pasricha" }) },
+      { year: "1979", title: "Among temple spires", caption: "Dancing in front of old stone temples, the kind of sculpture Odissi has always been compared to.", photo: art("madhavi-1979", 1059, 1400, "Black and white photograph of Madhavi Mudgal dancing in front of ancient temple spires", { credit: "Avinash Pasricha" }) },
+      { year: "1981", title: "Tribhangi", caption: "Head, chest and hip, each bending its own way: the stance Odissi is known by.", photo: art("madhavi-1981", 988, 1400, "Black and white photograph of Madhavi Mudgal in a standing Odissi pose", { credit: "Avinash Pasricha" }) },
+      { year: "1984", title: "Joy", caption: "A smile that got away from her, mid-performance.", photo: art("madhavi-1984", 1018, 1400, "Black and white close portrait of Madhavi Mudgal smiling, hand at her chin, in a high-contrast print", { credit: "Avinash Pasricha" }) },
+      { title: "With Pandit Durga Lal", caption: "Sharing the stage with the Kathak master.", photo: art("madhavi-duet", 1137, 1400, "Black and white photograph of Madhavi Mudgal and Pandit Durga Lal dancing a Kathak duet", { credit: "Avinash Pasricha" }) },
     ] as ArchivePrint[],
   },
   faqs: [

@@ -14,7 +14,8 @@ const security = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   // The default quality (75) visibly softens the festival photographs, so they use 85 and the hero 90.
-  images: { formats: ["image/avif", "image/webp"], qualities: [75, 85, 90] },
+  // Optimised copies are kept for 30 days: the photographs rarely change, and a new name or a redeploy refreshes them.
+  images: { formats: ["image/avif", "image/webp"], qualities: [75, 85, 90], minimumCacheTTL: 60 * 60 * 24 * 30 },
   async headers() {
     return [
       { source: "/:path*", headers: security },
@@ -24,8 +25,8 @@ const nextConfig: NextConfig = {
       { source: "/p/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       { source: "/api/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       // Photographs and icons change rarely; let browsers and the CDN reuse them for a day.
-      { source: "/images/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }] },
-      { source: "/icons/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }] },
+      { source: "/images/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }] },
+      { source: "/icons/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }] },
     ];
   },
 };

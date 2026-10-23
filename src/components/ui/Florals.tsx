@@ -152,50 +152,81 @@ export function Florals({ overlay = false }: { overlay?: boolean }) {
   useEffect(() => {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
-    let lastY = window.scrollY;
-    let lean = 0; // how far the flowers are leaning with the scroll speed, in degrees
+    let target = window.scrollY; // where the page is
+    let current = target; // where the flowers think it is: it glides toward the page, so motion is never steppy
+    let last = 0;
+    let vw = 0;
+    let vh = 0;
+    let scale = 1;
+    const widths: number[] = [];
 
-    const place = () => {
-      raf = 0;
-      const sy = still ? 0 : window.scrollY;
-      const vh = window.innerHeight;
-      const vw = window.innerWidth;
-      const scale = vw < 640 ? 0.55 : vw < 1024 ? 0.8 : 1;
+    // Sizes only change when the window does, so they are set here, not on every frame
+    const measure = () => {
+      vw = window.innerWidth;
+      vh = window.innerHeight;
+      scale = vw < 640 ? 0.55 : vw < 1024 ? 0.8 : 1;
+      BLOOMS.forEach((b, i) => {
+        widths[i] = b.size * 16 * scale;
+        const el = refs.current[i];
+        if (el) el.style.width = `${widths[i]}px`;
+      });
+    };
 
-      // Scrolling fast tips the flowers a little in the direction of travel, then they settle back.
-      const velocity = still ? 0 : sy - lastY;
-      lastY = sy;
-      lean += (Math.max(-14, Math.min(14, velocity * 0.45)) - lean) * 0.18;
-
+    const paint = (lag: number) => {
+      // The lag is how far the flowers are behind the page: they lean into it, then settle upright.
+      const lean = Math.max(-11, Math.min(11, lag * 0.04));
       const doc = Math.max(1, document.documentElement.scrollHeight - vh);
-      root.current?.style.setProperty("--sp", String(Math.min(1, sy / doc)));
-
+      root.current?.style.setProperty("--sp", String(Math.min(1, Math.max(0, current / doc))));
       BLOOMS.forEach((b, i) => {
         const el = refs.current[i];
         if (!el) return;
-        const w = b.size * 16 * scale;
-        // Carry upward with the scroll, then wrap round so a bloom re-enters from below.
+        const w = widths[i];
+        // Carry upward with the scroll, then wrap round while fully off screen, so a bloom re-enters unseen.
         const span = vh + w * 2;
-        const raw = b.y * vh - sy * b.speed;
+        const raw = b.y * vh - current * b.speed;
         const y = ((((raw + w) % span) + span) % span) - w;
-        const lift = b.speed > 0.25 ? 1 : 0.5; // near blooms lean more than far ones
-        el.style.width = `${w}px`;
-        el.style.transform = `translate3d(${b.x * vw - w / 2}px, ${y}px, 0) rotate(${(sy / 100) * b.spin + lean * lift}deg)`;
+        const near = b.speed > 0.25 ? 1 : 0.55;
+        el.style.transform = `translate3d(${(b.x * vw - w / 2).toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${((current / 100) * b.spin + lean * near).toFixed(2)}deg)`;
       });
-
-      // Keep easing back to upright after scrolling stops
-      if (!still && Math.abs(lean) > 0.08) raf = requestAnimationFrame(place);
     };
+
+    const frame = (now: number) => {
+      raf = 0;
+      const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+      last = now;
+      const lag = target - current;
+      // Frame-rate independent easing: the same glide on a 60 Hz phone and a 144 Hz monitor
+      current += lag * (1 - Math.exp(-dt * 5.2));
+      paint(target - current);
+      if (Math.abs(target - current) > 0.12) raf = requestAnimationFrame(frame);
+      else {
+        current = target;
+        paint(0);
+      }
+    };
+
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(place);
+      target = still ? 0 : window.scrollY;
+      if (still) current = 0;
+      if (!raf) {
+        last = performance.now();
+        raf = requestAnimationFrame(frame);
+      }
+    };
+    const onResize = () => {
+      measure();
+      paint(target - current);
     };
 
-    place();
+    measure();
+    target = still ? 0 : window.scrollY;
+    current = target;
+    paint(0);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
@@ -204,7 +235,7 @@ export function Florals({ overlay = false }: { overlay?: boolean }) {
     <div
       ref={root}
       aria-hidden="true"
-      className={`no-print pointer-events-none fixed inset-0 overflow-hidden ${overlay ? "" : "-z-10"}`}
+      className={`no-print pointer-events-none fixed inset-0 overflow-hidden [contain:strict] ${overlay ? "" : "-z-10"}`}
       style={
         {
           "--sp": 0,
@@ -215,6 +246,19 @@ export function Florals({ overlay = false }: { overlay?: boolean }) {
         } as React.CSSProperties
       }
     >
+      {/* The four shapes are drawn once here and every bloom, on the page and over the green band, reuses them */}
+      {!overlay && (
+        <svg width="0" height="0" className="absolute" focusable="false">
+          <defs>
+            {(["lotus", "marigold", "jasmine", "vine"] as Kind[]).map((k) => (
+              <symbol key={k} id={`fl-${k}`} viewBox="0 0 200 200">
+                <Shape kind={k} />
+              </symbol>
+            ))}
+          </defs>
+        </svg>
+      )}
+
       {BLOOMS.map((b, i) => (
         <div
           key={i}
@@ -225,7 +269,7 @@ export function Florals({ overlay = false }: { overlay?: boolean }) {
           style={{ color: b.colour, opacity: b.opacity }}
         >
           <svg viewBox="0 0 200 200" className="floral-sway block h-auto w-full" style={{ animationDelay: `${-i * 1.7}s`, animationDuration: `${9 + (i % 4) * 2}s` }}>
-            <Shape kind={b.kind} />
+            <use href={`#fl-${b.kind}`} />
           </svg>
         </div>
       ))}

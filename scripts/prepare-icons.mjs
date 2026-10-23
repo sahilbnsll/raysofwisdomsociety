@@ -18,16 +18,16 @@ await mkdir("src/app", { recursive: true });
 await mkdir("public/icons", { recursive: true });
 
 // Browser tab and search results
-await emblem(192, 0.02).png({ compressionLevel: 9 }).toFile("src/app/icon.png");
+await emblem(192, 0.02).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile("src/app/icon.png");
 // iPhone home screen: no transparency allowed, so cream behind the emblem
-await emblem(180, 0.12).flatten({ background: cream }).png({ compressionLevel: 9 }).toFile("src/app/apple-icon.png");
+await emblem(180, 0.12).flatten({ background: cream }).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile("src/app/apple-icon.png");
 // Installable web app icons
-await emblem(192, 0.04).png({ compressionLevel: 9 }).toFile("public/icons/icon-192.png");
-await emblem(512, 0.04).png({ compressionLevel: 9 }).toFile("public/icons/icon-512.png");
-await emblem(512, 0.18).flatten({ background: cream }).png({ compressionLevel: 9 }).toFile("public/icons/maskable-512.png");
+await emblem(192, 0.04).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile("public/icons/icon-192.png");
+await emblem(512, 0.04).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile("public/icons/icon-512.png");
+await emblem(512, 0.18).flatten({ background: cream }).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile("public/icons/maskable-512.png");
 
 // /favicon.ico: crawlers and old browsers still ask for it. A 48 px PNG inside an ICO wrapper.
-const png = await emblem(48, 0.02).png({ compressionLevel: 9 }).toBuffer();
+const png = await emblem(48, 0.02).png({ palette: true, quality: 90, compressionLevel: 9 }).toBuffer();
 const header = Buffer.alloc(22);
 header.writeUInt16LE(0, 0); // reserved
 header.writeUInt16LE(1, 2); // type: icon

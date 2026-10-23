@@ -11,3 +11,7 @@ IAAF (2026) artist photographs/
 
 # Local editor and agent tooling
 .claude/
+
+# Photographs waiting to be added to the gallery viewers (originals can be huge); see README, "Adding photographs".
+gallery-inbox/*/*
+!gallery-inbox/*/.gitkeep

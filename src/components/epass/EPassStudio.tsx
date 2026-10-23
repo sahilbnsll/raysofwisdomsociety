@@ -36,6 +36,8 @@ export function EPassStudio() {
   const honeypot = useRef<HTMLInputElement>(null);
   const gateRef = useRef<HTMLDialogElement>(null);
   const drawVersion = useRef(0);
+  // The picture is drawn when the section is close to the screen, not while the page is still loading
+  const [near, setNear] = useState(false);
 
   const [name, setName] = useState("");
   const [guests, setGuests] = useState(1);
@@ -58,16 +60,32 @@ export function EPassStudio() {
   const current: PassData | null = creating ? null : (passes.find((p) => p.id === selectedId) ?? passes[0] ?? null);
   const view = useMemo<PassData>(() => current ?? { id: PREVIEW_ID, name: name.trim() || "Your name", guests, days }, [current, name, guests, days]);
 
-  // The picture on screen is the same one that gets downloaded.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "900px 0px" },
+    );
+    io.observe(canvas);
+    return () => io.disconnect();
+  }, []);
+
+  // The picture on screen is the same one that gets downloaded.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !near) return;
     const version = ++drawVersion.current;
     const raf = requestAnimationFrame(() => {
       drawPass(canvas, view, window.location.origin, () => version !== drawVersion.current).catch(() => {});
     });
     return () => cancelAnimationFrame(raf);
-  }, [view]);
+  }, [view, near]);
 
   useEffect(() => {
     registerFocus(() => (current ? readyRef.current?.focus({ preventScroll: true }) : nameRef.current?.focus({ preventScroll: true })));
@@ -161,7 +179,7 @@ export function EPassStudio() {
     <section id="e-pass" className="relative overflow-hidden bg-sage" aria-labelledby="epass-title">
       {/* The page's flowers carry on over this green band: the same ones, clipped to the section */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 [clip-path:inset(0)]">
-        <Florals overlay />
+        {near && <Florals overlay />}
       </div>
       {/* The cream page meets the green section along the poster's hills */}
       <div className="relative z-10 bg-cream">

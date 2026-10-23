@@ -1,4 +1,3 @@
-import QRCode from "qrcode";
 import { brand, event, eveningLabels, org, sponsors, type Evenings } from "@/content/event";
 
 export interface PassData {
@@ -46,6 +45,7 @@ const qrCache = new Map<string, HTMLCanvasElement>();
 async function qrFor(text: string): Promise<HTMLCanvasElement> {
   const hit = qrCache.get(text);
   if (hit) return hit;
+  const { default: QRCode } = await import("qrcode"); // only needed once a pass is drawn
   const canvas = document.createElement("canvas");
   // Level Q survives glare, a cracked screen or a crumpled printout.
   await QRCode.toCanvas(canvas, text, { margin: 0, width: 420, color: { dark: C.ink, light: C.paper }, errorCorrectionLevel: "Q" });

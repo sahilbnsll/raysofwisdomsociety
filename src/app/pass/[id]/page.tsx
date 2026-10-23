@@ -13,7 +13,9 @@ import { Seal } from "@/components/ui/Seal";
 
 export const metadata: Metadata = {
   title: "E-pass",
+  description: `Show this e-pass at the gate: ${event.edition} ${event.title} 2026, Kamani Auditorium, New Delhi.`,
   robots: { index: false, follow: false },
+  openGraph: { type: "website", title: `E-pass for the ${event.edition} ${event.title} 2026`, description: "Show this e-pass at the gate. The festival team scans its QR code and checks you in." },
 };
 
 /** "Sahil Bansal" becomes "Sahil B.": enough for a guest to recognise, not a list of attendees. */

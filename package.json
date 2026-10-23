@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "predev": "node scripts/prepare-gallery.mjs",
     "build": "next build",
+    "prebuild": "node scripts/prepare-gallery.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "images": "node scripts/prepare-images.mjs",
-    "icons": "node scripts/prepare-icons.mjs"
+    "icons": "node scripts/prepare-icons.mjs",
+    "gallery": "node scripts/prepare-gallery.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",

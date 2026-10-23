@@ -2,7 +2,6 @@ import Image from "next/image";
 import { brand, event, org } from "@/content/event";
 import { EPassLink } from "@/components/epass/EPassLink";
 import { Hills, LotusRule, Sprig } from "@/components/ui/Ornaments";
-import { Reveal } from "@/components/ui/Reveal";
 
 /**
  * Opens like the printed pass, on a quiet field: the organiser's mark, who presents it, the title with
@@ -14,7 +13,7 @@ export function Hero() {
     <section id="top" className="relative isolate -mt-[var(--header-h)] flex min-h-[min(100svh,58rem)] flex-col overflow-hidden pt-[var(--header-h)]">
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-20 bg-[radial-gradient(46rem_26rem_at_100%_0%,rgba(214,150,150,0.2),transparent_70%),radial-gradient(40rem_24rem_at_0%_10%,rgba(176,194,140,0.22),transparent_70%)]"
+        className="absolute inset-0 -z-20 bg-[radial-gradient(50rem_30rem_at_0%_0%,rgba(176,194,140,0.3),transparent_72%),radial-gradient(44rem_30rem_at_50%_42%,rgba(222,196,128,0.16),transparent_72%),radial-gradient(44rem_26rem_at_100%_100%,rgba(176,194,140,0.16),transparent_72%)]"
       />
 
       <Sprig className="absolute left-0 top-16 -z-10 hidden w-44 md:block lg:w-56" />
@@ -25,32 +24,32 @@ export function Hero() {
         <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[44%] -z-10 w-[min(118vw,48rem)] -translate-x-1/2 -translate-y-1/2">
           <div className="emblem-breathe">
             <div className="emblem-turn">
-              <Image src={brand.logo.src} alt="" width={brand.logo.w} height={brand.logo.h} sizes="(min-width:768px) 48rem, 118vw" quality={90} className="h-auto w-full select-none" priority />
+              <Image src={brand.emblem.src} alt="" width={brand.emblem.w} height={brand.emblem.h} sizes="(min-width:768px) 48rem, 118vw" quality={85} priority className="h-auto w-full select-none" />
             </div>
           </div>
         </div>
 
-        <Reveal className="flex flex-col items-center">
+        <div className="hero-rise flex flex-col items-center">
           <a href={org.site} aria-label={`${org.name}, website`} className="transition-opacity hover:opacity-80">
             <Image src={brand.rays.src} alt={brand.rays.alt} width={brand.rays.w} height={brand.rays.h} className="h-16 w-auto sm:h-20" priority />
           </a>
           <p className="serif mt-2 text-[1.1rem] italic text-ink-muted">{org.name} presents</p>
 
-          <h1 className="display mt-5 text-balance text-[clamp(2.8rem,1.1rem+6.6vw,6.5rem)] leading-[0.96] tracking-[-0.01em]">
+          <h1 className="display mt-5 text-balance text-[clamp(2.8rem,1.1rem+6.6vw,6.5rem)] leading-[0.95] tracking-[-0.015em] text-[#1d2714] [text-shadow:0_1px_0_rgb(255_255_255/0.6),0_0_28px_rgb(246_239_224/0.9)]">
             <span className="whitespace-nowrap">
               <span className="text-[1.5em] leading-none">9</span>
-              <sup className="mr-[0.15em] align-[0.95em] text-[0.4em] italic">th</sup>
+              <sup className="mr-[0.15em] align-[0.95em] text-[0.4em]">th</sup>
               International
             </span>
             <br />
-            Ancient Arts Festival <span className="whitespace-nowrap text-maroon">2026</span>
+            Ancient Arts Festival <span className="whitespace-nowrap text-maroon [text-shadow:0_1px_0_rgb(255_255_255/0.5),0_0_24px_rgb(246_239_224/0.9)]">2026</span>
           </h1>
           <LotusRule className="mx-auto mt-6 w-[min(80%,22rem)]" />
-          <p className="serif mt-5 max-w-2xl text-balance text-[clamp(1.2rem,1.05rem+0.7vw,1.6rem)] italic leading-snug text-olive">{event.subtitle}</p>
-        </Reveal>
+          <p className="serif mt-5 max-w-2xl text-balance text-[clamp(1.2rem,1.05rem+0.7vw,1.6rem)] font-medium italic leading-snug text-[#44562a]">{event.subtitle}</p>
+        </div>
 
-        <Reveal delay={100} className="mt-7 flex flex-col items-center">
-          <p className="serif flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[clamp(1.15rem,1rem+0.6vw,1.5rem)] font-medium text-maroon">
+        <div className="hero-rise mt-7 flex flex-col items-center" style={{ animationDelay: "100ms" }}>
+          <p className="serif flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[clamp(1.15rem,1rem+0.6vw,1.5rem)] font-medium text-maroon-deep">
             <span className="inline-flex items-center gap-2">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
@@ -67,7 +66,7 @@ export function Hero() {
               {event.venue.name}, {event.venue.area}
             </span>
           </p>
-          <p className="serif mt-2 text-lg text-ink-muted">
+          <p className="serif mt-2.5 text-[1.05rem] text-[#5b6250]">
             Curated and directed by <span className="font-medium text-ink">Dr. {event.director}</span> <span className="whitespace-nowrap">· {event.timeLabel}</span>
           </p>
           <p className="motto mt-4 justify-center" aria-label={event.motto.join(", ")}>
@@ -75,9 +74,9 @@ export function Hero() {
               <span key={w}>{w}</span>
             ))}
           </p>
-        </Reveal>
+        </div>
 
-        <Reveal delay={180} className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+        <div className="hero-rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3" style={{ animationDelay: "180ms" }}>
           <EPassLink className="btn btn-primary !min-h-[3.25rem] !px-7 text-base" />
           <a href="#programme" className="link-arrow">
             See the programme
@@ -85,7 +84,7 @@ export function Hero() {
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </a>
-        </Reveal>
+        </div>
       </div>
 
       {/* The poster's hills close the opening */}

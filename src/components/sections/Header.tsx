@@ -32,10 +32,11 @@ export function Header() {
       }`}
     >
       <div className="wrap flex h-[var(--header-h)] items-center justify-between gap-4">
-        <a href="#top" className="flex items-center gap-3" aria-label={`${event.title} 2026, back to top`}>
+        <a href="#top" className="flex items-center gap-3">
           <Image src={brand.logo.src} alt="" width={44} height={44} className="size-10 object-contain" priority />
           <span className="leading-tight max-[359px]:hidden">
             <span className="display block text-[1.35rem]">{event.shortTitle}</span>
+            <span className="sr-only">, back to top</span>
             <span className="hidden text-xs text-ink-muted sm:block">25 to 26 Nov · Kamani Auditorium</span>
           </span>
         </a>

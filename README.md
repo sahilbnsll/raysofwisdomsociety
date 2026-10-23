@@ -47,6 +47,21 @@ makes web-sized JPEGs in `public/images/artists/` and transparent logos in `publ
 photo, add a line to that script, re-run it, then reference it in `src/content/event.ts` (`photos`). Photographer
 credits come from the file names (Avinash Pasricha, Ajay Lal, Priyanka, Sai Thejeswar Rao): confirm them with the client.
 
+## Adding photographs of the artists
+
+The page shows a few large photographs per performance; everything else lives behind the **Photographs** link (and a click on the
+large picture), in a quiet viewer with a caption under each photo. So adding pictures never crowds the page.
+
+1. Put the photographs (any size; JPG, PNG, WebP or TIFF) in `gallery-inbox/<folder>/`. The folders are the performance ids:
+   `mantra-bhasha`, `bharatanatyam`, `kuchipudi`, `kathak-sudarushka`, `santoor-rabab`, `vocal`, and `award` for Madhavi Mudgal.
+   Number the files (`01-...`, `02-...`) to set the order.
+2. Run `npm run gallery` (it also runs before `npm run dev` and `npm run build`). Each photo is shrunk to a web size, saved in
+   `public/images/gallery/` and listed in `src/content/gallery.generated.json`. Commit those two; the inbox is never committed.
+3. Say what each picture shows in `src/content/gallery-captions.json` (`"kuchipudi/03-in-orange.jpg": "One hand lifted..."`).
+   Write one plain line about what you see; without one, the viewer shows the photo's description.
+
+Photographs already in the content file (`src/content/event.ts`) take their caption from the `captions` block there.
+
 ## How the e-pass works
 
 1. The e-pass section shows a live ticket, drawn after the physical pass (logo row with the sponsors, title,
@@ -91,6 +106,13 @@ The Tribune. Mukesh Sharma: World Music Central. Rishi Shankar Upadhyay: Ashirva
 Mishra: Naad / Bimhuis and Trafó concert listings. Madhavi Mudgal: Wikipedia, Sahapedia, Kennedy Center.
 Kamani Auditorium and metro: kamaniauditorium.org. No reliable public profile was found for Joe Mathew,
 Princess Panigrahi, Priyanka Das, Durjay Bhowmick or the Sudarushka dancers, so they are listed by role only.
+
+## Performance, search and sharing
+
+Measured with Lighthouse on a production build (mobile, throttled): Performance 77, Accessibility 100, Best Practices 100, SEO 100
+(SEO is 100 once `NEXT_PUBLIC_INDEXABLE=true`; the draft is deliberately no-index). What keeps it light: the hero paints with CSS alone, the
+e-pass picture and its QR library load only when you scroll near them, photographs are served as AVIF at 85 to 90 quality, the italic
+text font loads after the first paint, and each flower shape is drawn once and reused.
 
 ## Not built yet
 
