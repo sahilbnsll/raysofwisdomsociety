@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { NextRequest } from "next/server";
-import { getPassStore } from "@/lib/epass/store";
+import { getPassStore, usingSharedStore } from "@/lib/epass/store";
 import type { Evenings } from "@/content/event";
 
 const NO_STORE = { "Cache-Control": "no-store" };
@@ -8,7 +8,8 @@ const NO_STORE = { "Cache-Control": "no-store" };
 export async function GET() {
   try {
     const count = await getPassStore().count();
-    return Response.json({ count }, { headers: NO_STORE });
+    // `shared` says whether the count comes from the database (true) or a local file / server memory (false).
+    return Response.json({ count, shared: usingSharedStore() }, { headers: NO_STORE });
   } catch (error) {
     console.error("[epass] count failed:", error);
     return Response.json({ error: "unavailable" }, { status: 503, headers: NO_STORE });
