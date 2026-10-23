@@ -469,6 +469,31 @@ html:has(dialog[open]) {
   }
 }
 
+/* The festival emblem behind the hero title: turns very slowly and breathes, faded into the paper. */
+.emblem-turn {
+  animation: emblem-turn 220s linear infinite;
+}
+.emblem-breathe {
+  opacity: 0.1;
+  animation: emblem-breathe 14s ease-in-out infinite;
+}
+@keyframes emblem-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes emblem-breathe {
+  0%,
+  100% {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.15;
+    transform: scale(1.035);
+  }
+}
+
 /* The artists' collage in the hero: faded to nothing at every edge, drifting very slowly. */
 .collage {
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 92%, transparent 100%), linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);

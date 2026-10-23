@@ -7,8 +7,8 @@ import { Reveal } from "@/components/ui/Reveal";
 /**
  * Opens like the printed pass, on a quiet field: the organiser's mark, who presents it, the title with
  * its big "9th", the lotus rule, the festival's own words, date and venue in maroon, the director and
- * the four words. Below, the artists of the poster stand together, feathered into the paper and drifting
- * very slowly.
+ * the four words, with the festival emblem turning slowly and faintly behind them. Below, the artists of
+ * the poster stand together, feathered into the paper and drifting very slowly.
  */
 export function Hero() {
   return (
@@ -21,7 +21,16 @@ export function Hero() {
       <Sprig className="absolute left-0 top-16 -z-10 hidden w-44 md:block lg:w-56" />
       <Sprig className="absolute right-0 top-16 -z-10 hidden w-44 md:block lg:w-56" flip />
 
-      <div className="wrap flex flex-col items-center pb-6 pt-8 text-center sm:pb-2 sm:pt-12">
+      <div className="wrap relative flex flex-col items-center pb-6 pt-8 text-center sm:pb-2 sm:pt-12">
+        {/* The festival emblem, faded and slowly turning behind the title */}
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[44%] -z-10 w-[min(118vw,48rem)] -translate-x-1/2 -translate-y-1/2">
+          <div className="emblem-breathe">
+            <div className="emblem-turn">
+              <Image src={brand.logo.src} alt="" width={brand.logo.w} height={brand.logo.h} sizes="(min-width:768px) 48rem, 118vw" quality={90} className="h-auto w-full select-none" priority />
+            </div>
+          </div>
+        </div>
+
         <Reveal className="flex flex-col items-center">
           <a href={org.site} aria-label={`${org.name}, website`} className="transition-opacity hover:opacity-80">
             <Image src={brand.rays.src} alt={brand.rays.alt} width={brand.rays.w} height={brand.rays.h} className="h-16 w-auto sm:h-20" priority />
