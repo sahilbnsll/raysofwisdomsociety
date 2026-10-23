@@ -2,9 +2,23 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/** Pulls a pass number out of whatever the QR holds: the pass URL, or a bare number. */
+const ID = "RWS26-?([2-9A-HJ-NP-Z]{6})";
+
+/**
+ * Pulls a pass number out of what a QR holds: a bare pass number, or our pass link (/p/ID or /pass/ID).
+ * Anything else (a website, a Wi-Fi code, someone else's ticket) is not a pass, even if it happens to
+ * contain something that looks like one.
+ */
 export function passIdFrom(text: string): string | null {
-  const m = /RWS26-?([2-9A-HJ-NP-Z]{6})/i.exec(text);
+  const t = text.trim();
+  let m = new RegExp(`^${ID}$`, "i").exec(t);
+  if (!m) {
+    try {
+      m = new RegExp(`^/(?:p|pass)/${ID}/?$`, "i").exec(decodeURIComponent(new URL(t).pathname));
+    } catch {
+      m = null;
+    }
+  }
   return m ? `RWS26-${m[1].toUpperCase()}` : null;
 }
 
@@ -15,6 +29,8 @@ export function passIdFrom(text: string): string | null {
 export function Scanner({ onPass, onClose }: { onPass: (id: string) => void; onClose: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState("");
+  // A QR code was read but it is not a festival pass: say so, and keep looking.
+  const [wrong, setWrong] = useState(false);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -22,6 +38,8 @@ export function Scanner({ onPass, onClose }: { onPass: (id: string) => void; onC
     let stopped = false;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    let lastWrong = { text: "", at: 0 };
+    let hideWrong = 0;
 
     (async () => {
       try {
@@ -48,6 +66,14 @@ export function Scanner({ onPass, onClose }: { onPass: (id: string) => void; onC
               onPass(id);
               return;
             }
+            // A different QR code: warn once, then again only if it is a new code or a few seconds later.
+            if (code && code.data && (code.data !== lastWrong.text || performance.now() - lastWrong.at > 4000)) {
+              lastWrong = { text: code.data, at: performance.now() };
+              setWrong(true);
+              if (navigator.vibrate) navigator.vibrate([60, 50, 60]);
+              clearTimeout(hideWrong);
+              hideWrong = window.setTimeout(() => setWrong(false), 3500);
+            }
           }
           raf = requestAnimationFrame(tick);
         };
@@ -60,6 +86,7 @@ export function Scanner({ onPass, onClose }: { onPass: (id: string) => void; onC
     return () => {
       stopped = true;
       cancelAnimationFrame(raf);
+      clearTimeout(hideWrong);
       stream?.getTracks().forEach((t) => t.stop());
     };
   }, [onPass]);
@@ -72,6 +99,11 @@ export function Scanner({ onPass, onClose }: { onPass: (id: string) => void; onC
         <div className="size-[min(62vw,16rem)] rounded-3xl shadow-[0_0_0_9999px_rgb(0_0_0/0.35)] ring-2 ring-paper/90" />
       </div>
       <p className="absolute inset-x-0 top-4 text-center text-sm font-semibold text-paper">Point at the QR code on the pass</p>
+      {wrong && (
+        <p role="alert" className="absolute inset-x-4 bottom-20 rounded-xl bg-maroon p-3 text-center text-sm font-semibold text-paper shadow-e2">
+          That QR code is not a festival e-pass. Ask the guest to open their e-pass and hold the code up.
+        </p>
+      )}
       {error && <p className="absolute inset-x-4 bottom-20 rounded-xl bg-paper p-3 text-sm text-ink">{error}</p>}
       <button type="button" onClick={onClose} className="btn btn-secondary absolute bottom-4 left-1/2 -translate-x-1/2 !bg-paper">
         Stop camera

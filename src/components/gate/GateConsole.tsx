@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { brand } from "@/content/event";
 import { defaultEvening, eveningName, type Evening } from "@/lib/epass/evening";
 import type { Verdict } from "@/lib/epass/verdict";
-import { Scanner } from "./Scanner";
+import { passIdFrom, Scanner } from "./Scanner";
 import { VerdictCard, eveningOptions } from "./VerdictCard";
 
 interface Stats {
@@ -130,8 +130,8 @@ export function GateConsole() {
           <div className="h-full rounded-full bg-olive transition-[width] duration-500" style={{ width: `${pct}%` }} />
         </div>
         {stats && !stats.shared && (
-          <p className="mt-3 rounded-lg bg-cream px-3 py-2 text-xs text-ink-muted">
-            Test mode: passes are kept in this server&apos;s temporary memory. Connect the database before the festival so every gate phone sees the same check-ins.
+          <p role="alert" className="mt-3 rounded-lg bg-maroon px-3 py-2.5 text-sm font-semibold text-paper">
+            Database not connected. Passes and check-ins live in one server&apos;s memory, so a pass can show as &quot;not found&quot; or be admitted twice. Connect the database before the festival.
           </p>
         )}
       </section>
@@ -153,7 +153,11 @@ export function GateConsole() {
         className="mt-3 flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (manual.trim()) check(manual.trim());
+          const text = manual.trim();
+          if (!text) return;
+          // Accept a pasted pass link too; anything else goes to the server, which says "not a pass number".
+          check(passIdFrom(text) ?? text);
+          setManual("");
         }}
       >
         <label htmlFor="manual-id" className="sr-only">

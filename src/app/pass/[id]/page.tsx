@@ -5,8 +5,8 @@ import { connection } from "next/server";
 import { brand, event, eveningLabels, org } from "@/content/event";
 import { dateRange } from "@/lib/format";
 import { isStaff } from "@/lib/epass/gate";
-import { getPassStore, normalisePassId, PASS_ID } from "@/lib/epass/store";
-import { defaultEvening } from "@/lib/epass/evening";
+import { getPassStore, normalisePassId, PASS_ID, usingSharedStore } from "@/lib/epass/store";
+import { defaultEvening, eveningName, type Evening } from "@/lib/epass/evening";
 import { toGatePass, verdictFor } from "@/lib/epass/verdict";
 import { VerdictCard } from "@/components/gate/VerdictCard";
 import { Seal } from "@/components/ui/Seal";
@@ -26,9 +26,12 @@ const mask = (name: string) => {
  * What a pass's QR code opens. Gate staff (signed in at /gate) get the verdict and the check-in
  * button; anyone else sees a calm confirmation that the pass is real and what to do with it.
  */
-export default async function PassPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PassPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ evening?: string }> }) {
   await connection();
   const { id: raw } = await params;
+  const { evening: asked } = await searchParams;
+  // Staff check against tonight by default, or the evening they pick with the switch below.
+  const evening: Evening = asked === "day1" || asked === "day2" ? asked : defaultEvening();
   const id = normalisePassId(decodeURIComponent(raw));
 
   let pass = null;
@@ -42,7 +45,7 @@ export default async function PassPage({ params }: { params: Promise<{ id: strin
   }
 
   if (await isStaff()) {
-    const verdict = verdictFor(pass && toGatePass(pass), defaultEvening());
+    const verdict = { ...verdictFor(pass && toGatePass(pass), evening), shared: usingSharedStore(), ...(PASS_ID.test(id) ? {} : { invalid: true }) };
     return (
       <main className="mx-auto min-h-svh w-full max-w-xl px-4 py-6">
         <div className="mb-4 flex items-center justify-between">
@@ -53,7 +56,20 @@ export default async function PassPage({ params }: { params: Promise<{ id: strin
             Open the scanner
           </Link>
         </div>
-        {failed ? <p className="card p-6">Could not reach the pass list. Try again in a moment.</p> : <VerdictCard initial={verdict} />}
+        <nav aria-label="Evening being checked" className="mb-4 grid grid-cols-2 rounded-full bg-paper p-1 shadow-e1 ring-1 ring-line">
+          {(["day1", "day2"] as const).map((e) => (
+            <Link
+              key={e}
+              href={`?evening=${e}`}
+              replace
+              aria-current={evening === e ? "true" : undefined}
+              className={`rounded-full py-2.5 text-center text-sm font-semibold transition-colors ${evening === e ? "bg-ink text-paper" : "text-ink-muted"}`}
+            >
+              Evening of {eveningName[e]}
+            </Link>
+          ))}
+        </nav>
+        {failed ? <p className="card p-6">Could not reach the pass list. Try again in a moment.</p> : <VerdictCard key={evening} initial={verdict} />}
       </main>
     );
   }

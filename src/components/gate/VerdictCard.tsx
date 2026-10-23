@@ -11,7 +11,7 @@ const time = (iso?: string) =>
 const tone = {
   admit: { bar: "bg-olive text-paper", label: "Valid pass" },
   admitted: { bar: "bg-olive text-paper", label: "Admitted" },
-  already: { bar: "bg-gold text-ink", label: "Already checked in" },
+  already: { bar: "bg-gold text-ink", label: "Already admitted" },
   "wrong-evening": { bar: "bg-maroon text-paper", label: "Not for tonight" },
   "not-found": { bar: "bg-maroon text-paper", label: "Pass not found" },
 } as const;
@@ -32,7 +32,7 @@ export function VerdictCard({
   const [v, setV] = useState<Verdict>(initial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const t = tone[v.state];
+  const t = v.state === "not-found" && v.invalid ? { ...tone["not-found"], label: "Not a festival pass" } : tone[v.state];
   const p = v.pass;
 
   async function send(body: { undo?: boolean }) {
@@ -61,6 +61,12 @@ export function VerdictCard({
     <article className="overflow-hidden rounded-3xl bg-paper shadow-e3 ring-1 ring-line" aria-live="assertive">
       <div className={`flex items-center justify-between gap-4 px-6 py-5 ${t.bar}`}>
         <p className="display text-3xl sm:text-4xl">{t.label}</p>
+        {v.state === "already" && v.admittedAt && (
+          <p className="text-right leading-tight">
+            <span className="block text-xs font-semibold uppercase tracking-wide opacity-70">Admitted at</span>
+            <span className="display whitespace-nowrap text-3xl tabular-nums sm:text-4xl">{time(v.admittedAt)}</span>
+          </p>
+        )}
         {(v.state === "admit" || v.state === "admitted") && p && (
           <p className="display text-5xl tabular-nums" aria-label={`${p.guests} ${p.guests === 1 ? "person" : "people"}`}>
             {p.guests}
@@ -79,11 +85,11 @@ export function VerdictCard({
 
             <p className="mt-5 text-[1.0625rem]">
               {v.state === "admit" && <>Valid for the evening of {eveningName[v.evening]}. Check them in to let the party through.</>}
-              {v.state === "admitted" && <>Checked in at {time(v.admittedAt)} for {eveningName[v.evening]}. Scanning it again will show this time.</>}
+              {v.state === "admitted" && <>Checked in at {time(v.admittedAt)} for {eveningName[v.evening]}. If it is scanned again, it will show as already admitted.</>}
               {v.state === "already" && (
                 <>
-                  This pass was already used at <strong>{time(v.admittedAt)}</strong> on {eveningName[v.evening]}. Ask the guest if part of the party went in
-                  earlier.
+                  This pass was admitted at <strong>{time(v.admittedAt)}</strong> on {eveningName[v.evening]}, for {p.guests} {p.guests === 1 ? "person" : "people"}. If more of the party
+                  have arrived, check with the guest before letting them through.
                 </>
               )}
               {v.state === "wrong-evening" && (
@@ -113,8 +119,19 @@ export function VerdictCard({
           </>
         ) : (
           <>
-            <p className="display text-3xl leading-tight">We could not find this pass</p>
-            <p className="mt-3 text-ink-muted">Check the pass number on the guest&apos;s screen, or ask for their name. Passes start with RWS26.</p>
+            <p className="display text-3xl leading-tight">{v.invalid ? "That is not a pass number" : "We could not find this pass"}</p>
+            {v.invalid ? (
+              <p className="mt-3 text-ink-muted">
+                Pass numbers look like <strong>RWS26-ABC234</strong>. Scan the QR code on the guest&apos;s e-pass, or type the number printed under it.
+              </p>
+            ) : v.shared === false ? (
+              <p className="mt-3 rounded-xl bg-maroon/10 p-4 text-maroon">
+                The pass list is not saved in the shared database yet, so a pass made on another server cannot be found here. This is a set-up problem, not a bad pass.
+                Ask the site owner to connect the database before admitting anyone.
+              </p>
+            ) : (
+              <p className="mt-3 text-ink-muted">Check the pass number on the guest&apos;s screen, or ask for their name. Passes start with RWS26.</p>
+            )}
           </>
         )}
         {error && (

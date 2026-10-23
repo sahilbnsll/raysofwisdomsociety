@@ -18,6 +18,10 @@ export interface Verdict {
   pass?: GatePass;
   /** ISO time of the earlier check-in, when state is "already". */
   admittedAt?: string;
+  /** True when what was scanned or typed is not shaped like a pass number at all. */
+  invalid?: boolean;
+  /** False when passes are only in one server's memory (no database), so "not found" may be wrong. */
+  shared?: boolean;
 }
 
 export function verdictFor(pass: GatePass | null, evening: Evening): Verdict {
