@@ -14,8 +14,7 @@ npm run build && npm start
 ## Content
 
 All copy lives in **`src/content/event.ts`**: title, dates, venue, programme (each performance carries its
-artists and bios), award, sponsors, FAQs. The text is the client's own, received 22 Oct 2026. While
-`isDraft: true` the page asks search engines not to index it.
+artists and bios), award, sponsors, FAQs. The text is the client's own, received 22 Oct 2026, trimmed for length.
 
 Page order: hero (styled after the printed pass) → presented by / in association with → about and the
 director → programme (two evenings, "Meet the artists" sheets, an e-pass call per evening) → e-pass → Ancient
@@ -24,6 +23,21 @@ Arts Award → plan your visit and FAQ. Each photograph is used in one place onl
 Still to come from the client: per-performance times and running order (the order inside each evening follows
 their text), entry policy, social links, and official sponsor artwork. Chadha Papers is cut from the supplied
 image; the Modi Groups mark is redrawn from a photo of their wall sign (`scripts/prepare-images.mjs`).
+
+## Search, sharing and going live
+
+- **Draft mode.** Until `NEXT_PUBLIC_INDEXABLE=true` is set on the live site, `robots.txt` blocks crawlers and every page
+  says `noindex`. After the client signs off, set that variable in Vercel and redeploy: no code change.
+- **Address.** Set `NEXT_PUBLIC_SITE_URL` (the final domain) so canonical links, the sitemap and share cards use it.
+- **Share card.** `src/app/opengraph-image.tsx` draws the 1200 x 630 picture shown on WhatsApp, Facebook, X, LinkedIn and
+  iMessage at build time (about 70 KB). Change the title face in `assets/fonts/`, the photos in `event.arcade`.
+- **Search.** Title, description and keywords come from `event.ts` and `layout.tsx`; `EventJsonLd` adds schema.org Event
+  data (dates, venue, organiser, performers, both evenings). No price or ticket link is claimed until an entry policy exists.
+  Also generated: `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest`, favicon and touch icons (`npm run icons`).
+- **Security.** `next.config.ts` sets security headers (no framing, no sniffing, camera only for the gate page) and keeps
+  `/gate`, `/pass`, `/p` and `/api` out of search. Browser POSTs from other sites are refused.
+- **Gate PIN.** Set `GATE_PIN` (6 or more characters; letters and digits are fine) and `GATE_SECRET` (a long random string)
+  in Vercel. Changing either signs staff out.
 
 ## Photographs and logos
 

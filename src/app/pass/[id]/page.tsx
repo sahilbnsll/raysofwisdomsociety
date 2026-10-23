@@ -12,7 +12,7 @@ import { VerdictCard } from "@/components/gate/VerdictCard";
 import { Seal } from "@/components/ui/Seal";
 
 export const metadata: Metadata = {
-  title: `E-pass | ${event.title} 2026`,
+  title: "E-pass",
   robots: { index: false, follow: false },
 };
 

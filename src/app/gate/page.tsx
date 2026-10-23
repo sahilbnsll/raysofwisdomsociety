@@ -5,7 +5,7 @@ import { GateLogin } from "@/components/gate/GateLogin";
 import { gateConfigured, isStaff } from "@/lib/epass/gate";
 
 export const metadata: Metadata = {
-  title: "Gate check-in | IAAF 2026",
+  title: "Gate check-in",
   robots: { index: false, follow: false },
 };
 

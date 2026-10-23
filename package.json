@@ -8,15 +8,16 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "images": "node scripts/prepare-images.mjs"
+    "images": "node scripts/prepare-images.mjs",
+    "icons": "node scripts/prepare-icons.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
     "jsqr": "^1.4.0",
-    "next": "latest",
+    "next": "16.4.2",
     "qrcode": "^1.5.4",
-    "react": "latest",
-    "react-dom": "latest",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
@@ -26,7 +27,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "latest",
+    "eslint-config-next": "16.4.2",
     "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "typescript": "^5"

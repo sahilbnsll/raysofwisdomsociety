@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Hanken_Grotesk, Newsreader } from "next/font/google";
-import { brand, event, org } from "@/content/event";
+import { event, org } from "@/content/event";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 // Display: a bold, high-contrast serif close to the poster's title lettering.
@@ -27,37 +28,66 @@ const hanken = Hanken_Grotesk({
   display: "swap",
 });
 
-// Absolute base for share-image URLs: set NEXT_PUBLIC_SITE_URL on the live site; Vercel supplies a fallback.
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3100");
+const fullTitle = `${event.edition} ${event.title} 2026`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: `${event.title} 2026 | ${org.name}`,
-  description: `${event.edition} ${event.title}, 25 and 26 November 2026 at Kamani Auditorium, New Delhi. Get your e-pass. ${event.motto.join(". ")}.`,
-  icons: { icon: brand.logo.src },
+  title: { default: `${fullTitle} | ${org.name}`, template: `%s | ${event.shortTitle}` },
+  description: event.seoDescription,
+  applicationName: event.shortTitle,
+  keywords: [
+    "International Ancient Arts Festival",
+    "IAAF 2026",
+    "Indian classical dance festival",
+    "Odissi",
+    "Bharatanatyam",
+    "Kuchipudi",
+    "Kathak",
+    "santoor",
+    "Kamani Auditorium",
+    "New Delhi events",
+    org.name,
+  ],
+  authors: [{ name: org.name, url: org.site }],
+  creator: org.name,
+  publisher: org.name,
+  category: "events",
+  alternates: { canonical: "/" },
+  // The share image comes from opengraph-image.tsx; these fill in the rest of the card.
   openGraph: {
-    title: `${event.edition} ${event.title} 2026`,
-    description: `25 and 26 November 2026, Kamani Auditorium, New Delhi. ${event.motto.join(". ")}.`,
-    images: [{ url: event.poster.src, width: event.poster.width, height: event.poster.height, alt: event.poster.alt }],
+    type: "website",
+    siteName: org.name,
+    locale: "en_IN",
+    url: "/",
+    title: fullTitle,
+    description: event.seoDescription,
   },
-  robots: event.isDraft ? { index: false, follow: false } : undefined,
+  twitter: { card: "summary_large_image", title: fullTitle, description: event.seoDescription },
+  robots: event.isDraft
+    ? { index: false, follow: false }
+    : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#f6efe0",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${dmSerif.variable} ${newsreader.variable} ${hanken.variable}`}>
+    <html lang="en-IN" className={`${dmSerif.variable} ${newsreader.variable} ${hanken.variable}`}>
       <body>
         <noscript>
           <style>{`.reveal{opacity:1!important;transform:none!important}.develop img{filter:none!important}`}</style>
         </noscript>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-maroon focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-paper"
+        >
+          Skip to content
+        </a>
         {children}
       </body>
     </html>

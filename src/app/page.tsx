@@ -1,4 +1,5 @@
 import { EPassProvider } from "@/components/epass/EPassProvider";
+import { EventJsonLd } from "@/components/seo/EventJsonLd";
 import { EPassStudio } from "@/components/epass/EPassStudio";
 import { About } from "@/components/sections/About";
 import { Award } from "@/components/sections/Award";
@@ -19,7 +20,8 @@ export default function EventPage() {
   return (
     <EPassProvider>
       <Header />
-      <main>
+      <EventJsonLd />
+      <main id="main">
         <Hero />
         <Partners />
         <About />

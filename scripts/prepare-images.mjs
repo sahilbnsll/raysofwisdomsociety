@@ -91,13 +91,13 @@ async function cutOutWhite(input, output, width) {
   await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } })
     .trim({ threshold: 1 })
     .resize({ width, withoutEnlargement: true })
-    .png({ compressionLevel: 9 })
+    .png({ palette: true, quality: 92, compressionLevel: 9 })
     .toFile(output);
   console.log(`${path.basename(output)} written`);
 }
 
-await cutOutWhite(path.join(SRC, "Logos", "IAAF logo.jpeg"), path.join(OUT, "brand", "iaaf-logo.png"), 900);
-await cutOutWhite(path.join(SRC, "Logos", "rays logo.jpeg"), path.join(OUT, "brand", "rays-logo.png"), 700);
+await cutOutWhite(path.join(SRC, "Logos", "IAAF logo.jpeg"), path.join(OUT, "brand", "iaaf-logo.png"), 512);
+await cutOutWhite(path.join(SRC, "Logos", "rays logo.jpeg"), path.join(OUT, "brand", "rays-logo.png"), 360);
 
 /* ---------------------------------------------------------------- */
 /* Sponsors                                                          */
@@ -106,7 +106,7 @@ await cutOutWhite(path.join(SRC, "Logos", "rays logo.jpeg"), path.join(OUT, "bra
 // Chadha Papers: the supplied file is a phone screenshot; crop the mark and wordmark, drop the white.
 {
   const crop = await sharp(path.join(SRC, "Logos", "IMG_8188.JPG")).rotate().extract({ left: 160, top: 340, width: 700, height: 440 }).toBuffer();
-  await cutOutWhite(crop, path.join(OUT, "brand", "chadha-papers.png"), 600);
+  await cutOutWhite(crop, path.join(OUT, "brand", "chadha-papers.png"), 360);
 }
 
 // Modi Groups: the supplied file is a photo of 3D wall lettering (glare, grey wall), so the mark is
@@ -119,6 +119,6 @@ await cutOutWhite(path.join(SRC, "Logos", "rays logo.jpeg"), path.join(OUT, "bra
       font-size="205" textLength="1420" lengthAdjust="spacingAndGlyphs" fill="#2d2d33">MODI GROUPS</text>
   </svg>`;
   const raster = await sharp(Buffer.from(svg), { density: 144 }).png().toBuffer();
-  await sharp(raster).trim({ threshold: 1 }).resize({ width: 640 }).png({ compressionLevel: 9 }).toFile(path.join(OUT, "brand", "modi-groups.png"));
+  await sharp(raster).trim({ threshold: 1 }).resize({ width: 360 }).png({ palette: true, quality: 92, compressionLevel: 9 }).toFile(path.join(OUT, "brand", "modi-groups.png"));
   console.log("modi-groups.png written");
 }

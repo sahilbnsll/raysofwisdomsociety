@@ -3,7 +3,7 @@ import type { Photo } from "@/content/event";
 
 /**
  * A photograph in a fixed-ratio frame (no layout shift), optionally cut as a temple arch.
- * Photographer credits are listed once in the footer rather than printed on the pictures.
+ * No credit lines are printed on the pictures.
  */
 export function Frame({
   photo,
