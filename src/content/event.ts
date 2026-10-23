@@ -45,7 +45,7 @@ export const photos = {
   gauriPortrait: art("gauri-portrait", 2000, 1325, "Gauri Diwakar in a purple striped dupatta looking to the side with hands raised", { position: "55% 25%" }),
   sudarushkaStage: art("sudarushka-stage", 2000, 1346, "Three Russian dancers in blue sarafans holding embroidered shawls wide on a lit stage", { position: "50% 45%" }),
   sudarushkaGroup: art("sudarushka-group", 1030, 1600, "Russian dancers in blue and white folk costume gathered together in a forest", { position: "50% 30%" }),
-  abhaySantoor: art("abhay-santoor", 2000, 1694, "Abhay Sopori in a cream embroidered kurta seated behind his santoor", { position: "50% 40%" }),
+  abhaySantoor: art("abhay-santoor", 2000, 1694, "Abhay Sopori in a cream embroidered kurta seated behind his santoor", { position: "64% 50%" }),
   abhayPortrait: art("abhay-portrait", 1261, 1800, "Abhay Sopori in a cream embroidered kurta, hands poised over the santoor strings", { position: "50% 22%" }),
   joeMathew: art("joe-mathew-1", 1086, 1448, "Joe Mathew in white, leaning back with one arm raised and his gaze lifted", { position: "50% 22%" }),
   joeMathewB: art("joe-mathew-2", 1086, 1448, "Joe Mathew in white, arms spread wide in a balanced ballet pose", { position: "55% 24%" }),
@@ -311,8 +311,8 @@ export const event = {
           tagline: "The ancient stringed voices of different musical traditions",
           artForm: "Instrumental",
           note: "The resonance of the Iranian rabab and the Indian santoor creates a dialogue across cultures, celebrating music's capacity to carry memory, emotion and cultural identity beyond the boundaries of language.",
-          leadPhotos: [photos.abhayPortrait],
-          stage: photos.abhaySantoor,
+          leadPhotos: [photos.abhaySantoor],
+          stage: photos.abhayPortrait,
           artists: [
             {
               name: "Pandit Abhay Rustum Sopori",
