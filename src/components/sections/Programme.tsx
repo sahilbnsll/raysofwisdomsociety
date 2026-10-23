@@ -85,7 +85,9 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
   const sameName = s.title.trim().toLowerCase() === s.artForm.trim().toLowerCase();
   // Everything already said above the names (label, title, art form). A role is only shown for what it
   // adds: "Bharatanatyam" under Arupa Lahiri is left out, "Odissi, festival director" keeps "festival director".
-  const said = [s.tagline ?? s.artForm, sameName ? "" : s.title, s.tagline ? s.artForm : ""].join(" ").toLowerCase();
+  // When the title is only the dance ("Kuchipudi"), the dance goes under the artist's name, like Gauri Diwakar's, and the label above is dropped.
+  const label = sameName && s.artists.filter((a) => a.billing === "lead").length === 1 ? null : (s.tagline ?? s.artForm);
+  const said = [label ?? "", sameName ? "" : s.title, s.tagline ? s.artForm : ""].join(" ").toLowerCase();
   const newInRole = (role: string) =>
     role
       .split(",")
@@ -98,7 +100,7 @@ function SessionRow({ s, flip }: { s: Session; flip: boolean }) {
       <Leads s={s} flip={flip} extras={extras} onOpen={openAt} />
 
       <Reveal delay={100} className="md:col-span-7">
-        <p className="serif italic text-olive">{s.tagline ?? s.artForm}</p>
+        {label && <p className="serif italic text-olive">{label}</p>}
         {!sameName && (
           <h4 className="serif mt-1.5 text-[clamp(1.15rem,1.05rem+0.5vw,1.45rem)] font-medium leading-snug text-ink-muted">
             {s.title}
