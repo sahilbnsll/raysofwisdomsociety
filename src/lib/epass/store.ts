@@ -29,7 +29,8 @@ export interface GateStats {
 export type AdmitResult = { status: "admitted"; pass: IssuedPass } | { status: "already"; pass: IssuedPass } | { status: "not-found" };
 
 interface PassStore {
-  count(): Promise<number>;
+  /** Everyone covered by an issued pass: the sum of guests, not the number of passes. */
+  people(): Promise<number>;
   issue(input: { name: string; guests: number; days: Evenings }): Promise<IssuedPass>;
   get(id: string): Promise<IssuedPass | null>;
   /** Marks the pass as in for this evening. Never overwrites an earlier check-in. */
@@ -100,6 +101,20 @@ const fromRow = (r: Row): IssuedPass => ({
   },
 });
 
+/** Supabase returns at most 1,000 rows per request, so read a big table page by page. */
+async function allRows<T>(page: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>): Promise<T[]> {
+  const size = 1000;
+  const out: T[] = [];
+  for (let from = 0; ; from += size) {
+    const { data, error } = await page(from, from + size - 1);
+    if (error) throw new Error(error.message);
+    out.push(...((data ?? []) as T[]));
+    if (!data || data.length < size) return out;
+  }
+}
+
+let peopleCache: { value: number; at: number } | null = null;
+
 function supabaseStore(): PassStore | null {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -108,16 +123,22 @@ function supabaseStore(): PassStore | null {
   const table = () => db.from("epass_issues");
 
   return {
-    async count() {
-      const { count, error } = await table().select("id", { count: "exact", head: true });
-      if (error) throw new Error(error.message);
-      return count ?? 0;
+    async people() {
+      // Many visitors poll this, so share one database read between them for a few seconds.
+      if (peopleCache && Date.now() - peopleCache.at < 5000) return peopleCache.value;
+      const rows = await allRows<{ guests: number }>((from, to) => table().select("guests").order("created_at").range(from, to));
+      const value = rows.reduce((n, r) => n + r.guests, 0);
+      peopleCache = { value, at: Date.now() };
+      return value;
     },
     async issue({ name, guests, days }) {
       // Retry on the (very unlikely) id collision.
       for (let attempt = 0; attempt < 4; attempt++) {
         const { data, error } = await table().insert({ id: newPassId(), name, guests, days }).select(COLS).single();
-        if (!error && data) return fromRow(data as Row);
+        if (!error && data) {
+          peopleCache = null;
+          return fromRow(data as Row);
+        }
         if (error && error.code !== "23505") throw new Error(error.message);
       }
       throw new Error("Could not allocate a pass number");
@@ -143,9 +164,10 @@ function supabaseStore(): PassStore | null {
       return data ? fromRow(data as Row) : null;
     },
     async stats(evening) {
-      const { data, error } = await table().select("guests, days, admitted_day1, admitted_day2");
-      if (error) throw new Error(error.message);
-      const rows = (data ?? []).map((r) => fromRow({ id: "", name: "", created_at: "", ...(r as Omit<Row, "id" | "name" | "created_at">) }));
+      const data = await allRows<Omit<Row, "id" | "name" | "created_at">>((from, to) =>
+        table().select("guests, days, admitted_day1, admitted_day2").order("created_at").range(from, to),
+      );
+      const rows = data.map((r) => fromRow({ id: "", name: "", created_at: "", ...r }));
       return summarise(rows, evening);
     },
   };
@@ -182,8 +204,8 @@ async function writeAll(rows: IssuedPass[]) {
 }
 
 const localStore: PassStore = {
-  async count() {
-    return (await readAll()).length;
+  async people() {
+    return (await readAll()).reduce((n, r) => n + r.guests, 0);
   },
   async issue({ name, guests, days }) {
     const rows = await readAll();

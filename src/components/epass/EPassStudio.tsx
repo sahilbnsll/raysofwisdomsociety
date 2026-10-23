@@ -103,13 +103,13 @@ export function EPassStudio() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: trimmed, guests, days, website: honeypot.current?.value ?? "" }),
       });
-      const data = (await res.json()) as { error?: string; field?: string; id: string; name: string; guests: number; days: Evenings; count: number };
+      const data = (await res.json()) as { error?: string; field?: string; id: string; name: string; guests: number; days: Evenings; people: number };
       if (!res.ok) {
         setError({ field: data.field, message: data.error ?? "Something went wrong. Please try again." });
         return;
       }
       const issued: PassData = { id: data.id, name: data.name, guests: data.guests, days: data.days };
-      recordIssued(issued, data.count);
+      recordIssued(issued, data.people);
       setCreating(false);
       setSelectedId(issued.id);
       setJustIssued(issued.id);
@@ -172,7 +172,7 @@ export function EPassStudio() {
             {event.closing} Make your pass here, keep it on your phone and show it at the gate.
           </p>
           <div className="mt-6 flex justify-center">
-            <EPassCounter variant="chip" />
+            <EPassCounter />
           </div>
         </Reveal>
 

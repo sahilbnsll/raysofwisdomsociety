@@ -5,13 +5,13 @@ import type { Evenings } from "@/content/event";
 import type { PassData } from "@/lib/epass/render-pass";
 
 interface EPassContextValue {
-  /** Total passes issued so far, or null until the first response (or if the counter is unavailable). */
-  count: number | null;
+  /** Everyone covered by the passes issued so far (guests, not passes), or null until the first response. */
+  people: number | null;
   /** Passes this browser has made, newest first. */
   passes: PassData[];
   /** The evening a visitor picked elsewhere on the page (e.g. under a day of the programme). */
   preferred: { value: Evenings; at: number } | null;
-  recordIssued: (pass: PassData, count: number) => void;
+  recordIssued: (pass: PassData, people: number) => void;
   /** Scrolls to the e-pass section and puts the cursor in the name field, optionally choosing an evening. */
   goToPass: (evening?: Evenings) => void;
   /** The studio registers how to focus its first field. */
@@ -58,7 +58,7 @@ function parsePasses(raw: string | null): PassData[] {
 const NO_PASSES: PassData[] = [];
 
 export function EPassProvider({ children }: { children: React.ReactNode }) {
-  const [count, setCount] = useState<number | null>(null);
+  const [people, setPeople] = useState<number | null>(null);
   const [preferred, setPreferred] = useState<{ value: Evenings; at: number } | null>(null);
   const raw = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const parsed = useMemo(() => parsePasses(raw), [raw]);
@@ -70,8 +70,8 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
     const load = () =>
       fetch("/api/epass", { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error("unavailable"))))
-        .then((d: { count: number }) => {
-          if (!cancelled) setCount(d.count);
+        .then((d: { people: number }) => {
+          if (!cancelled) setPeople(d.people);
         })
         .catch(() => {});
     load();
@@ -84,7 +84,7 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const recordIssued = useCallback((p: PassData, total: number) => {
-    setCount(total);
+    setPeople(total);
     const next = JSON.stringify([p, ...parsePasses(getSnapshot()).filter((x) => x.id !== p.id)].slice(0, 12));
     memoryRaw = next;
     try {
@@ -108,8 +108,8 @@ export function EPassProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ count, passes, preferred, recordIssued, goToPass, registerFocus }),
-    [count, passes, preferred, recordIssued, goToPass, registerFocus],
+    () => ({ people, passes, preferred, recordIssued, goToPass, registerFocus }),
+    [people, passes, preferred, recordIssued, goToPass, registerFocus],
   );
 
   return <EPassContext.Provider value={value}>{children}</EPassContext.Provider>;

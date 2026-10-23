@@ -26,7 +26,7 @@ export function StickyCta() {
       }`}
       inert={!show}
     >
-      <EPassCounter />
+      <EPassCounter short />
       <EPassLink className="btn btn-primary !min-h-11 !px-5 text-sm whitespace-nowrap" />
     </div>
   );

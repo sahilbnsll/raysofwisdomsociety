@@ -58,7 +58,7 @@ export function Header() {
 
         <div className="flex items-center gap-2 md:gap-3">
           <a href="#e-pass" className="hidden rounded-full md:inline-flex" aria-label="Number of e-passes downloaded, go to the e-pass section">
-            <EPassCounter variant="chip" />
+            <EPassCounter variant="chip" short />
           </a>
           {/* Short label on the narrowest phones so the bar never overflows */}
           <EPassLink className="btn btn-primary !min-h-10 !px-4 text-sm whitespace-nowrap">

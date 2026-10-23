@@ -7,17 +7,17 @@ const NO_STORE = { "Cache-Control": "no-store" };
 
 export async function GET() {
   try {
-    const count = await getPassStore().count();
-    // `shared` says whether the count comes from the database (true) or a local file / server memory (false).
-    return Response.json({ count, shared: usingSharedStore() }, { headers: NO_STORE });
+    const people = await getPassStore().people();
+    // `shared` says whether the number comes from the database (true) or a local file / server memory (false).
+    return Response.json({ people, shared: usingSharedStore() }, { headers: NO_STORE });
   } catch (error) {
-    console.error("[epass] count failed:", error);
+    console.error("[epass] guest count failed:", error);
     return Response.json({ error: "unavailable" }, { status: 503, headers: NO_STORE });
   }
 }
 
 /* Small per-instance rate limit: 5 passes per client per 10 minutes. It only stops a script from
-   inflating the counter; a person getting passes for a family never gets near it. */
+   inflating the guest count; a person getting passes for a family never gets near it. */
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
 const hits = new Map<string, number[]>();
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   // Hidden field only a script fills in: pretend it worked, store nothing.
   if (clean(body.website)) {
-    return Response.json({ id: "RWS26-222222", name: "", guests: 1, days: "both", count: 0 }, { headers: NO_STORE });
+    return Response.json({ id: "RWS26-222222", name: "", guests: 1, days: "both", people: 0 }, { headers: NO_STORE });
   }
 
   const name = clean(body.name);
@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
   try {
     const store = getPassStore();
     const pass = await store.issue({ name, guests, days });
-    const count = await store.count();
-    return Response.json({ id: pass.id, name: pass.name, guests: pass.guests, days: pass.days, count }, { headers: NO_STORE });
+    const people = await store.people();
+    return Response.json({ id: pass.id, name: pass.name, guests: pass.guests, days: pass.days, people }, { headers: NO_STORE });
   } catch (error) {
     console.error("[epass] issue failed:", error);
     return Response.json({ error: "We could not create your pass. Please try again." }, { status: 503, headers: NO_STORE });
