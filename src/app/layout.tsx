@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Hanken_Grotesk, Newsreader } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { event, org } from "@/content/event";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -108,6 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         {children}
+        <Analytics />
       </body>
     </html>
   );
