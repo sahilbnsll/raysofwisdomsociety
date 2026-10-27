@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
       // The share picture and poster, so image search can find the festival too
-      images: [`${siteUrl}/opengraph-image`, `${siteUrl}/images/poster.jpg`],
+      images: [`${siteUrl}/opengraph-image`, `${siteUrl}/images/poster-v2.jpg`],
     },
   ];
 }

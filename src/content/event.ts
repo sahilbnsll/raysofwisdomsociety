@@ -224,9 +224,9 @@ export const event = {
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Kamani+Auditorium+New+Delhi",
     metro: "Mandi House metro station (Blue and Violet lines) is about a 5 to 10 minute walk away.",
   },
-  // Official festival poster (1080 x 1080): used for social sharing previews.
+  // Official festival poster (supplied at 1000 x 1000, resized to 1080): the top of the e-pass and the social sharing images.
   poster: {
-    src: "/images/poster.jpg",
+    src: "/images/poster-v2.jpg",
     width: 1080,
     height: 1080,
     alt: "Poster for the 9th International Ancient Arts Festival 2026 with classical dancers and musicians in colourful costume.",

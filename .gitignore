@@ -15,4 +15,4 @@ IAAF (2026) artist photographs/
 # Photographs waiting to be added to the gallery viewers (originals can be huge); see README, "Adding photographs".
 gallery-inbox/*/*
 !gallery-inbox/*/.gitkeep
-gallery-inbox/collage.png
+gallery-inbox/*.png
