@@ -41,13 +41,19 @@ const hanken = Hanken_Grotesk({
 });
 
 const fullTitle = `${event.edition} ${event.title} 2026`;
+// What shows in search results and browser tabs: the searched-for name first, then the full festival name.
+const searchTitle = `${event.searchName} | ${fullTitle}, New Delhi`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: `${fullTitle} | ${org.name}`, template: `%s | ${event.shortTitle}` },
+  title: { default: searchTitle, template: `%s | ${event.shortTitle}` },
   description: event.seoDescription,
   applicationName: event.shortTitle,
   keywords: [
+    "IAAF26",
+    "IAAF 26",
+    "IAAF festival",
+    "IAAF 2026 New Delhi",
     "International Ancient Arts Festival",
     "IAAF 2026",
     "Indian classical dance festival",
@@ -79,10 +85,10 @@ export const metadata: Metadata = {
     siteName: org.name,
     locale: "en_IN",
     url: "/",
-    title: fullTitle,
+    title: searchTitle,
     description: event.seoDescription,
   },
-  twitter: { card: "summary_large_image", title: fullTitle, description: event.seoDescription },
+  twitter: { card: "summary_large_image", title: searchTitle, description: event.seoDescription },
   robots: event.isDraft
     ? { index: false, follow: false }
     : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },

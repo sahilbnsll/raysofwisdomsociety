@@ -28,8 +28,9 @@ export function EventJsonLd() {
     "@context": "https://schema.org",
     "@type": "Event",
     name: `${event.edition} ${event.title} 2026`,
+    alternateName: [event.searchName, "IAAF 26", event.shortTitle, `${event.title} 2026`],
     description: `${event.seoDescription} The Ancient Arts Award 2026 is presented to ${event.award.recipient}.`,
-    keywords: "Indian classical dance, Odissi, Bharatanatyam, Kuchipudi, Kathak, santoor, rabab, Banaras Gharana, ancient arts",
+    keywords: "IAAF26, IAAF 2026, Indian classical dance, Odissi, Bharatanatyam, Kuchipudi, Kathak, santoor, rabab, Banaras Gharana, ancient arts",
     url: siteUrl,
     image: [`${siteUrl}/opengraph-image`, `${siteUrl}${event.poster.src}`],
     startDate: eventStartsAt,
@@ -53,6 +54,23 @@ export function EventJsonLd() {
     })),
   };
 
+  // The site itself, so a search for the short name can show the festival's own name and address
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: event.searchName,
+    alternateName: ["IAAF 26", event.shortTitle, `${event.edition} ${event.title} 2026`],
+    url: siteUrl,
+    inLanguage: "en-IN",
+    publisher: { "@type": "Organization", name: org.name, url: org.site },
+  };
+
   // "<" is escaped so no text in the data can close the script tag early.
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
+  const json = (d: object) => JSON.stringify(d).replace(/</g, "\\u003c");
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json(data) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json(website) }} />
+    </>
+  );
 }

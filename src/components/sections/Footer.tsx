@@ -77,7 +77,7 @@ export function Footer() {
                 {event.edition} {event.title}
               </p>
               <p className="mt-1 text-paper/65">
-                {dateRange()} · {event.venue.name}, {event.venue.area}
+                #{event.searchName} · {dateRange()} · {event.venue.name}, {event.venue.area}
               </p>
             </div>
           </div>

@@ -210,6 +210,8 @@ export const event = {
   edition: "9th",
   title: "International Ancient Arts Festival",
   shortTitle: "IAAF 2026",
+  /** What people type into a search box, and the festival hashtag: the same word as the web address. */
+  searchName: "IAAF26",
   subtitle: "Ancient Arts. Universal Consciousness. A World Beyond Boundaries.",
   motto: ["Art", "Heals", "Connects", "Awakens"],
   director: "Reela Hota",
@@ -239,9 +241,9 @@ export const event = {
     { photo: photos.gauriTwirl, label: "Kathak" },
     { photo: photos.abhayPortrait, label: "Santoor" },
   ],
-  /** Meta description: one sentence, under about 160 characters. */
+  /** Meta description: under about 160 characters, with the name people search for at the front. */
   seoDescription:
-    "Two evenings of classical and folk dance and classical music at Kamani Auditorium, New Delhi, 25 and 26 November 2026. Get your e-pass.",
+    "IAAF26: two evenings of Indian classical and folk dance and classical music at Kamani Auditorium, New Delhi, 25 and 26 Nov 2026. Get your e-pass.",
   intro: "Art has always been more than a performance.",
   // The client's own words, as in the script they sent (22 Oct 2026)
   about: [
