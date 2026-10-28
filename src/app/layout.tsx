@@ -79,10 +79,12 @@ export const metadata: Metadata = {
   // The page has proper tap-to-call links; stop phones restyling plain numbers and addresses on their own
   formatDetection: { telephone: false, email: false, address: false },
   alternates: { canonical: "/" },
+  // Where it happens, for search engines that weigh place (Bing reads these)
+  other: { "geo.region": "IN-DL", "geo.placename": "New Delhi", "geo.position": "28.6250;77.2336", ICBM: "28.6250, 77.2336" },
   // The share image comes from opengraph-image.tsx; these fill in the rest of the card.
   openGraph: {
     type: "website",
-    siteName: org.name,
+    siteName: event.searchName,
     locale: "en_IN",
     url: "/",
     title: searchTitle,

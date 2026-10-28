@@ -212,6 +212,8 @@ export const event = {
   shortTitle: "IAAF 2026",
   /** What people type into a search box, and the festival hashtag: the same word as the web address. */
   searchName: "IAAF26",
+  /** When the content last changed, for the sitemap. Update it whenever the programme, artists or details change. */
+  updatedAt: "2026-10-28",
   subtitle: "Ancient Arts. Universal Consciousness. A World Beyond Boundaries.",
   motto: ["Art", "Heals", "Connects", "Awakens"],
   director: "Reela Hota",
@@ -465,6 +467,10 @@ export const event = {
     ] as ArchivePrint[],
   },
   faqs: [
+    {
+      q: "What is IAAF26?",
+      a: "IAAF26 is the 9th International Ancient Arts Festival 2026: two evenings of classical and folk dance and classical music at Kamani Auditorium, New Delhi, on 25 and 26 November 2026, presented by Rays of Wisdom Society and curated and directed by Dr. Reela Hota.",
+    },
     {
       q: "Do I need an e-pass?",
       a: "Yes. Make one in the e-pass section and show it at the gate, on your phone or printed.",

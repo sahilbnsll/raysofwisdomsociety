@@ -44,8 +44,8 @@ export function Hero() {
           <h1 className="display mt-5 text-balance text-[clamp(2.8rem,1.1rem+6.6vw,6.5rem)] leading-[0.95] lg:mt-[2svh] lg:text-[clamp(2.4rem,min(4.2vw,6.6svh),4.6rem)] tracking-[-0.015em] text-[#1d2714] [text-shadow:0_1px_0_rgb(255_255_255/0.6),0_0_28px_rgb(246_239_224/0.9)]">
             <span className="whitespace-nowrap">
               <span className="text-[1.5em] leading-none">9</span>
-              <sup className="mr-[0.15em] align-[0.95em] text-[0.4em]">th</sup>
-              International
+              <sup className="align-[0.95em] text-[0.4em]">th</sup>{" "}
+              International{" "}
             </span>
             <br />
             Ancient Arts Festival <span className="whitespace-nowrap text-maroon [text-shadow:0_1px_0_rgb(255_255_255/0.5),0_0_24px_rgb(246_239_224/0.9)]">2026</span>
