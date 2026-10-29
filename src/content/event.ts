@@ -466,47 +466,30 @@ export const event = {
       { title: "With Pandit Durga Lal", caption: "On stage with a Kathak master, the form she first learned.", photo: art("madhavi-duet", 1137, 1400, "Black and white photograph of Madhavi Mudgal and Pandit Durga Lal dancing a Kathak duet", { credit: "Avinash Pasricha" }) },
     ] as ArchivePrint[],
   },
+  // Six questions, each answering what people search for or ask at the gate. Keep the facts in step with `days` above.
   faqs: [
     {
       q: "What is IAAF26?",
       a: "IAAF26 is the 9th International Ancient Arts Festival 2026: two evenings of classical and folk dance and classical music at Kamani Auditorium, New Delhi, on 25 and 26 November 2026, presented by Rays of Wisdom Society and curated and directed by Dr. Reela Hota.",
     },
-    // The next four answer what people search for (an art or dance event in Delhi, which dance forms, who performs).
-    // Keep them in step with `days` above if the programme changes.
     {
-      q: "When and where is the festival in Delhi?",
-      a: "The festival runs on two evenings, 25 and 26 November 2026, from 6:30 pm, at Kamani Auditorium, 1 Copernicus Marg, Mandi House, New Delhi 110001. The nearest metro station is Mandi House (Blue and Violet lines), about a 5 to 10 minute walk away.",
+      q: "When and where is it?",
+      a: "On 25 and 26 November 2026, from 6:30 pm, at Kamani Auditorium, 1 Copernicus Marg, Mandi House, New Delhi 110001. The nearest metro station is Mandi House (Blue and Violet lines), a 5 to 10 minute walk.",
     },
     {
-      q: "Which dance forms can I see?",
-      a: "The first evening, 25 November, is classical and folk dance: Odissi and classical ballet in Sanskrit: The Mantra Bhasha, Bharatanatyam, Kuchipudi, and Indian Kathak meeting the Russian folk circle dance Sudarushka.",
+      q: "What will I see and hear?",
+      a: "The first evening, 25 November, is classical and folk dance: Odissi and classical ballet, Bharatanatyam, Kuchipudi, and Kathak meeting the Russian folk dance Sudarushka. The second, 26 November, is classical music: santoor and rabab, then a Hindustani classical vocal recital in the Banaras Gharana tradition. Artists include Dr. Reela Hota, Gauri Diwakar, Arupa Lahiri, Amrita Lahiri, Pandit Abhay Rustum Sopori, Pandit Mukesh Sharma, and Pandit Ritesh Mishra and Pandit Rajnish Mishra. The Ancient Arts Award 2026 goes to Padma Shri Madhavi Mudgal.",
     },
     {
-      q: "Which music will be performed?",
-      a: "The second evening, 26 November, is classical music: the santoor and the rabab, with pakhawaj and tabla, and a closing Hindustani classical vocal recital in the Banaras Gharana tradition.",
+      q: "Do I need an e-pass, and who does it cover?",
+      a: "Yes. Make one in the e-pass section and show it at the gate, on your phone or printed. One e-pass admits up to 4 people, including you; for a larger group, make another with \"Get a pass for someone else\". Choose \"Both evenings\" and it is checked in once each evening, or pick a single evening and it is valid that evening only.",
     },
     {
-      q: "Who is performing?",
-      a: "Dr. Reela Hota (Odissi), Joe Mathew (ballet), Princess Panigrahi and Priyanka Das, Arupa Lahiri (Bharatanatyam), Amrita Lahiri (Kuchipudi) and Gauri Diwakar (Kathak) with Mariia Timashova, Mariia Agafonova and Yana (Sudarushka) on the first evening; Pandit Abhay Rustum Sopori (santoor), Pandit Mukesh Sharma (rabab) and Pandit Ritesh Mishra and Pandit Rajnish Mishra (Banaras Gharana vocal) on the second. The Ancient Arts Award 2026 goes to Padma Shri Madhavi Mudgal.",
-    },
-    {
-      q: "Do I need an e-pass?",
-      a: "Yes. Make one in the e-pass section and show it at the gate, on your phone or printed.",
-    },
-    {
-      q: "Can one pass cover my family?",
-      a: "Yes. One e-pass admits up to 4 people, including you. For a larger group, make another with \"Get a pass for someone else\".",
-    },
-    {
-      q: "Is one pass valid for both evenings?",
-      a: "Yes, if you choose \"Both evenings\". It is checked in once each evening. A single-evening pass is valid that evening only.",
-    },
-    {
-      q: "I lost my pass. What now?",
+      q: "What if I lose my pass?",
       a: "Open this page on the same phone and it is still there. Or give the gate team your name and pass number.",
     },
     {
-      q: "Who do I contact with questions?",
+      q: "Who can I contact?",
       a: `Call the project coordinator, ${org.coordinator.name}, on ${org.coordinator.phone}, or the office on ${org.mobile} or ${org.landline}. You can also write to ${org.email}.`,
     },
   ],
