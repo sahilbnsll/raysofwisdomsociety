@@ -45,6 +45,17 @@ export function createLimiter(max: number, windowMs: number) {
       if (hits.size > 5000) hits.clear();
       return over;
     },
+    /** Whether the client is already over the limit, without counting this visit. */
+    blocked(key: string): boolean {
+      const now = Date.now();
+      return (hits.get(key) ?? []).filter((t) => now - t < windowMs).length >= max;
+    },
+    /** Counts one hit against the client: for failures only, so honest use never uses the allowance up. */
+    hit(key: string): void {
+      const now = Date.now();
+      hits.set(key, [...(hits.get(key) ?? []).filter((t) => now - t < windowMs), now]);
+      if (hits.size > 5000) hits.clear();
+    },
     retryAfter: Math.ceil(windowMs / 1000),
   };
 }

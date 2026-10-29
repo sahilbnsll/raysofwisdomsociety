@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { connection } from "next/server";
-import { brand, event, eveningLabels, org } from "@/content/event";
+import { event, eveningLabels, org } from "@/content/event";
 import { dateRange } from "@/lib/format";
 import { isStaff } from "@/lib/epass/gate";
 import { getPassStore, normalisePassId, PASS_ID, usingSharedStore } from "@/lib/epass/store";
-import { defaultEvening, eveningName, type Evening } from "@/lib/epass/evening";
+import { defaultEvening, type Evening } from "@/lib/epass/evening";
 import { toGatePass, verdictFor } from "@/lib/epass/verdict";
+import { GateHeader, TabLabel, eveningTabs, segmented, segmentItem } from "@/components/gate/gate-ui";
 import { VerdictCard } from "@/components/gate/VerdictCard";
 import { Seal } from "@/components/ui/Seal";
 
@@ -50,24 +50,15 @@ export default async function PassPage({ params, searchParams }: { params: Promi
     const verdict = { ...verdictFor(pass && toGatePass(pass), evening), shared: usingSharedStore(), ...(PASS_ID.test(id) ? {} : { invalid: true }) };
     return (
       <main className="mx-auto min-h-svh w-full max-w-xl px-4 py-6">
-        <div className="mb-4 flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm text-ink-muted">
-            <Image src={brand.logo.src} alt="" width={28} height={28} className="size-7" /> Gate check-in
-          </span>
-          <Link href="/gate" className="text-sm font-semibold underline underline-offset-4">
-            Open the scanner
+        <GateHeader>
+          <Link href="/gate" aria-label="Open the scanner" className="btn btn-secondary !min-h-9 shrink-0 !px-4 !py-1.5 text-[0.8125rem]">
+            Scanner
           </Link>
-        </div>
-        <nav aria-label="Evening being checked" className="mb-4 grid grid-cols-2 rounded-full bg-paper p-1 shadow-e1 ring-1 ring-line">
-          {(["day1", "day2"] as const).map((e) => (
-            <Link
-              key={e}
-              href={`?evening=${e}`}
-              replace
-              aria-current={evening === e ? "true" : undefined}
-              className={`rounded-full py-2.5 text-center text-sm font-semibold transition-colors ${evening === e ? "bg-ink text-paper" : "text-ink-muted"}`}
-            >
-              Evening of {eveningName[e]}
+        </GateHeader>
+        <nav aria-label="Evening being checked" className={`${segmented} mb-5 mt-5`}>
+          {eveningTabs.map((o) => (
+            <Link key={o.value} href={`?evening=${o.value}`} replace aria-current={evening === o.value ? "true" : undefined} aria-label={o.aria} className={segmentItem(evening === o.value)}>
+              <TabLabel date={o.date} theme={o.theme} />
             </Link>
           ))}
         </nav>

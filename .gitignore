@@ -1,9 +1,22 @@
+# Dependencies and build output
 node_modules
 .next
-.data
-.env*.local
 next-env.d.ts
 *.tsbuildinfo
+coverage
+
+# Secrets and settings: every .env file stays out of Git, except the template with no values in it.
+# (.env.local holds the database key and gate PIN; never commit it.)
+.env
+.env.*
+!.env.example
+*.pem
+
+# Local test data (the pass list kept in a file when no database is connected)
+.data
+
+# Vercel CLI link to the hosted project
+.vercel
 
 # Client's original photographs (~380 MB, one 45 MB TIFF): too large for Git.
 # Keep them locally or in shared storage; `npm run images` builds public/images from them.
@@ -13,6 +26,16 @@ IAAF (2026) artist photographs/
 .claude/
 
 # Photographs waiting to be added to the gallery viewers (originals can be huge); see README, "Adding photographs".
+# Anything dropped straight into the inbox folder (a collage, a poster) is ignored too; only the README and
+# the empty-folder markers are kept.
 gallery-inbox/*/*
 !gallery-inbox/*/.gitkeep
-gallery-inbox/*.png
+gallery-inbox/*.*
+!gallery-inbox/README.md
+
+# Logs and files the operating system leaves behind
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini

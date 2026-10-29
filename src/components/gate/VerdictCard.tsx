@@ -4,21 +4,23 @@ import { useState } from "react";
 import { eveningLabels } from "@/content/event";
 import { eveningName, type Evening } from "@/lib/epass/evening";
 import type { Verdict } from "@/lib/epass/verdict";
+import { IconAlert, IconCheck, IconClock, IconCross } from "./gate-ui";
 
 const time = (iso?: string) =>
   iso ? new Date(iso).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit" }) : "";
 
+/** Colour and a shape for every answer, so it reads at a glance and without relying on colour alone. */
 const tone = {
-  admit: { bar: "bg-olive text-paper", label: "Valid pass" },
-  admitted: { bar: "bg-olive text-paper", label: "Admitted" },
-  already: { bar: "bg-gold text-ink", label: "Already admitted" },
-  "wrong-evening": { bar: "bg-maroon text-paper", label: "Not for tonight" },
-  "not-found": { bar: "bg-maroon text-paper", label: "Pass not found" },
+  admit: { bar: "bg-olive text-paper", disc: "bg-paper/20", label: "Valid pass", Icon: IconCheck },
+  admitted: { bar: "bg-olive text-paper", disc: "bg-paper/20", label: "Admitted", Icon: IconCheck },
+  already: { bar: "bg-gold text-ink", disc: "bg-ink/10", label: "Already admitted", Icon: IconClock },
+  "wrong-evening": { bar: "bg-maroon text-paper", disc: "bg-paper/20", label: "Not for tonight", Icon: IconAlert },
+  "not-found": { bar: "bg-maroon text-paper", disc: "bg-paper/20", label: "Pass not found", Icon: IconCross },
 } as const;
 
 /**
  * One scan, one unmistakable answer, readable at arm's length in a dim foyer: a coloured band with
- * the verdict, the guest's name and party size, and the one action that fits.
+ * the verdict, a tear line like the e-pass, the guest's name and party size, and the one action that fits.
  */
 export function VerdictCard({
   initial,
@@ -59,31 +61,41 @@ export function VerdictCard({
 
   return (
     <article className="overflow-hidden rounded-3xl bg-paper shadow-e3 ring-1 ring-line" aria-live="assertive">
-      <div className={`flex items-center justify-between gap-4 px-6 py-5 ${t.bar}`}>
-        <p className="display text-3xl sm:text-4xl">{t.label}</p>
+      <div className={`flex items-center justify-between gap-4 px-5 py-4 sm:px-6 ${t.bar}`}>
+        <div className="flex min-w-0 items-center gap-3">
+          <span aria-hidden="true" className={`grid size-11 shrink-0 place-items-center rounded-full ${t.disc}`}>
+            <t.Icon />
+          </span>
+          <p className="display text-[1.55rem] leading-tight sm:text-[2rem]">{t.label}</p>
+        </div>
         {v.state === "already" && v.admittedAt && (
-          <p className="text-right leading-tight">
+          <p className="shrink-0 text-right leading-tight">
             <span className="block text-xs font-semibold uppercase tracking-wide opacity-70">Admitted at</span>
             <span className="display whitespace-nowrap text-3xl tabular-nums sm:text-4xl">{time(v.admittedAt)}</span>
           </p>
         )}
         {(v.state === "admit" || v.state === "admitted") && p && (
-          <p className="display text-5xl tabular-nums" aria-label={`${p.guests} ${p.guests === 1 ? "person" : "people"}`}>
+          <p className="display shrink-0 text-5xl tabular-nums" aria-label={`${p.guests} ${p.guests === 1 ? "person" : "people"}`}>
             {p.guests}
             <span className="ml-1 font-sans text-base font-semibold">{p.guests === 1 ? "person" : "people"}</span>
           </p>
         )}
       </div>
+      <div className="perforation" />
 
       <div className={compact ? "p-5" : "p-6 sm:p-8"}>
         {p ? (
           <>
             <p className="display text-4xl leading-tight">{p.name}</p>
-            <p className="mt-1 text-ink-muted">
-              {p.guests} {p.guests === 1 ? "person" : "people"} · {eveningLabels[p.days].long} · <span className="font-semibold tracking-wider text-ink">{p.id}</span>
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <span className="rounded-full bg-sage px-3 py-1 font-semibold">
+                {p.guests} {p.guests === 1 ? "person" : "people"}
+              </span>
+              <span className="rounded-full bg-sage px-3 py-1">{eveningLabels[p.days].long}</span>
+              <span className="rounded-full bg-cream px-3 py-1 font-semibold tracking-wider ring-1 ring-line-strong">{p.id}</span>
             </p>
 
-            <p className="mt-5 text-[1.0625rem]">
+            <p className="mt-5 border-l-2 border-gold pl-4 text-[1.0625rem] leading-relaxed">
               {v.state === "admit" && <>Valid for the evening of {eveningName[v.evening]}. Check them in to let the party through.</>}
               {v.state === "admitted" && <>Checked in at {time(v.admittedAt)} for {eveningName[v.evening]}. If it is scanned again, it will show as already admitted.</>}
               {v.state === "already" && (
@@ -101,7 +113,7 @@ export function VerdictCard({
 
             <div className="mt-6 flex flex-wrap gap-3">
               {v.state === "admit" && (
-                <button type="button" disabled={busy} onClick={() => send({})} className="btn w-full bg-olive !min-h-16 text-lg text-paper hover:bg-ink sm:w-auto sm:!px-10">
+                <button type="button" disabled={busy} onClick={() => send({})} className="btn w-full bg-olive !min-h-16 text-lg text-paper shadow-e2 hover:bg-ink sm:w-auto sm:!px-10">
                   {busy ? "Checking in…" : `Check in ${p.guests} ${p.guests === 1 ? "person" : "people"}`}
                 </button>
               )}

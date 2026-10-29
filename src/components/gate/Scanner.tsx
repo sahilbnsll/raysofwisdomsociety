@@ -92,13 +92,18 @@ export function Scanner({ onPass, onClose }: { onPass: (id: string) => void; onC
   }, [onPass]);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-ink">
+    <div className="relative overflow-hidden rounded-3xl bg-ink shadow-e2 ring-1 ring-line-strong">
       <video ref={video} className="aspect-[3/4] w-full object-cover sm:aspect-video" muted playsInline aria-label="Camera view for scanning passes" />
-      {/* Aiming frame */}
+      {/* Aiming frame: the veil around it, and four gold corners */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
-        <div className="size-[min(62vw,16rem)] rounded-3xl shadow-[0_0_0_9999px_rgb(0_0_0/0.35)] ring-2 ring-paper/90" />
+        <div className="relative size-[min(62vw,16rem)] rounded-3xl shadow-[0_0_0_9999px_rgb(20_26_12/0.45)]">
+          <span className="absolute -left-0.5 -top-0.5 size-9 rounded-tl-3xl border-l-[3px] border-t-[3px] border-gold" />
+          <span className="absolute -right-0.5 -top-0.5 size-9 rounded-tr-3xl border-r-[3px] border-t-[3px] border-gold" />
+          <span className="absolute -bottom-0.5 -left-0.5 size-9 rounded-bl-3xl border-b-[3px] border-l-[3px] border-gold" />
+          <span className="absolute -bottom-0.5 -right-0.5 size-9 rounded-br-3xl border-b-[3px] border-r-[3px] border-gold" />
+        </div>
       </div>
-      <p className="absolute inset-x-0 top-4 text-center text-sm font-semibold text-paper">Point at the QR code on the pass</p>
+      <p className="absolute left-1/2 top-4 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink/65 px-4 py-1.5 text-sm font-semibold text-paper backdrop-blur">Point at the QR code on the pass</p>
       {wrong && (
         <p role="alert" className="absolute inset-x-4 bottom-20 rounded-xl bg-maroon p-3 text-center text-sm font-semibold text-paper shadow-e2">
           That QR code is not a festival e-pass. Ask the guest to open their e-pass and hold the code up.

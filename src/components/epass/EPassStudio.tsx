@@ -109,7 +109,7 @@ export function EPassStudio() {
     if (sending) return;
     setError(null);
     const trimmed = name.trim();
-    if (trimmed.length < 2) {
+    if (trimmed.length < 2 || !/\p{L}/u.test(trimmed)) {
       setError({ field: "name", message: "Please enter your name as you would like it on the pass." });
       nameRef.current?.focus();
       return;
@@ -221,7 +221,7 @@ export function EPassStudio() {
                 <h3 className="display text-3xl">Make your pass</h3>
                 <div className="mt-6">
                   <label htmlFor="epass-name" className="text-sm font-semibold">
-                    Full name
+                    Full name <span className="font-normal text-maroon">(required)</span>
                   </label>
                   <input
                     ref={nameRef}
@@ -235,6 +235,8 @@ export function EPassStudio() {
                     maxLength={60}
                     autoComplete="name"
                     placeholder="As it should appear on the pass"
+                    required
+                    aria-required="true"
                     disabled={sending}
                     aria-invalid={!!nameErr}
                     aria-describedby={nameErr ? "epass-name-error" : undefined}

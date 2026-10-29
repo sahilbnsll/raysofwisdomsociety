@@ -18,9 +18,10 @@ export async function GET() {
   }
 }
 
-/* Small per-instance rate limit: 5 passes per client per 10 minutes. It only stops a script from
-   inflating the numbers; a person getting passes for a family never gets near it. */
-const limiter = createLimiter(5, 10 * 60 * 1000);
+/* Small per-instance rate limit: 40 passes per client per 10 minutes. It only stops a script from
+   inflating the numbers. It is not tight because many visitors can share one address (mobile carriers and
+   venue Wi-Fi do), and a family never gets near it. */
+const limiter = createLimiter(40, 10 * 60 * 1000);
 
 const clean = (value: unknown) =>
   typeof value === "string" ? value.replace(/[\u0000-\u001f\u007f<>]/g, "").replace(/\s+/g, " ").trim() : "";
@@ -49,6 +50,9 @@ export async function POST(request: NextRequest) {
   const days = (typeof body.days === "string" ? body.days : "both") as Evenings;
   if (name.length < 2 || name.length > 60) {
     return json({ error: "Please enter your name (2 to 60 characters).", field: "name" }, 400);
+  }
+  if (!/\p{L}/u.test(name)) {
+    return json({ error: "Please enter your name using letters.", field: "name" }, 400);
   }
   if (!Number.isInteger(guests) || guests < 1 || guests > 4) {
     return json({ error: "A pass admits 1 to 4 people.", field: "guests" }, 400);
