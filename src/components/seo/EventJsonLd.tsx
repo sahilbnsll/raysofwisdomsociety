@@ -55,6 +55,8 @@ export function EventJsonLd() {
     ],
   };
 
+  const images = [`${siteUrl}/opengraph-image`, `${siteUrl}${event.poster.src}`];
+
   const eventData = {
     "@context": "https://schema.org",
     // A festival of dance and of music: all three are kinds of Event, so it stays eligible for event results
@@ -80,7 +82,7 @@ export function EventJsonLd() {
     ].map((name) => ({ "@type": "Thing", name })),
     url: siteUrl,
     mainEntityOfPage: siteUrl,
-    image: [`${siteUrl}/opengraph-image`, `${siteUrl}${event.poster.src}`],
+    image: images,
     startDate: eventStartsAt,
     endDate: event.endDate,
     eventStatus: "https://schema.org/EventScheduled",
@@ -90,15 +92,23 @@ export function EventJsonLd() {
     organizer: organization,
     performer: performers.map((name) => ({ "@type": "Person", name })),
     sponsor: sponsors.map((s) => ({ "@type": "Organization", name: s.name })),
+    // Each evening is its own event: it carries the same details as the whole festival (image, end date, who is
+    // performing that night), which is what search results ask for. The end time is not announced, so the end
+    // date is the evening itself and no time is invented.
     subEvent: event.days.map((d) => ({
       "@type": "Event",
       name: `${event.shortTitle}: ${d.theme} evening`,
       description: d.blurb,
+      url: `${siteUrl}/#programme`,
+      image: images,
       startDate: `${d.date}T18:30:00+05:30`,
+      endDate: d.date,
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      inLanguage: "en",
       location: place,
       organizer: { "@id": ids.org },
+      performer: [...new Set(d.sessions.flatMap((s) => s.artists.flatMap((p) => personNames(p.name))))].map((name) => ({ "@type": "Person", name })),
     })),
   };
 
