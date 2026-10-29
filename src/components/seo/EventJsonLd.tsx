@@ -57,13 +57,27 @@ export function EventJsonLd() {
 
   const eventData = {
     "@context": "https://schema.org",
-    "@type": "Event",
+    // A festival of dance and of music: all three are kinds of Event, so it stays eligible for event results
+    "@type": ["Festival", "DanceEvent", "MusicEvent"],
     "@id": ids.event,
     name: `${event.edition} ${event.title} 2026`,
     alternateName: [event.searchName, "IAAF 26", event.shortTitle, `${event.title} 2026`],
-    description: `${event.seoDescription} The Ancient Arts Award 2026 is presented to ${event.award.recipient}.`,
-    keywords: "IAAF26, IAAF 2026, Indian classical dance, Odissi, Bharatanatyam, Kuchipudi, Kathak, santoor, rabab, Banaras Gharana, ancient arts",
-    about: ["Indian classical dance", "Odissi", "Bharatanatyam", "Kuchipudi", "Kathak", "Hindustani classical music"].map((name) => ({ "@type": "Thing", name })),
+    description: `${event.seoDescription} The first evening, 25 November, brings Odissi, classical ballet, Bharatanatyam, Kuchipudi and Kathak with the Russian folk dance Sudarushka; the second, 26 November, is classical music: santoor, rabab and a Hindustani classical vocal recital in the Banaras Gharana tradition. The Ancient Arts Award 2026 is presented to ${event.award.recipient}.`,
+    keywords:
+      "IAAF26, IAAF 2026, art event in Delhi, classical dance festival Delhi, Indian classical dance, Kathak performance Delhi, Odissi, Bharatanatyam, Kuchipudi, Kathak, classical music concert Delhi, santoor, rabab, Hindustani classical vocal, Banaras Gharana, cultural event New Delhi November 2026, ancient arts",
+    about: [
+      "Indian classical dance",
+      "Odissi",
+      "Bharatanatyam",
+      "Kuchipudi",
+      "Kathak",
+      "Classical ballet",
+      "Russian folk dance",
+      "Hindustani classical music",
+      "Santoor",
+      "Rabab",
+      "Indian arts and culture",
+    ].map((name) => ({ "@type": "Thing", name })),
     url: siteUrl,
     mainEntityOfPage: siteUrl,
     image: [`${siteUrl}/opengraph-image`, `${siteUrl}${event.poster.src}`],
