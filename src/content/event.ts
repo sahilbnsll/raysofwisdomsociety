@@ -470,7 +470,7 @@ export const event = {
   faqs: [
     {
       q: "What is IAAF26?",
-      a: "IAAF26 is the 9th International Ancient Arts Festival 2026: two evenings of classical and folk dance and classical music at Kamani Auditorium, New Delhi, on 25 and 26 November 2026, presented by Rays of Wisdom Society and curated and directed by Dr. Reela Hota.",
+      a: "IAAF26 (also written IAAF 26 or IAAF 2026) is the 9th International Ancient Arts Festival 2026: two evenings of classical and folk dance and classical music at Kamani Auditorium, New Delhi, on 25 and 26 November 2026, presented by Rays of Wisdom Society and curated and directed by Dr. Reela Hota.",
     },
     {
       q: "When and where is it?",
